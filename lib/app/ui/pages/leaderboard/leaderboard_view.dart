@@ -129,7 +129,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
                             style: TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 13,
-                            ),
+                            fontFamily: 'Poppins'),
                           ),
                         ),
                       ],
@@ -206,7 +206,7 @@ class _TabButton extends StatelessWidget {
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: isSelected ? Colors.white : AppColors.textSecondary,
-            ),
+            fontFamily: 'Poppins'),
           ),
         ),
       ),
@@ -288,7 +288,7 @@ class _PodiumCard extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
-                  ),
+                  fontFamily: 'Poppins'),
                 ),
               ),
             ),
@@ -304,7 +304,7 @@ class _PodiumCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                ),
+                fontFamily: 'Poppins'),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -314,7 +314,7 @@ class _PodiumCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   color: AppColors.gray400,
-                ),
+                fontFamily: 'Poppins'),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
@@ -327,7 +327,7 @@ class _PodiumCard extends StatelessWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: AppColors.primary,
-                    ),
+                    fontFamily: 'Poppins'),
                   ),
                   const SizedBox(width: 2),
                   const Icon(
@@ -380,7 +380,7 @@ class _PlayerListItem extends StatelessWidget {
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: isCurrentUser ? Colors.white : AppColors.textPrimary,
-            ),
+            fontFamily: 'Poppins'),
           ),
           const SizedBox(width: 16),
           CircleAvatar(
@@ -402,7 +402,7 @@ class _PlayerListItem extends StatelessWidget {
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: isCurrentUser ? Colors.white : AppColors.textPrimary,
-              ),
+              fontFamily: 'Poppins'),
             ),
           ),
           Row(
@@ -413,7 +413,7 @@ class _PlayerListItem extends StatelessWidget {
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: isCurrentUser ? Colors.white : AppColors.primary,
-                ),
+                fontFamily: 'Poppins'),
               ),
               const SizedBox(width: 4),
               Icon(

@@ -8,6 +8,7 @@ class AppTextStyles {
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
     letterSpacing: -0.5,
+    fontFamily: 'Poppins',
   );
   
   static const h2 = TextStyle(
@@ -15,6 +16,7 @@ class AppTextStyles {
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
     letterSpacing: -0.5,
+    fontFamily: 'Poppins',
   );
   
   static const h3 = TextStyle(
@@ -22,6 +24,7 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     letterSpacing: -0.3,
+    fontFamily: 'Poppins',
   );
   
   static const h4 = TextStyle(
@@ -29,6 +32,7 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     letterSpacing: -0.3,
+    fontFamily: 'Poppins',
   );
   
   static const h5 = TextStyle(
@@ -36,6 +40,7 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     letterSpacing: -0.2,
+    fontFamily: 'Poppins',
   );
   
   // Body Text
@@ -43,18 +48,21 @@ class AppTextStyles {
     fontSize: 16,
     fontWeight: FontWeight.w400,
     color: AppColors.textPrimary,
+    fontFamily: 'Poppins',
   );
   
   static const bodyMedium = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: AppColors.textPrimary,
+    fontFamily: 'Poppins',
   );
   
   static const bodySmall = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
     color: AppColors.textSecondary,
+    fontFamily: 'Poppins',
   );
   
   // Button Text
@@ -62,12 +70,14 @@ class AppTextStyles {
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: AppColors.textWhite,
+    fontFamily: 'Poppins',
   );
   
   static const buttonSmall = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: AppColors.textWhite,
+    fontFamily: 'Poppins',
   );
   
   // Caption & Label
@@ -75,12 +85,14 @@ class AppTextStyles {
     fontSize: 12,
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
+    fontFamily: 'Poppins',
   );
   
   static const label = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
+    fontFamily: 'Poppins',
   );
   
   // Special
@@ -89,9 +101,10 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
     color: AppColors.textTertiary,
     letterSpacing: 1.5,
+    fontFamily: 'Poppins',
   );
   
   // Legacy (for backward compatibility)
-  static const title = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
-  static const subtitle = TextStyle(fontSize: 16, color: Color(0xFF6B7280));
+  static const title = TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Poppins');
+  static const subtitle = TextStyle(fontSize: 16, color: Color(0xFF6B7280), fontFamily: 'Poppins');
 }

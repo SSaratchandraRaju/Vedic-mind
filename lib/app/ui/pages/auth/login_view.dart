@@ -104,14 +104,14 @@ class LoginView extends GetView<AuthController> {
                   fontSize: 15,
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w400,
-                ),
+                fontFamily: 'Poppins'),
                 decoration: InputDecoration(
                   hintText: 'yourname@gmail.com',
                   hintStyle: TextStyle(
                     color: AppColors.gray400,
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
-                  ),
+                  fontFamily: 'Poppins'),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -154,7 +154,7 @@ class LoginView extends GetView<AuthController> {
                       fontSize: 15,
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w400,
-                    ),
+                    fontFamily: 'Poppins'),
                     decoration: InputDecoration(
                       hintText: '••••••••',
                       hintStyle: TextStyle(
@@ -162,7 +162,7 @@ class LoginView extends GetView<AuthController> {
                         fontSize: 20,
                         fontWeight: FontWeight.w400,
                         letterSpacing: 2,
-                      ),
+                      fontFamily: 'Poppins'),
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
@@ -210,7 +210,7 @@ class LoginView extends GetView<AuthController> {
                       color: AppColors.textPrimary,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                    ),
+                    fontFamily: 'Poppins'),
                   ),
                 ),
               ),
@@ -236,7 +236,7 @@ class LoginView extends GetView<AuthController> {
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.2,
-                    ),
+                    fontFamily: 'Poppins'),
                   ),
                 ),
               ),
@@ -260,7 +260,7 @@ class LoginView extends GetView<AuthController> {
                         color: AppColors.gray400,
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
-                      ),
+                      fontFamily: 'Poppins'),
                     ),
                   ),
                   Expanded(
@@ -304,7 +304,7 @@ class LoginView extends GetView<AuthController> {
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
                           letterSpacing: 0.1,
-                        ),
+                        fontFamily: 'Poppins'),
                       ),
                     ],
                   ),

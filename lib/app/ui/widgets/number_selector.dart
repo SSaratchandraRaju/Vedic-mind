@@ -36,7 +36,7 @@ class NumberSelector extends StatelessWidget {
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: isSelected ? Colors.white : AppColors.textPrimary,
-            ),
+            fontFamily: 'Poppins'),
           ),
         ),
       ),

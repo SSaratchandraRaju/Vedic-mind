@@ -92,7 +92,7 @@ class HomeView extends GetView<HomeController> {
                                     color: Colors.white,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
-                                  ),
+                                  fontFamily: 'Poppins'),
                                 ),
                                 SizedBox(width: 4),
                                 Icon(
@@ -111,7 +111,7 @@ class HomeView extends GetView<HomeController> {
                                 hintStyle: TextStyle(
                                   color: AppColors.gray400,
                                   fontSize: 14,
-                                ),
+                                fontFamily: 'Poppins'),
                                 border: InputBorder.none,
                               ),
                             ),
@@ -207,7 +207,7 @@ class HomeView extends GetView<HomeController> {
                       title: 'Vedic Methods',
                       subtitle: '100 math tables words',
                       badge: '20%',
-                      onTap: () => Get.toNamed(Routes.LESSONS),
+                      onTap: () => Get.toNamed(Routes.VEDIC_METHODS),
                     ),
                     const SizedBox(height: 12),
 
@@ -243,36 +243,48 @@ class HomeView extends GetView<HomeController> {
                             ),                            
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.all(20),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Continue your Journey Check',
+                                      'Continue your Journey',
                                       style: AppTextStyles.bodyMedium.copyWith(
                                         color: AppColors.textPrimary,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
                                       ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
+                                    const SizedBox(height: 4),
                                     Text(
-                                      'the new methods in our theory',
-                                      style: AppTextStyles.bodyMedium.copyWith(
+                                      'Check new methods',
+                                      style: AppTextStyles.bodySmall.copyWith(
                                         color: AppColors.textSecondary,
-                                        fontSize: 14,
+                                        fontSize: 12,
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    const SizedBox(height: 16),
+                                    const SizedBox(height: 12),
                                     ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Get.toNamed(Routes.VEDIC_COURSE);
+                                      },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: AppColors.primary,
                                         foregroundColor: Colors.white,
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 24,
-                                          vertical: 10,
+                                          horizontal: 20,
+                                          vertical: 8,
                                         ),
+                                        minimumSize: const Size(0, 36),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(8),
                                         ),
@@ -280,8 +292,9 @@ class HomeView extends GetView<HomeController> {
                                       child: const Text(
                                         "Let's start",
                                         style: TextStyle(
-                                          fontSize: 14,
+                                          fontSize: 13,
                                           fontWeight: FontWeight.w600,
+                                          fontFamily: 'Poppins',
                                         ),
                                       ),
                                     ),

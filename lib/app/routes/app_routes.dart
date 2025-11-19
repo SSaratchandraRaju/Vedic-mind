@@ -11,8 +11,16 @@ abstract class Routes {
   static const MATH_TABLES = '/math-tables';
   static const SECTION_DETAIL = '/section-detail';
   static const LESSONS = '/lessons';
+  static const VEDIC_METHODS = '/vedic-methods';
+  static const METHOD_DETAIL = '/method-detail';
+  static const VEDIC_COURSE = '/vedic-course';
+  static const CHAPTER_DETAIL = '/chapter-detail';
+  static const LESSON_DETAIL = '/lesson-detail';
+  static const LESSON_STEPS = '/lesson-steps';
+  static const LESSON_PRACTICE = '/lesson-practice';
   static const QUIZ = '/quiz';
   static const PRACTICE = '/practice';
+  static const PRACTICE_RESULTS = '/practice-results';
   static const LEADERBOARD = '/leaderboard';
   static const HISTORY = '/history';
   static const NOTIFICATIONS = '/notifications';

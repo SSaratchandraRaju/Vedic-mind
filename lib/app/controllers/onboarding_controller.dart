@@ -29,28 +29,24 @@ class OnboardingController extends GetxController with GetSingleTickerProviderSt
   }
 
   Future<void> nextPage() async {
-    if (currentPage.value < 3) {
+    if (currentPage.value < 1) {
       pageController.nextPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
     } else {
-      // Mark onboarding as completed
+      // Mark onboarding as completed and navigate to login
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('onboarding_completed', true);
-      
-      // Navigate to age selection screen
-      Get.offAllNamed(Routes.AGE_SELECTION);
+      Get.offAllNamed(Routes.LOGIN);
     }
   }
 
   Future<void> skipOnboarding() async {
-    // Mark onboarding as completed
+    // Mark onboarding as completed and navigate to login
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_completed', true);
-    
-    // Navigate to age selection screen
-    Get.offAllNamed(Routes.AGE_SELECTION);
+    Get.offAllNamed(Routes.LOGIN);
   }
 
   @override

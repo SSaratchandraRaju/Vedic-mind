@@ -5,8 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'app/routes/app_pages.dart';
 import 'app/theme/app_theme.dart';
+import 'app/bindings/app_bindings.dart';
 import 'app/bindings/dashboard_binding.dart';
-import 'app/services/firebase_auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,8 +16,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   
-  // Initialize Firebase Auth Service
-  await Get.putAsync(() async => FirebaseAuthService());
+  // Initialize app bindings (Repository pattern)
+  AppBindings().dependencies();
   
   // Load saved theme preference
   final prefs = await SharedPreferences.getInstance();

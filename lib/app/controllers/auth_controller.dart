@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../routes/app_routes.dart';
-import '../services/firebase_auth_service.dart';
+import '../services/auth_service.dart';
 
 class AuthController extends GetxController {
-  final FirebaseAuthService _authService = Get.find<FirebaseAuthService>();
+  final AuthService _authService = Get.find<AuthService>();
   
   // Text Controllers
   final emailController = TextEditingController();
@@ -51,14 +50,22 @@ class AuthController extends GetxController {
     }
 
     isLoading.value = true;
-    final credential = await _authService.signInWithEmailPassword(
-      emailController.text.trim(),
-      passwordController.text,
+    final result = await _authService.signInWithEmailPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text,
     );
     isLoading.value = false;
 
-    if (credential != null) {
+    if (result.isSuccess) {
       Get.offAllNamed(Routes.HOME);
+    } else {
+      Get.snackbar(
+        'Error',
+        result.error ?? 'Sign in failed',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -100,91 +107,65 @@ class AuthController extends GetxController {
     }
 
     isLoading.value = true;
-    final credential = await _authService.signUpWithEmailPassword(
-      emailController.text.trim(),
-      passwordController.text,
+    final result = await _authService.signUpWithEmailPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text,
     );
     isLoading.value = false;
 
-    if (credential != null) {
+    if (result.isSuccess) {
       Get.offAllNamed(Routes.HOME);
+    } else {
+      Get.snackbar(
+        'Error',
+        result.error ?? 'Sign up failed',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
   // Google Sign In
   Future<void> signInWithGoogle() async {
     isLoading.value = true;
-    final credential = await _authService.signInWithGoogle();
+    final result = await _authService.signInWithGoogle();
     isLoading.value = false;
 
-    if (credential != null) {
+    if (result.isSuccess) {
       Get.offAllNamed(Routes.HOME);
+    } else {
+      Get.snackbar(
+        'Error',
+        result.error ?? 'Google sign in failed',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
-  // Send Phone OTP
+  // Send Phone OTP - Note: Phone auth not yet implemented in new architecture
   Future<void> sendPhoneOTP() async {
-    if (phoneController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter phone number',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    // Format phone number (add country code if needed)
-    String phoneNumber = phoneController.text.trim();
-    if (!phoneNumber.startsWith('+')) {
-      phoneNumber = '+91$phoneNumber'; // Default to India, change as needed
-    }
-
-    isLoading.value = true;
-    
-    await _authService.sendPhoneOTP(
-      phoneNumber,
-      onCodeSent: (verId) {
-        isLoading.value = false;
-        verificationId.value = verId;
-        startResendTimer();
-        Get.toNamed(Routes.OTP_VERIFICATION, arguments: {
-          'phoneNumber': phoneNumber,
-          'verificationType': 'phone',
-        });
-      },
-      onVerificationFailed: (e) {
-        isLoading.value = false;
-        // Error is handled in the service
-      },
-      onAutoVerify: (credential) async {
-        isLoading.value = false;
-        Get.offAllNamed(Routes.HOME);
-      },
+    Get.snackbar(
+      'Coming Soon',
+      'Phone authentication will be available soon',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.orange,
+      colorText: Colors.white,
     );
+    // TODO: Implement phone auth in AuthService when needed
   }
 
-  // Verify OTP
+  // Verify OTP - Not yet implemented
   Future<void> verifyOTP(String otp) async {
-    if (otp.length != 6) {
-      Get.snackbar(
-        'Error',
-        'Please enter valid 6-digit OTP',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    isLoading.value = true;
-    final credential = await _authService.verifyPhoneOTP(otp);
-    isLoading.value = false;
-
-    if (credential != null) {
-      Get.offAllNamed(Routes.HOME);
-    }
+    Get.snackbar(
+      'Coming Soon',
+      'Phone authentication will be available soon',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.orange,
+      colorText: Colors.white,
+    );
   }
 
   // Resend OTP
@@ -220,8 +201,26 @@ class AuthController extends GetxController {
     }
 
     isLoading.value = true;
-    await _authService.resetPassword(emailController.text.trim());
+    final success = await _authService.sendPasswordResetEmail(emailController.text.trim());
     isLoading.value = false;
+    
+    if (success) {
+      Get.snackbar(
+        'Success',
+        'Password reset email sent!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } else {
+      Get.snackbar(
+        'Error',
+        'Failed to send reset email',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
   }
 
   // Sign Out

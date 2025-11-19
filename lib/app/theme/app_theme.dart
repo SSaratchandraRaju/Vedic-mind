@@ -6,6 +6,7 @@ class AppTheme {
     brightness: Brightness.light,
     primaryColor: AppColors.primary,
     scaffoldBackgroundColor: AppColors.background,
+    fontFamily: 'Poppins',
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       brightness: Brightness.light,
@@ -18,6 +19,7 @@ class AppTheme {
         color: AppColors.textPrimary,
         fontSize: 18,
         fontWeight: FontWeight.w600,
+        fontFamily: 'Poppins',
       ),
     ),
     cardTheme: CardThemeData(
@@ -34,6 +36,7 @@ class AppTheme {
     brightness: Brightness.dark,
     primaryColor: AppColors.primary,
     scaffoldBackgroundColor: const Color(0xFF121212),
+    fontFamily: 'Poppins',
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       brightness: Brightness.dark,
@@ -48,6 +51,7 @@ class AppTheme {
         color: Colors.white,
         fontSize: 18,
         fontWeight: FontWeight.w600,
+        fontFamily: 'Poppins',
       ),
     ),
     cardTheme: CardThemeData(
@@ -59,9 +63,9 @@ class AppTheme {
       ),
     ),
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Colors.white),
-      bodyMedium: TextStyle(color: Colors.white70),
-      bodySmall: TextStyle(color: Colors.white60),
+      bodyLarge: TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+      bodyMedium: TextStyle(color: Colors.white70, fontFamily: 'Poppins'),
+      bodySmall: TextStyle(color: Colors.white60, fontFamily: 'Poppins'),
     ),
   );
 }

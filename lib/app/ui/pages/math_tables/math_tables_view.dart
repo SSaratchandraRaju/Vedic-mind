@@ -53,7 +53,7 @@ class MathTablesView extends GetView<MathTablesController> {
                             color: AppColors.textSecondary,
                             fontSize: 13,
                             decoration: TextDecoration.underline,
-                          ),
+                          fontFamily: 'Poppins'),
                         ),
                       ),
                     ],
@@ -200,7 +200,7 @@ class MathTablesView extends GetView<MathTablesController> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                      ),
+                      fontFamily: 'Poppins'),
                     ),
                   ),
                 ),
@@ -226,7 +226,7 @@ class MathTablesView extends GetView<MathTablesController> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                      ),
+                      fontFamily: 'Poppins'),
                     ),
                   ),
                 ),

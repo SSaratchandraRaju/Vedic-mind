@@ -87,7 +87,7 @@ class MethodCard extends StatelessWidget {
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
-                      ),
+                      fontFamily: 'Poppins'),
                     ),
                   ],
                 ),

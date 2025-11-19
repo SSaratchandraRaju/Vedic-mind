@@ -95,7 +95,7 @@ class _NavItem extends StatelessWidget {
               fontSize: 11,
               fontWeight: FontWeight.w500,
               color: isActive ? AppColors.primary : AppColors.gray400,
-            ),
+            fontFamily: 'Poppins'),
           ),
         ],
       ),

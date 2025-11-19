@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/firebase_auth_service.dart';
+import '../services/auth_service.dart';
 import '../routes/app_routes.dart';
+import '../widgets/common/alert_dialog_util.dart';
 
 class SettingsController extends GetxController {
-  final FirebaseAuthService _authService = Get.find<FirebaseAuthService>();
+  final AuthService _authService = Get.find<AuthService>();
   final ImagePicker _imagePicker = ImagePicker();
 
   // Observable variables
@@ -51,10 +52,10 @@ class SettingsController extends GetxController {
   // Load user profile data
   Future<void> _loadUserProfile() async {
     try {
-      final user = _authService.currentUser;
+      final user = await _authService.getCurrentUser();
       if (user != null) {
         profileName.value = user.displayName ?? 'User';
-        profileEmail.value = user.email ?? '';
+        profileEmail.value = user.email;
         nameController.text = profileName.value;
         
         // Load saved profile image path from SharedPreferences
@@ -170,21 +171,34 @@ class SettingsController extends GetxController {
     try {
       isLoading.value = true;
       
-      // Update Firebase user profile
-      final user = _authService.currentUser;
+      // Update user profile using AuthService
+      final user = await _authService.getCurrentUser();
       if (user != null) {
-        await user.updateDisplayName(nameController.text.trim());
-        profileName.value = nameController.text.trim();
+        final updatedUser = user.copyWith(displayName: nameController.text.trim());
+        final success = await _authService.updateUserProfile(updatedUser);
         
-        Get.back(); // Close dialog
-        Get.snackbar(
-          'Success',
-          'Profile name updated',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+        if (success) {
+          profileName.value = nameController.text.trim();
+          
+          Get.back(); // Close dialog
+          Get.snackbar(
+            'Success',
+            'Profile name updated',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+          );
+        } else {
+          Get.snackbar(
+            'Error',
+            'Failed to update name',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
       }
     } catch (e) {
       Get.snackbar(
@@ -275,25 +289,41 @@ class SettingsController extends GetxController {
     try {
       isLoading.value = true;
       
-      // Update Firebase user profile
-      final user = _authService.currentUser;
+      // Update user profile using AuthService
+      final user = await _authService.getCurrentUser();
       if (user != null) {
-        await user.updateDisplayName(nameController.text.trim());
-        profileName.value = nameController.text.trim();
-        
-        // Save user type
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userType', userType.value);
-        
-        Get.back(); // Close edit profile screen
-        Get.snackbar(
-          'Success',
-          'Profile updated successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
+        final updatedUser = user.copyWith(
+          displayName: nameController.text.trim(),
+          ageCategory: userType.value.toLowerCase(),
         );
+        final success = await _authService.updateUserProfile(updatedUser);
+        
+        if (success) {
+          profileName.value = nameController.text.trim();
+          
+          // Save user type
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('userType', userType.value);
+          
+          Get.back(); // Close edit profile screen
+          Get.snackbar(
+            'Success',
+            'Profile updated successfully',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+          );
+        } else {
+          Get.snackbar(
+            'Error',
+            'Failed to update profile',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
       }
     } catch (e) {
       Get.snackbar(
@@ -312,27 +342,20 @@ class SettingsController extends GetxController {
   // Sign out
   Future<void> signOut() async {
     try {
-      Get.dialog(
-        AlertDialog(
-          title: const Text('Sign Out'),
-          content: const Text('Are you sure you want to sign out?'),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                Get.back(); // Close dialog
-                isLoading.value = true;
-                await _authService.signOut();
-                isLoading.value = false;
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text('Sign Out'),
-            ),
-          ],
-        ),
+      await AlertDialogUtil.showConfirmation(
+        title: 'Sign Out',
+        message: 'Are you sure you want to sign out?',
+        confirmText: 'Sign Out',
+        cancelText: 'Cancel',
+        isDestructive: true,
+        onConfirm: () async {
+          isLoading.value = true;
+          await _authService.signOut();
+          isLoading.value = false;
+          
+          // Navigate to login screen and clear navigation stack
+          Get.offAllNamed(Routes.LOGIN);
+        },
       );
     } catch (e) {
       Get.snackbar(

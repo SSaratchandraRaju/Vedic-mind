@@ -101,7 +101,7 @@ class SignupView extends GetView<AuthController> {
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: controller.selectedAuthMethod.value == 0 ? Colors.white : AppColors.textSecondary,
-                                  ),
+                                  fontFamily: 'Poppins'),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -122,7 +122,7 @@ class SignupView extends GetView<AuthController> {
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color: controller.selectedAuthMethod.value == 1 ? Colors.white : AppColors.textSecondary,
-                                  ),
+                                  fontFamily: 'Poppins'),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -156,14 +156,16 @@ class SignupView extends GetView<AuthController> {
                         ),
                         child: controller.isLoading.value
                             ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                            : Text(controller.selectedAuthMethod.value == 0 ? 'Sign Up' : 'Send OTP', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 0.2)),
+                            : Text(controller.selectedAuthMethod.value == 0 ? 'Sign Up' : 'Send OTP', style: const TextStyle(fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w600, letterSpacing: 0.2),
+                            ),
                       ),
                     )),
                 const SizedBox(height: 20),
                 Row(
                   children: [
                     Expanded(child: Divider(color: AppColors.border, thickness: 1, height: 1)),
-                    Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text('Or', style: TextStyle(color: AppColors.gray400, fontSize: 13, fontWeight: FontWeight.w400))),
+                    Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text('Or', style: TextStyle(color: AppColors.gray400, fontFamily: 'Poppins', fontSize: 13, fontWeight: FontWeight.w400)),
+                    ),
                     Expanded(child: Divider(color: AppColors.border, thickness: 1, height: 1)),
                   ],
                 ),
@@ -184,7 +186,8 @@ class SignupView extends GetView<AuthController> {
                       children: [
                         SvgPicture.asset('assets/icons/google.svg', width: 20, height: 20),
                         const SizedBox(width: 12),
-                        const Text('Continue with Google', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary, letterSpacing: 0.1)),
+                        const Text('Continue with Google', style: TextStyle(fontSize: 15, fontFamily: 'Poppins', fontWeight: FontWeight.w600, color: AppColors.textPrimary, letterSpacing: 0.1),
+                        ),
                       ],
                     ),
                   ),
@@ -218,10 +221,12 @@ class SignupView extends GetView<AuthController> {
       TextField(
         controller: controller.emailController,
         keyboardType: TextInputType.emailAddress,
-        style: const TextStyle(fontSize: 15, color: AppColors.textPrimary, fontWeight: FontWeight.w400),
+        style: const TextStyle(fontSize: 15, color: AppColors.textPrimary, fontWeight: FontWeight.w400,
+        fontFamily: 'Poppins'),
         decoration: InputDecoration(
           hintText: 'yourname@gmail.com',
-          hintStyle: TextStyle(color: AppColors.gray400, fontSize: 15, fontWeight: FontWeight.w400),
+          hintStyle: TextStyle(color: AppColors.gray400, fontSize: 15, fontWeight: FontWeight.w400,
+          fontFamily: 'Poppins'),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
@@ -236,10 +241,12 @@ class SignupView extends GetView<AuthController> {
       Obx(() => TextField(
             controller: controller.passwordController,
             obscureText: controller.obscurePassword.value,
-            style: const TextStyle(fontSize: 15, color: AppColors.textPrimary, fontWeight: FontWeight.w400),
+            style: const TextStyle(fontSize: 15, color: AppColors.textPrimary, fontWeight: FontWeight.w400,
+            fontFamily: 'Poppins'),
             decoration: InputDecoration(
               hintText: '••••••••',
-              hintStyle: TextStyle(color: AppColors.gray400, fontSize: 20, fontWeight: FontWeight.w400, letterSpacing: 2),
+              hintStyle: TextStyle(color: AppColors.gray400, fontSize: 20, fontWeight: FontWeight.w400, letterSpacing: 2,
+              fontFamily: 'Poppins'),
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
@@ -255,10 +262,12 @@ class SignupView extends GetView<AuthController> {
       Obx(() => TextField(
             controller: controller.confirmPasswordController,
             obscureText: controller.obscureConfirmPassword.value,
-            style: const TextStyle(fontSize: 15, color: AppColors.textPrimary, fontWeight: FontWeight.w400),
+            style: const TextStyle(fontSize: 15, color: AppColors.textPrimary, fontWeight: FontWeight.w400,
+            fontFamily: 'Poppins'),
             decoration: InputDecoration(
               hintText: '••••••••',
-              hintStyle: TextStyle(color: AppColors.gray400, fontSize: 20, fontWeight: FontWeight.w400, letterSpacing: 2),
+              hintStyle: TextStyle(color: AppColors.gray400, fontSize: 20, fontWeight: FontWeight.w400, letterSpacing: 2,
+              fontFamily: 'Poppins'),
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),
@@ -278,10 +287,12 @@ class SignupView extends GetView<AuthController> {
       TextField(
         controller: controller.phoneController,
         keyboardType: TextInputType.phone,
-        style: const TextStyle(fontSize: 15, color: AppColors.textPrimary, fontWeight: FontWeight.w400),
+        style: const TextStyle(fontSize: 15, color: AppColors.textPrimary, fontWeight: FontWeight.w400,
+        fontFamily: 'Poppins'),
         decoration: InputDecoration(
           hintText: '+91 1234567890',
-          hintStyle: TextStyle(color: AppColors.gray400, fontSize: 15, fontWeight: FontWeight.w400),
+          hintStyle: TextStyle(color: AppColors.gray400, fontSize: 15, fontWeight: FontWeight.w400,
+          fontFamily: 'Poppins'),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border)),

@@ -84,7 +84,7 @@ class SectionDetailView extends GetView<SectionDetailController> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.textSecondary,
-                                ),
+                                fontFamily: 'Poppins'),
                               ),
                               // Show operation buttons on the right
                               // White container for × and ÷ operations
@@ -227,7 +227,7 @@ class SectionDetailView extends GetView<SectionDetailController> {
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
-                              ),
+                              fontFamily: 'Poppins'),
                             ),
                           ),
                           // White Table Section
@@ -335,14 +335,14 @@ class SectionDetailView extends GetView<SectionDetailController> {
           fontWeight: FontWeight.w500,
           height: 1.0,
           // letterSpacing: 0.2,
-        ),
+        fontFamily: 'Poppins'),
         children: [
           TextSpan(
             text: '$baseNumber',
             style: const TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w500,
-            ),
+            fontFamily: 'Poppins'),
           ),
           const TextSpan(
             text: '  ',
@@ -352,7 +352,7 @@ class SectionDetailView extends GetView<SectionDetailController> {
             style: TextStyle(
               color: AppColors.textSecondary.withOpacity(0.5),
               fontWeight: FontWeight.w300,
-            ),
+            fontFamily: 'Poppins'),
           ),
           const TextSpan(
             text: '  ',
@@ -362,7 +362,7 @@ class SectionDetailView extends GetView<SectionDetailController> {
             style: const TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w500,
-            ),
+            fontFamily: 'Poppins'),
           ),
           const TextSpan(
             text: '  ',
@@ -372,7 +372,7 @@ class SectionDetailView extends GetView<SectionDetailController> {
             style: TextStyle(
               color: AppColors.textSecondary.withOpacity(0.5),
               fontWeight: FontWeight.w300,
-            ),
+            fontFamily: 'Poppins'),
           ),
           const TextSpan(
             text: '  ',
@@ -382,7 +382,7 @@ class SectionDetailView extends GetView<SectionDetailController> {
             style: const TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w600,
-            ),
+            fontFamily: 'Poppins'),
           ),
         ],
       ),

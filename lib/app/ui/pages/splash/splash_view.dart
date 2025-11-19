@@ -68,7 +68,7 @@ class _SplashViewState extends State<SplashView> {
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
                 letterSpacing: -0.5,
-              ),
+              fontFamily: 'Poppins'),
             ),
             const SizedBox(height: 8),
             Text(
@@ -77,7 +77,7 @@ class _SplashViewState extends State<SplashView> {
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 color: Colors.white.withOpacity(0.9),
-              ),
+              fontFamily: 'Poppins'),
             ),
           ],
         ),

@@ -30,7 +30,7 @@ class SectionChip extends StatelessWidget {
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: isSelected ? Colors.white : AppColors.textSecondary,
-          ),
+          fontFamily: 'Poppins'),
         ),
       ),
     );

@@ -2,6 +2,8 @@
     <!-- Internet permission for Firebase and Google Sign-In -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Vibration permission for haptic feedback -->
+    <uses-permission android:name="android.permission.VIBRATE" />
     
     <application
         android:label="vedic_maths"

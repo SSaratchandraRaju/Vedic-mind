@@ -81,7 +81,7 @@ class OTPVerificationView extends GetView<AuthController> {
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
-                      ),
+                      fontFamily: 'Poppins'),
                     ),
                   ),
                 ],
@@ -98,7 +98,7 @@ class OTPVerificationView extends GetView<AuthController> {
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
-                  ),
+                  fontFamily: 'Poppins'),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
@@ -112,7 +112,7 @@ class OTPVerificationView extends GetView<AuthController> {
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
-                  ),
+                  fontFamily: 'Poppins'),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
@@ -126,7 +126,7 @@ class OTPVerificationView extends GetView<AuthController> {
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
-                  ),
+                  fontFamily: 'Poppins'),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -221,7 +221,7 @@ class OTPVerificationView extends GetView<AuthController> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                              ),
+                              fontFamily: 'Poppins'),
                             ),
                     ),
                   )),

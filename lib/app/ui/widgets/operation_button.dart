@@ -46,7 +46,7 @@ class OperationButton extends StatelessWidget {
               fontSize: 28,
               fontWeight: FontWeight.w600,
               color: isSelected ? Colors.white : AppColors.textPrimary,
-            ),
+            fontFamily: 'Poppins'),
           ),
         ),
       ),

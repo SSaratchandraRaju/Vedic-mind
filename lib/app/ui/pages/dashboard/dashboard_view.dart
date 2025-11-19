@@ -36,7 +36,7 @@ class DashboardView extends GetView<DashboardController> {
                 color: Color(0xFF1F2937),
                 fontWeight: FontWeight.w700,
                 fontSize: 20,
-              ),
+              fontFamily: 'Poppins'),
             ),
           ],
         ),
@@ -83,7 +83,7 @@ class DashboardView extends GetView<DashboardController> {
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                         letterSpacing: -0.5,
-                      ),
+                      fontFamily: 'Poppins'),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -92,7 +92,7 @@ class DashboardView extends GetView<DashboardController> {
                         fontSize: 15,
                         color: Colors.white.withOpacity(0.9),
                         fontWeight: FontWeight.w400,
-                      ),
+                      fontFamily: 'Poppins'),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
@@ -114,7 +114,7 @@ class DashboardView extends GetView<DashboardController> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                            ),
+                            fontFamily: 'Poppins'),
                           ),
                           SizedBox(width: 8),
                           Icon(Icons.arrow_forward_rounded, size: 20),
@@ -134,7 +134,7 @@ class DashboardView extends GetView<DashboardController> {
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF1F2937),
                   letterSpacing: -0.3,
-                ),
+                fontFamily: 'Poppins'),
               ),
               const SizedBox(height: 16),
               Row(
@@ -179,7 +179,7 @@ class DashboardView extends GetView<DashboardController> {
                                 color: selectedOperation.value == i
                                     ? Colors.white
                                     : const Color(0xFF6366F1),
-                              ),
+                              fontFamily: 'Poppins'),
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -190,7 +190,7 @@ class DashboardView extends GetView<DashboardController> {
                                 color: selectedOperation.value == i
                                     ? Colors.white.withOpacity(0.9)
                                     : const Color(0xFF9CA3AF),
-                              ),
+                              fontFamily: 'Poppins'),
                             ),
                           ],
                         ),
@@ -212,7 +212,7 @@ class DashboardView extends GetView<DashboardController> {
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF1F2937),
                       letterSpacing: -0.3,
-                    ),
+                    fontFamily: 'Poppins'),
                   ),
                   Text(
                     '1 - 100',
@@ -220,7 +220,7 @@ class DashboardView extends GetView<DashboardController> {
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: Colors.grey.shade600,
-                    ),
+                    fontFamily: 'Poppins'),
                   ),
                 ],
               ),
@@ -301,7 +301,7 @@ class _TableCard extends StatelessWidget {
                   fontSize: 28,
                   color: Color(0xFF6366F1),
                   letterSpacing: -0.5,
-                ),
+                fontFamily: 'Poppins'),
               ),
             ),
           ),
@@ -360,7 +360,7 @@ class _TableCard extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                         color: Color(0xFF374151),
                         letterSpacing: 0.2,
-                      ),
+                      fontFamily: 'Poppins'),
                     ),
                   );
                 },

@@ -52,12 +52,19 @@ class MathTablesController extends GetxController {
 class _PracticeSetupSheet extends StatelessWidget {
   final selectedTime = 1.obs; // Index of selected time
   final selectedTasks = 0.obs; // Index of selected tasks
+  final controller = Get.find<MathTablesController>();
 
   _PracticeSetupSheet();
 
   @override
   Widget build(BuildContext context) {
-    final times = ['00:45', '01:30', '00:45', '00:45'];
+    // Time options in minutes
+    final timeOptions = [
+      {'label': '0:45', 'minutes': 0.75}, // 45 seconds
+      {'label': '1:30', 'minutes': 1.5},  // 1.5 minutes
+      {'label': '3:00', 'minutes': 3.0},  // 3 minutes
+      {'label': '5:00', 'minutes': 5.0},  // 5 minutes
+    ];
     final tasks = [5, 10, 20, 30, 50];
 
     return Container(
@@ -87,6 +94,7 @@ class _PracticeSetupSheet extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
                 ),
               ),
               const SizedBox(width: 8),
@@ -100,7 +108,7 @@ class _PracticeSetupSheet extends StatelessWidget {
                 children: List.generate(
                   4,
                   (index) => _TimeChip(
-                    label: times[index],
+                    label: timeOptions[index]['label'] as String,
                     isSelected: selectedTime.value == index,
                     onTap: () => selectedTime.value = index,
                   ),
@@ -116,6 +124,7 @@ class _PracticeSetupSheet extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
                 ),
               ),
               const SizedBox(width: 8),
@@ -144,7 +153,15 @@ class _PracticeSetupSheet extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Get.back();
-                Get.toNamed(Routes.PRACTICE);
+                Get.toNamed(
+                  Routes.PRACTICE,
+                  arguments: {
+                    'operation': controller.selectedOperation.value,
+                    'tasks': tasks[selectedTasks.value],
+                    'totalMinutes': timeOptions[selectedTime.value]['minutes'],
+                    'timePerQuestion': 10, // 10 seconds per question
+                  },
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF5B7FFF),
@@ -159,6 +176,7 @@ class _PracticeSetupSheet extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
                 ),
               ),
             ),
@@ -175,6 +193,7 @@ class _PracticeSetupSheet extends StatelessWidget {
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black54,
+                  fontFamily: 'Poppins',
                 ),
               ),
             ),
@@ -213,6 +232,7 @@ class _TimeChip extends StatelessWidget {
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: isSelected ? Colors.white : Colors.black54,
+            fontFamily: 'Poppins',
           ),
         ),
       ),
@@ -257,6 +277,7 @@ class _TaskChip extends StatelessWidget {
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: isSelected ? Colors.white : Colors.black54,
+                fontFamily: 'Poppins',
               ),
             ),
           ],
