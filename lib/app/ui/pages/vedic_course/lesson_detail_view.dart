@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../controllers/vedic_course_controller.dart';
 import '../../../data/models/vedic_course_models.dart';
 import '../../../routes/app_routes.dart';
+import '../../../services/tts_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 
@@ -13,6 +14,7 @@ class LessonDetailView extends GetView<VedicCourseController> {
   @override
   Widget build(BuildContext context) {
     final Lesson lesson = Get.arguments as Lesson;
+    final TtsService ttsService = Get.find<TtsService>();
     
     // Calculate chapter and lesson number from lessonId
     // lessonId format: 101, 102, 103 (chapter 1), 201, 202 (chapter 2), etc.
@@ -47,7 +49,11 @@ class LessonDetailView extends GetView<VedicCourseController> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(CupertinoIcons.back, color: Colors.white),
-          onPressed: () => Get.back(),
+          onPressed: () {
+            // Stop TTS when leaving the page
+            ttsService.stop();
+            Get.back();
+          },
         ),
         title: Text(
           'Lesson $chapterId.$lessonNumber',
@@ -147,6 +153,11 @@ class LessonDetailView extends GetView<VedicCourseController> {
             // Content Section
             _buildSectionHeader('Content', Icons.menu_book),
             const SizedBox(height: 12),
+            
+            // Text-to-Speech Controls
+            _buildTtsControls(lesson, ttsService),
+            const SizedBox(height: 12),
+            
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -746,5 +757,200 @@ class LessonDetailView extends GetView<VedicCourseController> {
         ),
       );
     });
+  }
+  
+  /// Build Text-to-Speech controls
+  Widget _buildTtsControls(Lesson lesson, TtsService ttsService) {
+    return Obx(() {
+      final isPlaying = ttsService.isPlaying.value;
+      final isPaused = ttsService.isPaused.value;
+      
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primary.withOpacity(0.1),
+              AppColors.secondary.withOpacity(0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.volume_up, color: AppColors.primary, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Listen to Content',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            
+            // Play/Pause/Stop Controls
+            Row(
+              children: [
+                // Play/Pause Button
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      if (isPlaying && !isPaused) {
+                        ttsService.pause();
+                      } else if (isPaused) {
+                        ttsService.resume();
+                      } else {
+                        // Prepare content for reading
+                        String contentToRead = _prepareContentForReading(lesson);
+                        ttsService.speak(contentToRead);
+                      }
+                    },
+                    icon: Icon(
+                      isPlaying && !isPaused 
+                          ? Icons.pause 
+                          : Icons.play_arrow,
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                      isPlaying && !isPaused 
+                          ? 'Pause' 
+                          : isPaused 
+                              ? 'Resume' 
+                              : 'Play',
+                      style: AppTextStyles.button.copyWith(fontSize: 14),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+                
+                // Stop Button
+                if (isPlaying || isPaused) ...[
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      ttsService.stop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.error,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Icon(Icons.stop, color: Colors.white),
+                  ),
+                ],
+              ],
+            ),
+            
+            // Speed Control
+            if (isPlaying || isPaused) ...[
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(Icons.speed, size: 16, color: AppColors.gray600),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Speed:',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.gray600,
+                    ),
+                  ),
+                  Expanded(
+                    child: Slider(
+                      value: ttsService.speechRate.value,
+                      min: 0.3,
+                      max: 1.0,
+                      divisions: 7,
+                      label: '${(ttsService.speechRate.value * 2).toStringAsFixed(1)}x',
+                      onChanged: (value) {
+                        ttsService.setSpeechRate(value);
+                      },
+                      activeColor: AppColors.primary,
+                    ),
+                  ),
+                  Text(
+                    '${(ttsService.speechRate.value * 2).toStringAsFixed(1)}x',
+                    style: AppTextStyles.caption.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            
+            // Status indicator
+            if (isPlaying && !isPaused) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.success),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Reading content...',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.success,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      );
+    });
+  }
+  
+  /// Prepare lesson content for text-to-speech reading
+  String _prepareContentForReading(Lesson lesson) {
+    StringBuffer buffer = StringBuffer();
+    
+    // Add title
+    buffer.writeln('Lesson: ${lesson.lessonTitle}.');
+    buffer.writeln();
+    
+    // Add objective
+    buffer.writeln('Objective: ${lesson.objective}.');
+    buffer.writeln();
+    
+    // Add main content
+    buffer.writeln('Content:');
+    buffer.writeln(lesson.content);
+    buffer.writeln();
+    
+    // Add summary
+    buffer.writeln('Summary: ${lesson.summary}');
+    
+    return buffer.toString();
   }
 }

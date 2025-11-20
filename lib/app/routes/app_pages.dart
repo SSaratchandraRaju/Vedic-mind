@@ -15,6 +15,7 @@ import '../bindings/onboarding_binding.dart';
 import '../bindings/auth_binding.dart';
 import '../bindings/settings_binding.dart';
 import '../bindings/vedic_course_binding.dart';
+import '../bindings/enhanced_vedic_binding.dart';
 import '../ui/pages/splash/splash_view.dart';
 import '../ui/pages/onboarding/onboarding_view.dart';
 import '../ui/pages/auth/login_view.dart';
@@ -30,6 +31,9 @@ import '../ui/pages/vedic_course/chapter_detail_view.dart';
 import '../ui/pages/vedic_course/lesson_detail_view.dart';
 import '../ui/pages/vedic_course/lesson_steps_view.dart';
 import '../ui/pages/vedic_course/lesson_practice_view.dart';
+import '../ui/pages/vedic_sutras/vedic_16_sutras_view.dart';
+import '../ui/pages/vedic_sutras/sutra_detail_view.dart';
+import '../ui/pages/vedic_sutras/interactive_lesson_view.dart';
 import '../ui/pages/vedic_methods/vedic_methods_overview_view.dart';
 import '../ui/pages/vedic_methods/method_detail_view.dart';
 import '../ui/pages/quiz/quiz_view.dart';
@@ -41,6 +45,22 @@ import '../ui/pages/history/history_view.dart';
 import '../ui/pages/notifications/notifications_view.dart';
 import '../ui/pages/settings/settings_view.dart';
 import '../ui/pages/settings/edit_profile_view.dart';
+import '../ui/pages/vedic_sutras/games/sutra1_square_dash_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra2_near_base_rush_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra3_crosswise_matrix_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra4_division_dash_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra5_zero_sum_solver_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra6_ratio_racer_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra7_equation_eliminator_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra8_complete_adjust_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra9_pattern_predictor_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra10_deficiency_detector_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra11_part_whole_puzzles_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra12_remainder_race_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra13_penultimate_puzzles_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra14_decimal_dash_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra15_product_sum_spotter_game.dart';
+import '../ui/pages/vedic_sutras/games/sutra16_factorization_finale_game.dart';
 
 class AppPages {
   static const initial = Routes.SPLASH;
@@ -63,6 +83,9 @@ class AppPages {
     GetPage(name: Routes.LESSON_DETAIL, page: () => const LessonDetailView(), binding: VedicCourseBinding()),
     GetPage(name: Routes.LESSON_STEPS, page: () => const LessonStepsView(), binding: VedicCourseBinding()),
     GetPage(name: Routes.LESSON_PRACTICE, page: () => const LessonPracticeView(), binding: VedicCourseBinding()),
+    GetPage(name: Routes.VEDIC_16_SUTRAS, page: () => const Vedic16SutrasView(), binding: EnhancedVedicBinding()),
+    GetPage(name: Routes.SUTRA_DETAIL, page: () => const SutraDetailView(), binding: EnhancedVedicBinding()),
+    GetPage(name: Routes.INTERACTIVE_LESSON, page: () => const InteractiveLessonView(), binding: EnhancedVedicBinding()),
     GetPage(name: Routes.QUIZ, page: () => const QuizView(), binding: QuizBinding()),
     GetPage(name: Routes.PRACTICE, page: () => const PracticeView(), binding: PracticeBinding()),
     GetPage(name: Routes.PRACTICE_RESULTS, page: () => const PracticeResultsView()),
@@ -72,6 +95,24 @@ class AppPages {
     GetPage(name: Routes.NOTIFICATIONS, page: () => const NotificationsView(), binding: NotificationsBinding()),
     GetPage(name: Routes.SETTINGS, page: () => const SettingsView(), binding: SettingsBinding()),
     GetPage(name: Routes.EDIT_PROFILE, page: () => const EditProfileView(), binding: SettingsBinding()),
+    
+    // Mini Game Routes
+    GetPage(name: Routes.SUTRA1_GAME, page: () => const SquareDashGame()),
+    GetPage(name: Routes.SUTRA2_GAME, page: () => const NearBaseRushGame()),
+    GetPage(name: Routes.SUTRA3_GAME, page: () => const CrosswiseMatrixGame()),
+    GetPage(name: Routes.SUTRA4_GAME, page: () => const DivisionDashGame()),
+    GetPage(name: Routes.SUTRA5_GAME, page: () => const ZeroSumSolverGame()),
+    GetPage(name: Routes.SUTRA6_GAME, page: () => const RatioRacerGame()),
+    GetPage(name: Routes.SUTRA7_GAME, page: () => const EquationEliminatorGame()),
+    GetPage(name: Routes.SUTRA8_GAME, page: () => const CompleteAdjustGame()),
+    GetPage(name: Routes.SUTRA9_GAME, page: () => const PatternPredictorGame()),
+    GetPage(name: Routes.SUTRA10_GAME, page: () => const DeficiencyDetectorGame()),
+    GetPage(name: Routes.SUTRA11_GAME, page: () => const PartWholePuzzlesGame()),
+    GetPage(name: Routes.SUTRA12_GAME, page: () => const RemainderRaceGame()),
+    GetPage(name: Routes.SUTRA13_GAME, page: () => const PenultimatePuzzlesGame()),
+    GetPage(name: Routes.SUTRA14_GAME, page: () => const DecimalDashGame()),
+    GetPage(name: Routes.SUTRA15_GAME, page: () => const ProductSumSpotterGame()),
+    GetPage(name: Routes.SUTRA16_GAME, page: () => const FactorizationFinaleGame()),
   ];
 }
 

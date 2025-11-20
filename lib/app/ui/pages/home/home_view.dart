@@ -202,12 +202,12 @@ class HomeView extends GetView<HomeController> {
                     const SizedBox(height: 12),
 
                     MethodCard(
-                      icon: Icons.auto_awesome,
+                      icon: Icons.psychology_outlined,
                       iconColor: AppColors.secondary,
-                      title: 'Vedic Methods',
-                      subtitle: '100 math tables words',
+                      title: 'Vedic Sutras',
+                      subtitle: '16 Ancient Sutras for Smarter, Faster Calculation.',
                       badge: '20%',
-                      onTap: () => Get.toNamed(Routes.VEDIC_METHODS),
+                      onTap: () => Get.toNamed(Routes.VEDIC_16_SUTRAS),
                     ),
                     const SizedBox(height: 12),
 
@@ -217,93 +217,20 @@ class HomeView extends GetView<HomeController> {
                       title: 'Practice',
                       subtitle: 'You can practice here & levelup',
                       badge: '234',
-                      onTap: () {},
+                      onTap: () => controller.showPracticeDialog(),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
 
-                    // Banner Section
-                    Container(
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 130,
-                              height: 130,
-                              child: Image.asset(
-                                'assets/images/banner.png',
-                                fit: BoxFit.fill,
-                              ),
-                            ),                            
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Continue your Journey',
-                                      style: AppTextStyles.bodyMedium.copyWith(
-                                        color: AppColors.textPrimary,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Check new methods',
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: AppColors.textSecondary,
-                                        fontSize: 12,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 12),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Get.toNamed(Routes.VEDIC_COURSE);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.primary,
-                                        foregroundColor: Colors.white,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 20,
-                                          vertical: 8,
-                                        ),
-                                        minimumSize: const Size(0, 36),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        "Let's start",
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                    GestureDetector(
+                      onTap: () => Get.toNamed(Routes.VEDIC_METHODS),
+                      onLongPress: () => Get.toNamed(Routes.VEDIC_COURSE),
+                      child: MethodCard(
+                        icon: Icons.auto_awesome,
+                        iconColor: AppColors.pink,
+                        title: 'Vedic Tactics',
+                        subtitle: 'Master vedic mathematics techniques',
+                        badge: 'New',
+                        onTap: () => Get.toNamed(Routes.VEDIC_METHODS),
                       ),
                     ),
                     const SizedBox(height: 20),

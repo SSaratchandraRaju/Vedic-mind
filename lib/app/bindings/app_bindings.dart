@@ -5,6 +5,7 @@ import '../data/datasources/remote/firebase_auth_data_source.dart';
 import '../data/repositories/auth_repository.dart';
 import '../data/repositories/auth_repository_impl.dart';
 import '../services/auth_service.dart';
+import '../services/tts_service.dart';
 
 /// Application bindings for dependency injection
 /// This is where you configure which backend to use
@@ -29,6 +30,9 @@ class AppBindings extends Bindings {
     // ========================================
     Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(Get.find()));
     Get.lazyPut<AuthService>(() => AuthService(Get.find()));
+    
+    // Text-to-Speech Service
+    Get.put(TtsService(), permanent: true);
   }
 }
 

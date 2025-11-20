@@ -61,6 +61,9 @@ dependencies:
   
   # Image Picker
   image_picker: ^1.0.7
+  
+  # Text to Speech
+  flutter_tts: ^4.2.0
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +90,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/data/16_SUTRAS_COMPLETE.json
     - assets/illustrations/
     - assets/icons/
     - assets/images/

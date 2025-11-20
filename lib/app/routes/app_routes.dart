@@ -18,6 +18,9 @@ abstract class Routes {
   static const LESSON_DETAIL = '/lesson-detail';
   static const LESSON_STEPS = '/lesson-steps';
   static const LESSON_PRACTICE = '/lesson-practice';
+  static const VEDIC_16_SUTRAS = '/vedic-16-sutras';
+  static const SUTRA_DETAIL = '/sutra-detail';
+  static const INTERACTIVE_LESSON = '/interactive-lesson';
   static const QUIZ = '/quiz';
   static const PRACTICE = '/practice';
   static const PRACTICE_RESULTS = '/practice-results';
@@ -27,5 +30,23 @@ abstract class Routes {
   static const SETTINGS = '/settings';
   static const EDIT_PROFILE = '/edit-profile';
   static const PROGRESS = '/progress';
+  
+  // Mini Game Routes
+  static const SUTRA1_GAME = '/sutra1-game';
+  static const SUTRA2_GAME = '/sutra2-game';
+  static const SUTRA3_GAME = '/sutra3-game';
+  static const SUTRA4_GAME = '/sutra4-game';
+  static const SUTRA5_GAME = '/sutra5-game';
+  static const SUTRA6_GAME = '/sutra6-game';
+  static const SUTRA7_GAME = '/sutra7-game';
+  static const SUTRA8_GAME = '/sutra8-game';
+  static const SUTRA9_GAME = '/sutra9-game';
+  static const SUTRA10_GAME = '/sutra10-game';
+  static const SUTRA11_GAME = '/sutra11-game';
+  static const SUTRA12_GAME = '/sutra12-game';
+  static const SUTRA13_GAME = '/sutra13-game';
+  static const SUTRA14_GAME = '/sutra14-game';
+  static const SUTRA15_GAME = '/sutra15-game';
+  static const SUTRA16_GAME = '/sutra16-game';
 }
 

@@ -168,7 +168,7 @@ class MathTablesView extends GetView<MathTablesController> {
             ),
           ),
           
-          // Fixed buttons container above nav bar
+          // Fixed button container above nav bar
           Container(
             color: Colors.white,
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
@@ -197,32 +197,6 @@ class MathTablesView extends GetView<MathTablesController> {
                     ),
                     child: const Text(
                       'Learn',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins'),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Practice Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: OutlinedButton(
-                    onPressed: () => controller.showPracticeDialog(),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.textPrimary,
-                      side: const BorderSide(color: AppColors.border),
-                      elevation: 0,
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Practice',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

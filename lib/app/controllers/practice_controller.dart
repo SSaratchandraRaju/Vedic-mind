@@ -55,7 +55,9 @@ class PracticeController extends GetxController {
       selectedOperation = args['operation'] ?? 0;
       numberOfQuestions = args['tasks'] ?? 20;
       questionTimeLimit = args['timePerQuestion'] ?? 10;
-      final totalMinutes = args['totalMinutes'] ?? 0;
+      final totalMinutes = args['totlTime'] ?? 0;
+       
+  
       totalTimeLimit.value = (totalMinutes * 60).toInt(); // Convert minutes to seconds and to int
     }
     

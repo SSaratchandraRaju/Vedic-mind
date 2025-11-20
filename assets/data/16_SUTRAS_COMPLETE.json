@@ -1,0 +1,358 @@
+{
+  "course_metadata": {
+    "title": "16 Vedic Sutras Mastery Course",
+    "total_sutras": 16,
+    "estimated_total_duration_minutes": 480,
+    "unlock_mode": "progressive_with_drill",
+    "drill_duration_seconds": 60,
+    "mastery_test_duration_minutes": 30
+  },
+  
+  "sutras": [
+    {
+      "sutra_id": 1,
+      "name": "Ekadhikena Purvena",
+      "translation": "By one more than the previous one",
+      "difficulty": "Beginner",
+      "time_minutes": 25,
+      "objective": "Master instant squaring of numbers ending in 5",
+      "why_learn": "Your go-to method for squaring numbers ending in 5 (15², 25²...95²). Essential for quick area calculations, price estimates with 5-cent increments, and geometry. Trains pattern recognition and builds confidence that complex calculations have elegant solutions. Answer '85²' in under 2 seconds (7225) - a genuine competitive advantage.",
+      "rule": ["Take number ending in 5", "Remove 5, get previous digit", "Multiply by one more than itself", "Append 25"],
+      "example": {"problem": "65²", "solution": "6×7=42, append 25 → 4225"},
+      "practice": [
+        {"problem": "25²", "answer": "625", "hint": "2×3=6"},
+        {"problem": "45²", "answer": "2025", "hint": "4×5=20"},
+        {"problem": "75²", "answer": "5625", "hint": "7×8=56"},
+        {"problem": "95²", "answer": "9025", "hint": "9×10=90"},
+        {"problem": "105²", "answer": "11025", "hint": "10×11=110"}
+      ],
+      "mini_game": "Square Dash - combo multipliers for speed",
+      "badge": {"name": "Square Master", "xp": 100}
+    },
+    
+    {
+      "sutra_id": 2,
+      "name": "Nikhilam Navatascaramam Dasataḥ",
+      "translation": "All from 9 and the last from 10",
+      "difficulty": "Beginner",
+      "time_minutes": 30,
+      "objective": "Multiply numbers near bases (10, 100, 1000) using complements",
+      "why_learn": "Ideal for multiplying numbers close to 10, 100, or 1000 (like 97×96, 998×994). Critical for financial calculations with near-round numbers, engineering estimates, and competitive math. Builds mental agility with complements and base arithmetic. In retail pricing (£98×103 items), this saves minutes daily. The complement thinking trains your brain for advanced problem decomposition.",
+      "rule": ["Find base (10, 100, 1000)", "Calculate deficit from base", "Cross-subtract for left side", "Multiply deficits for right side"],
+      "example": {"problem": "97×96", "solution": "Base 100: (97-4)=93||(3×4)=12 → 9312"},
+      "practice": [
+        {"problem": "98×97", "answer": "9506", "hint": "Base 100"},
+        {"problem": "993×996", "answer": "989028", "hint": "Base 1000"},
+        {"problem": "88×89", "answer": "7832", "hint": "Base 100"},
+        {"problem": "9×8", "answer": "72", "hint": "Base 10"},
+        {"problem": "1003×1005", "answer": "1008015", "hint": "Base 1000"}
+      ],
+      "mini_game": "Near-Base Rush - match numbers to bases",
+      "badge": {"name": "Complement Commander", "xp": 150}
+    },
+    
+    {
+      "sutra_id": 3,
+      "name": "Urdhva-Tiryagbhyam",
+      "translation": "Vertically and crosswise",
+      "difficulty": "Intermediate",
+      "time_minutes": 35,
+      "objective": "Master universal multiplication through crosswise pattern",
+      "why_learn": "The UNIVERSAL multiplication method that works for ANY numbers - from 12×13 to 9876×5432. While other sutras are specialized, this is your Swiss Army knife. Essential for competitive exams, engineering calculations, and anywhere calculators aren't available. Trains spatial visualization as you mentally draw crosswise patterns. Once mastered, you'll never use traditional long multiplication again. It's the most versatile technique in the entire Vedic arsenal.",
+      "rule": ["Multiply vertically (units)", "Cross-multiply and add (tens)", "Continue pattern for higher places", "Carry digits as needed"],
+      "example": {"problem": "23×14", "solution": "V:3×4=12(carry 1)|C:(2×4+3×1=11+1=12)|V:2×1=2+1=3 → 322"},
+      "practice": [
+        {"problem": "12×13", "answer": "156", "hint": "2×3=6, 1×3+2×1=5, 1×1=1"},
+        {"problem": "34×25", "answer": "850", "hint": "Crosswise middle digits"},
+        {"problem": "123×12", "answer": "1476", "hint": "3-digit × 2-digit"},
+        {"problem": "99×99", "answer": "9801", "hint": "Works beautifully!"},
+        {"problem": "456×78", "answer": "35568", "hint": "Multi-crosswise"}
+      ],
+      "mini_game": "Crosswise Matrix - drag crosswise lines",
+      "badge": {"name": "Universal Multiplier", "xp": 200}
+    },
+    
+    {
+      "sutra_id": 4,
+      "name": "Paravartya Yojayet",
+      "translation": "Transpose and apply / Transpose and adjust",
+      "difficulty": "Intermediate",
+      "time_minutes": 30,
+      "objective": "Master division by transposing divisor",
+      "why_learn": "Your secret weapon for complex divisions without long division. Especially powerful when divisor is near a base (dividing by 98, 997, etc.). Used in financial rate calculations, unit conversions, and data normalization. Builds algebraic thinking by teaching you to manipulate equations mentally. When dividing large datasets by constants (like 103), this method is 5x faster than calculators.",
+      "rule": ["Identify divisor structure", "Transpose (flip sign)", "Apply multiplication pattern", "Adjust quotient"],
+      "example": {"problem": "1÷19", "solution": "Transpose: 1÷(20-1) → multiply by 20, adjust"},
+      "practice": [
+        {"problem": "1÷9", "answer": "0.111...", "hint": "1÷(10-1)"},
+        {"problem": "1÷11", "answer": "0.0909...", "hint": "1÷(10+1)"},
+        {"problem": "1000÷97", "answer": "10.309", "hint": "Base 100"},
+        {"problem": "500÷19", "answer": "26.316", "hint": "Transpose to 20"},
+        {"problem": "1÷29", "answer": "0.0344...", "hint": "1÷(30-1)"}
+      ],
+      "mini_game": "Division Dash - transpose and solve",
+      "badge": {"name": "Division Master", "xp": 150}
+    },
+    
+    {
+      "sutra_id": 5,
+      "name": "Sunyam Samyasamuccaye",
+      "translation": "When the sum is the same, that sum is zero",
+      "difficulty": "Advanced",
+      "time_minutes": 35,
+      "objective": "Solve special algebraic equations where sums cancel",
+      "why_learn": "Elite technique for equations where coefficient sums match on both sides (like 3x+5=5x+3). Rare but devastating when applicable - solves in one mental step what normally takes 5 written steps. Critical in advanced algebra, competitive math olympiads, and physics formula manipulation. Trains you to spot hidden symmetries in equations. When it works, you look like a mathematical genius.",
+      "rule": ["Check if sum of coefficients on both sides equals", "If equal, solution is zero or special value", "Apply sameness principle"],
+      "example": {"problem": "3x+5=5x+3", "solution": "Sums both 8 → x=1"},
+      "practice": [
+        {"problem": "2x+7=7x+2", "answer": "x=1", "hint": "Both sum to 9"},
+        {"problem": "x+4=4+x", "answer": "All x", "hint": "Identity"},
+        {"problem": "5x+3=3x+5", "answer": "x=1", "hint": "Both 8"},
+        {"problem": "ax+b=bx+a", "answer": "x=1", "hint": "Symmetric"},
+        {"problem": "7x+9=9x+7", "answer": "x=1", "hint": "Pattern!"}
+      ],
+      "mini_game": "Symmetry Spotter - find matching sums",
+      "badge": {"name": "Symmetry Sage", "xp": 250}
+    },
+    
+    {
+      "sutra_id": 6,
+      "name": "Anurupyena",
+      "translation": "Proportionately",
+      "difficulty": "Intermediate",
+      "time_minutes": 28,
+      "objective": "Solve problems using proportional relationships",
+      "why_learn": "Master of ratio and proportion problems - recipes, currency conversion, scaling blueprints, mixing chemicals. When quantities scale proportionally (double recipe, half the fabric), this makes calculations instant. Essential for cooking, construction, photography ratios, and business forecasting. Builds intuition for linear relationships. Instead of setting up formal proportion equations, you see the scale factor instantly.",
+      "rule": ["Identify proportional relationship", "Find scale factor", "Apply uniformly"],
+      "example": {"problem": "If 3 items cost 15, what's 7 items?", "solution": "Factor 5 → 7×5=35"},
+      "practice": [
+        {"problem": "4:8 = x:16", "answer": "x=8", "hint": "Double both"},
+        {"problem": "Recipe×1.5", "answer": "Scale all", "hint": "Multiply by 1.5"},
+        {"problem": "3m=12cm → 5m=?", "answer": "20cm", "hint": "×4 factor"},
+        {"problem": "5km/2hrs → 12.5km/?", "answer": "5hrs", "hint": "Same rate"},
+        {"problem": "1:3 ratio → 7:?", "answer": "21", "hint": "×3 always"}
+      ],
+      "mini_game": "Proportion Puzzle - drag to scale",
+      "badge": {"name": "Ratio Ruler", "xp": 120}
+    },
+    
+    {
+      "sutra_id": 7,
+      "name": "Sankalana-Vyavakalanabhyam",
+      "translation": "By addition and by subtraction",
+      "difficulty": "Beginner",
+      "time_minutes": 25,
+      "objective": "Solve simultaneous equations by adding/subtracting",
+      "why_learn": "The go-to method for solving pairs of equations (x+y=10, x-y=2). Crucial in physics (two forces), economics (supply-demand), chemistry (mixture problems), and competitive math. Instead of substitution's multiple steps, this gives direct answers. Trains systematic problem decomposition. When you have two unknowns and two equations, this is your first weapon - fast, reliable, elegant.",
+      "rule": ["Add equations to eliminate one variable", "Subtract to eliminate the other", "Solve for remaining variable"],
+      "example": {"problem": "x+y=10, x-y=2", "solution": "Add: 2x=12 → x=6, then y=4"},
+      "practice": [
+        {"problem": "x+y=7, x-y=1", "answer": "x=4,y=3", "hint": "Add them"},
+        {"problem": "2x+y=10, x+y=6", "answer": "x=4,y=2", "hint": "Subtract"},
+        {"problem": "a+b=15, a-b=5", "answer": "a=10,b=5", "hint": "Add first"},
+        {"problem": "3x+y=11, x+y=5", "answer": "x=3,y=2", "hint": "Subtract"},
+        {"problem": "m+n=20, m-n=8", "answer": "m=14,n=6", "hint": "Classic"}
+      ],
+      "mini_game": "Equation Eliminator - tap to add/subtract",
+      "badge": {"name": "Equation Solver", "xp": 100}
+    },
+    
+    {
+      "sutra_id": 8,
+      "name": "Purna-Apurnabhyam",
+      "translation": "By completion and non-completion",
+      "difficulty": "Intermediate",
+      "time_minutes": 32,
+      "objective": "Use completion method for calculations near round numbers",
+      "why_learn": "When numbers are 'almost complete' to round values (299, 4998), this completes them mentally for easier computation. Perfect for shopping totals ($299→$300-$1), project estimates (4950 units→5000-50), and mental approximations. Trains you to see numbers as 'base plus adjustment' rather than absolute values. Critical skill for rapid mental arithmetic in business meetings where precise estimates must be instant.",
+      "rule": ["Complete number to next round value", "Perform calculation with complete number", "Adjust result by removing excess"],
+      "example": {"problem": "299+547", "solution": "(300-1)+547=847-1=846"},
+      "practice": [
+        {"problem": "98+76", "answer": "174", "hint": "100-2+76"},
+        {"problem": "299×3", "answer": "897", "hint": "300×3-3"},
+        {"problem": "4997+2558", "answer": "7555", "hint": "5000-3+2558"},
+        {"problem": "195+189", "answer": "384", "hint": "200-5+200-11"},
+        {"problem": "998×2", "answer": "1996", "hint": "1000×2-4"}
+      ],
+      "mini_game": "Complete & Adjust - fill to round numbers",
+      "badge": {"name": "Completion Champion", "xp": 130}
+    },
+    
+    {
+      "sutra_id": 9,
+      "name": "Calana-Kalanabhyam",
+      "translation": "Differences and motion (use alternate methods)",
+      "difficulty": "Advanced",
+      "time_minutes": 35,
+      "objective": "Apply differential/sequential techniques for special patterns",
+      "why_learn": "Advanced technique for finding patterns in sequences, rate problems, and calculus-adjacent arithmetic. When conventional algebra fails, this explores the 'motion' between numbers. Essential for series summations, polynomial evaluations, and recursive patterns. Used in algorithm optimization and competitive programming. Trains differential thinking - instead of 'what is it?', asking 'how does it change?' Prepares mind for calculus concepts.",
+      "rule": ["Observe sequential differences", "Apply motion patterns", "Use alternative calculation paths"],
+      "example": {"problem": "Sum 1+2+3...+100", "solution": "Pattern: 50 pairs of 101 = 5050"},
+      "practice": [
+        {"problem": "Sum 1-100", "answer": "5050", "hint": "Gauss method"},
+        {"problem": "1²+2²+3²...10²", "answer": "385", "hint": "Formula n(n+1)(2n+1)/6"},
+        {"problem": "Find 15th term: 2,5,10,17...", "answer": "227", "hint": "Pattern n²+1"},
+        {"problem": "Sum odd: 1+3+5...99", "answer": "2500", "hint": "50²"},
+        {"problem": "Sequence: 1,4,9,16...", "answer": "Squares", "hint": "n²"}
+      ],
+      "mini_game": "Pattern Predictor - spot sequences",
+      "badge": {"name": "Pattern Prophet", "xp": 200}
+    },
+    
+    {
+      "sutra_id": 10,
+      "name": "Yavadunam",
+      "translation": "Whatever the deficiency (use that deficiency)",
+      "difficulty": "Intermediate",
+      "time_minutes": 28,
+      "objective": "Multiply using deficiency from base",
+      "why_learn": "Sister technique to Nikhilam but focuses on deficiency pattern. Excellent for numbers just below bases (89×87, 996×994). Particularly powerful in financial calculations with discount percentages (15% off → 85% pricing). Reinforces complement thinking from multiple angles. When Nikhilam feels awkward, this provides the alternative perspective that clicks.",
+      "rule": ["Find deficiency from base", "Cross-subtract deficiencies", "Multiply deficiencies for right portion"],
+      "example": {"problem": "88×89", "solution": "Base 100: deficit 12&11 → (88-11)||(12×11) = 77||132 → 7832"},
+      "practice": [
+        {"problem": "88×89", "answer": "7832", "hint": "Both deficit from 100"},
+        {"problem": "95×96", "answer": "9120", "hint": "Deficit 5&4"},
+        {"problem": "997×998", "answer": "995006", "hint": "Base 1000"},
+        {"problem": "85×87", "answer": "7395", "hint": "15&13 deficit"},
+        {"problem": "78×79", "answer": "6162", "hint": "22&21 deficit"}
+      ],
+      "mini_game": "Deficiency Detector - find and multiply",
+      "badge": {"name": "Deficit Master", "xp": 140}
+    },
+    
+    {
+      "sutra_id": 11,
+      "name": "Vyastisamastih",
+      "translation": "Part and whole (individual and totality)",
+      "difficulty": "Advanced",
+      "time_minutes": 38,
+      "objective": "Break complex problems into parts while maintaining whole-view",
+      "why_learn": "Meta-technique for decomposing intimidating problems into manageable chunks while tracking the big picture. Critical for multi-step word problems, project planning, budget allocation, and strategic thinking. When a calculation has 'too many moving parts,' this systematizes the breakdown. Builds project management mindset - seeing both forest and trees. Used in advanced algebra factorization and integral calculus setup.",
+      "rule": ["Identify whole problem structure", "Break into logical parts", "Solve parts while maintaining relationships", "Synthesize to whole"],
+      "example": {"problem": "(x+5)(x+3)", "solution": "Parts: x², 3x, 5x, 15 → Whole: x²+8x+15"},
+      "practice": [
+        {"problem": "(x+2)(x+4)", "answer": "x²+6x+8", "hint": "FOIL parts"},
+        {"problem": "456×99", "answer": "45144", "hint": "456×100-456"},
+        {"problem": "Split 100 into 3:2", "answer": "60&40", "hint": "Parts of whole"},
+        {"problem": "(2x+3)(x-1)", "answer": "2x²+x-3", "hint": "Each part"},
+        {"problem": "75% of 180", "answer": "135", "hint": "Part of whole"}
+      ],
+      "mini_game": "Part-Whole Puzzles - assemble pieces",
+      "badge": {"name": "Synthesis Savant", "xp": 220}
+    },
+    
+    {
+      "sutra_id": 12,
+      "name": "Sesanyankena Caramena",
+      "translation": "The remainders and the last by the last",
+      "difficulty": "Advanced",
+      "time_minutes": 40,
+      "objective": "Master remainder patterns in division and modular arithmetic",
+      "why_learn": "Elite technique for divisibility tests, modular arithmetic, and cryptography foundations. When checking if 13 divides 12,345, this is faster than division. Essential for computer science (hash functions), number theory competitions, and calendar calculations (day of week for any date). Builds pattern recognition in remainders - seeing cycles invisible to others. Foundation skill for advanced mathematics.",
+      "rule": ["Identify last digit/remainder pattern", "Apply recursive remainder rule", "Use last-by-last multiplication"],
+      "example": {"problem": "Test if 7 divides 343", "solution": "Last digit method: 34-2(3)=28, divisible by 7 ✓"},
+      "practice": [
+        {"problem": "Is 13|156?", "answer": "Yes", "hint": "15-4(6)=..."},
+        {"problem": "Last digit of 7⁵", "answer": "7", "hint": "Pattern 7,9,3,1"},
+        {"problem": "Remainder 45÷7", "answer": "3", "hint": "Last-by-last"},
+        {"problem": "Is 11|253?", "answer": "Yes", "hint": "Alternating sum"},
+        {"problem": "Day of week calc", "answer": "Pattern", "hint": "Mod 7"}
+      ],
+      "mini_game": "Remainder Race - spot divisibility",
+      "badge": {"name": "Modular Mystic", "xp": 250}
+    },
+    
+    {
+      "sutra_id": 13,
+      "name": "Sopaantyadvayamantyam",
+      "translation": "The ultimate and twice the penultimate",
+      "difficulty": "Intermediate",
+      "time_minutes": 30,
+      "objective": "Apply ultimate-penultimate pattern in special multiplications",
+      "why_learn": "Specialized for numbers where pattern between last two digits creates shortcut (like 12×18 where 2+8=10). Perfect for certain multiplication families and polynomial evaluations. Trains you to spot hidden relationships between digit positions. While narrow in application, when it fits, it's spectacular - solving in seconds what looks complex. Builds awareness that 'where digits sit' matters as much as 'what they are.'",
+      "rule": ["Identify ultimate (last) digit", "Find penultimate (second-last)", "Apply formula: ultimate + 2×penultimate"],
+      "example": {"problem": "12×18", "solution": "1×2=2, 2+2(1)=4 → First part, then 2×8=16 → 216"},
+      "practice": [
+        {"problem": "13×17", "answer": "221", "hint": "Pattern with 3&7"},
+        {"problem": "14×16", "answer": "224", "hint": "Middle trick"},
+        {"problem": "22×28", "answer": "616", "hint": "2 lots trick"},
+        {"problem": "31×39", "answer": "1209", "hint": "Decade pattern"},
+        {"problem": "21×29", "answer": "609", "hint": "Last+2×penult"}
+      ],
+      "mini_game": "Penultimate Puzzles - special products",
+      "badge": {"name": "Digit Detective", "xp": 160}
+    },
+    
+    {
+      "sutra_id": 14,
+      "name": "Ekanyunena Purvena",
+      "translation": "By one less than the previous one",
+      "difficulty": "Beginner",
+      "time_minutes": 25,
+      "objective": "Master fraction-to-decimal conversion using one-less pattern",
+      "why_learn": "Your secret weapon for converting fractions like 1/9, 1/99, 1/999 to decimals instantly (0.111..., 0.0101..., 0.001001...). Critical for percentage calculations, decimal conversions in finance, and pattern-based estimation. Sister technique to Sutra 1 (one MORE) - together they bookend the pattern spectrum. Builds deep understanding of decimal place value and recurring decimals.",
+      "rule": ["Take denominator (e.g., 9)", "Use one less (8) as numerator pattern", "Result: 8/9 = 0.888..."],
+      "example": {"problem": "1÷9", "solution": "One less than 9 is 8 → 0.888... (recurring)"},
+      "practice": [
+        {"problem": "1÷9", "answer": "0.111...", "hint": "One less than 9"},
+        {"problem": "1÷99", "answer": "0.0101...", "hint": "Pattern 01"},
+        {"problem": "1÷999", "answer": "0.001001...", "hint": "Pattern 001"},
+        {"problem": "8÷9", "answer": "0.888...", "hint": "Direct"},
+        {"problem": "1÷11", "answer": "0.0909...", "hint": "One less=10"}
+      ],
+      "mini_game": "Decimal Dash - convert fractions",
+      "badge": {"name": "Decimal Decoder", "xp": 110}
+    },
+    
+    {
+      "sutra_id": 15,
+      "name": "Gunitasamuchyah",
+      "translation": "The product of sum is same (product-sum relationships)",
+      "difficulty": "Advanced",
+      "time_minutes": 36,
+      "objective": "Exploit product-sum equality patterns in special equations",
+      "why_learn": "Advanced algebraic technique for equations where products equal sums (like ab=a+b). Rare occurrence but when spotted, reduces complex algebra to instant solution. Used in Diophantine equations, competitive math olympiads, and theoretical physics symmetry problems. Trains you to recognize deep structural patterns others miss. When standard algebraic manipulation fails, this reveals the elegant backdoor.",
+      "rule": ["Check if product of terms equals their sum", "Apply special case solutions", "Recognize ab=a+b family"],
+      "example": {"problem": "Find x,y where xy=x+y", "solution": "Special case: x=2,y=2 OR x=y=0"},
+      "practice": [
+        {"problem": "xy=x+y, x=2", "answer": "y=2", "hint": "Product=sum"},
+        {"problem": "(x-1)(y-1)=?", "answer": "Pattern", "hint": "Expand"},
+        {"problem": "ab=a+b, a=3", "answer": "b=1.5", "hint": "Solve"},
+        {"problem": "Special case", "answer": "a=b=2", "hint": "Classic"},
+        {"problem": "Product-sum", "answer": "Pattern", "hint": "Structure"}
+      ],
+      "mini_game": "Product-Sum Spotter - find equalities",
+      "badge": {"name": "Algebra Architect", "xp": 230}
+    },
+    
+    {
+      "sutra_id": 16,
+      "name": "Gunakasamuchyah",
+      "translation": "The factors of sum are the same (factor-sum relationships)",
+      "difficulty": "Advanced",
+      "time_minutes": 38,
+      "objective": "Master factor-sum relationship patterns",
+      "why_learn": "Final and most abstract sutra - recognizes when factors share sum properties. Used in advanced factorization, cryptography (factoring large numbers), and combinatorics. While applications are specialized, it completes the Vedic system's philosophy: all relationships can be seen as patterns. Trains highest-level mathematical abstraction. Completing all 16 sutras means you see mathematics as an interconnected web of patterns, not isolated rules.",
+      "rule": ["Identify common factor patterns", "Check sum relationships", "Apply factorization shortcuts"],
+      "example": {"problem": "Factor x²+5x+6", "solution": "Factors: (x+2)(x+3), sums check"},
+      "practice": [
+        {"problem": "Factor x²+7x+12", "answer": "(x+3)(x+4)", "hint": "3+4=7"},
+        {"problem": "Factor x²+5x+6", "answer": "(x+2)(x+3)", "hint": "2+3=5"},
+        {"problem": "Factor x²-5x+6", "answer": "(x-2)(x-3)", "hint": "Signs"},
+        {"problem": "Factor x²+13x+42", "answer": "(x+6)(x+7)", "hint": "6+7=13"},
+        {"problem": "Factor x²+11x+30", "answer": "(x+5)(x+6)", "hint": "5+6=11"}
+      ],
+      "mini_game": "Factorization Finale - master challenge",
+      "badge": {"name": "Vedic Virtuoso", "xp": 300}
+    }
+  ],
+  
+  "mastery_test": {
+    "title": "16 Sutras Grand Mastery Challenge",
+    "duration_minutes": 30,
+    "total_problems": 20,
+    "passing_score": 15,
+    "problems_mix": "Randomized from all sutras, some requiring multiple techniques",
+    "badge": {"name": "Vedic Mathematics Master", "xp": 1000},
+    "certification": "Official completion certificate with score"
+  }
+}
