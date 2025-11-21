@@ -2,7 +2,8 @@ class VedicMethod {
   final String id;
   final String title;
   final String description;
-  final String operation; // 'addition', 'subtraction', 'multiplication', 'division'
+  final String
+  operation; // 'addition', 'subtraction', 'multiplication', 'division'
   final String difficulty; // '2-digit', '3-digit', etc.
   final bool isCompleted;
   final bool isOngoing;
@@ -31,7 +32,8 @@ class MethodStep {
   final String title;
   final String description;
   final String? calculation; // e.g., "52 = 50 + 2"
-  final List<String>? breakdownLines; // For showing multiple lines like "50" and "2"
+  final List<String>?
+  breakdownLines; // For showing multiple lines like "50" and "2"
 
   MethodStep({
     required this.stepNumber,

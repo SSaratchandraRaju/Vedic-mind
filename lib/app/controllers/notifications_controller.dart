@@ -6,7 +6,7 @@ class NotificationsController extends GetxController {
 
   void onNavTap(int index) {
     currentNavIndex.value = index;
-    
+
     switch (index) {
       case 0:
         Get.offAllNamed(Routes.LEADERBOARD);

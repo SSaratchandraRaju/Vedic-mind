@@ -6,7 +6,12 @@ class LessonCard extends StatelessWidget {
   final String subtitle;
   final VoidCallback? onTap;
 
-  const LessonCard({super.key, required this.title, this.subtitle = '', this.onTap});
+  const LessonCard({
+    super.key,
+    required this.title,
+    this.subtitle = '',
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

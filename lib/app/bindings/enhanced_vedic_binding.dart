@@ -9,7 +9,7 @@ class EnhancedVedicBinding extends Bindings {
     if (!Get.isRegistered<TtsService>()) {
       Get.lazyPut<TtsService>(() => TtsService());
     }
-    
+
     // Register the enhanced controller
     Get.lazyPut<EnhancedVedicCourseController>(
       () => EnhancedVedicCourseController(),

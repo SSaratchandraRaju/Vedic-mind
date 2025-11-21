@@ -5,33 +5,33 @@ import '../services/auth_service.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = Get.find<AuthService>();
-  
+
   // Text Controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final phoneController = TextEditingController();
   final nameController = TextEditingController();
-  
+
   // Observable states
   final obscurePassword = true.obs;
   final obscureConfirmPassword = true.obs;
   final isLoading = false.obs;
   final selectedAuthMethod = 0.obs; // 0 = Email, 1 = Phone
-  
+
   // OTP related
   final otpCode = ''.obs;
   final verificationId = ''.obs;
   final resendTimer = 60.obs;
-  
+
   void togglePasswordVisibility() {
     obscurePassword.value = !obscurePassword.value;
   }
-  
+
   void toggleConfirmPasswordVisibility() {
     obscureConfirmPassword.value = !obscureConfirmPassword.value;
   }
-  
+
   void selectAuthMethod(int method) {
     selectedAuthMethod.value = method;
   }
@@ -71,7 +71,7 @@ class AuthController extends GetxController {
 
   // Email/Password Signup
   Future<void> signUp() async {
-    if (emailController.text.isEmpty || 
+    if (emailController.text.isEmpty ||
         passwordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty) {
       Get.snackbar(
@@ -201,9 +201,11 @@ class AuthController extends GetxController {
     }
 
     isLoading.value = true;
-    final success = await _authService.sendPasswordResetEmail(emailController.text.trim());
+    final success = await _authService.sendPasswordResetEmail(
+      emailController.text.trim(),
+    );
     isLoading.value = false;
-    
+
     if (success) {
       Get.snackbar(
         'Success',

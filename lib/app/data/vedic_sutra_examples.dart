@@ -3,7 +3,7 @@
 class SutraExample {
   final String problem;
   final List<ExampleStep> steps;
-  
+
   SutraExample({required this.problem, required this.steps});
 }
 
@@ -11,7 +11,7 @@ class ExampleStep {
   final String display;
   final String description;
   final String audioText;
-  
+
   ExampleStep({
     required this.display,
     required this.description,
@@ -24,7 +24,7 @@ class PracticeStep {
   final String expectedAnswer;
   final String hint;
   final String formula;
-  
+
   PracticeStep({
     required this.instruction,
     required this.expectedAnswer,
@@ -72,7 +72,7 @@ class VedicSutraExamples {
         return _getSutra1Example();
     }
   }
-  
+
   static List<PracticeStep> getPracticeSteps(int sutraId, String problem) {
     switch (sutraId) {
       case 1:
@@ -120,7 +120,8 @@ class VedicSutraExamples {
         ExampleStep(
           display: '25²',
           description: 'Problem: Square 25',
-          audioText: 'Let\'s calculate 25 squared using the sutra: By one more than the one before',
+          audioText:
+              'Let\'s calculate 25 squared using the sutra: By one more than the one before',
         ),
         ExampleStep(
           display: '2',
@@ -150,16 +151,20 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static List<PracticeStep> _getSutra1PracticeSteps(String problem) {
     // Extract number from problem like "25²" or "25^2"
-    final numStr = problem.replaceAll('²', '').replaceAll('^2', '').replaceAll(' ', '').trim();
-    
+    final numStr = problem
+        .replaceAll('²', '')
+        .replaceAll('^2', '')
+        .replaceAll(' ', '')
+        .trim();
+
     try {
       final num = int.parse(numStr);
       final firstDigit = num ~/ 10;
       final product = firstDigit * (firstDigit + 1);
-      
+
       return [
         PracticeStep(
           instruction: 'Take the first digit',
@@ -221,7 +226,8 @@ class VedicSutraExamples {
         ExampleStep(
           display: '(-3) × (-2) = 6',
           description: 'Step 4: Multiply deviations',
-          audioText: 'Multiply the deviations: negative 3 times negative 2 equals 6',
+          audioText:
+              'Multiply the deviations: negative 3 times negative 2 equals 6',
         ),
         ExampleStep(
           display: '95 | 06',
@@ -236,13 +242,13 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static List<PracticeStep> _getSutra2PracticeSteps(String problem) {
     try {
       // Parse "97×98" or "97 × 98"
       final parts = problem.replaceAll(' ', '').split('×');
       if (parts.length != 2) throw FormatException('Invalid format');
-      
+
       final num1 = int.parse(parts[0]);
       final num2 = int.parse(parts[1]);
       final base = 100;
@@ -250,7 +256,7 @@ class VedicSutraExamples {
       final dev2 = num2 - base;
       final crossSum = num1 + dev2;
       final devProduct = dev1 * dev2;
-      
+
       return [
         PracticeStep(
           instruction: 'Find deviation of first number from 100',
@@ -278,8 +284,10 @@ class VedicSutraExamples {
         ),
         PracticeStep(
           instruction: 'Write the final answer',
-          expectedAnswer: '${crossSum}${devProduct.abs().toString().padLeft(2, '0')}',
-          hint: 'Combine $crossSum and ${devProduct.abs().toString().padLeft(2, '0')}',
+          expectedAnswer:
+              '${crossSum}${devProduct.abs().toString().padLeft(2, '0')}',
+          hint:
+              'Combine $crossSum and ${devProduct.abs().toString().padLeft(2, '0')}',
           formula: '$crossSum | ${devProduct.abs().toString().padLeft(2, '0')}',
         ),
       ];
@@ -304,12 +312,14 @@ class VedicSutraExamples {
         ExampleStep(
           display: '12 × 13',
           description: 'Problem: Multiply 12 × 13',
-          audioText: 'Let\'s multiply 12 times 13 using vertical and crosswise method',
+          audioText:
+              'Let\'s multiply 12 times 13 using vertical and crosswise method',
         ),
         ExampleStep(
           display: '1 × 1 = 1',
           description: 'Step 1: Multiply leftmost digits',
-          audioText: 'Multiply the leftmost digits vertically: 1 times 1 equals 1',
+          audioText:
+              'Multiply the leftmost digits vertically: 1 times 1 equals 1',
         ),
         ExampleStep(
           display: '(1×3) + (2×1) = 5',
@@ -334,19 +344,19 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static List<PracticeStep> _getSutra3PracticeSteps(String problem) {
     try {
       final parts = problem.replaceAll(' ', '').split('×');
       if (parts.length != 2) throw FormatException('Invalid format');
-      
+
       final num1 = int.parse(parts[0]);
       final num2 = int.parse(parts[1]);
       final a = num1 ~/ 10;
       final b = num1 % 10;
       final c = num2 ~/ 10;
       final d = num2 % 10;
-      
+
       return [
         PracticeStep(
           instruction: 'Multiply leftmost digits',
@@ -424,7 +434,7 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static List<PracticeStep> _getSutra4PracticeSteps(String problem) {
     return [
       PracticeStep(
@@ -471,7 +481,7 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static List<PracticeStep> _getSutra5PracticeSteps(String problem) {
     return [
       PracticeStep(
@@ -512,7 +522,7 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static List<PracticeStep> _getSutra6PracticeSteps(String problem) {
     return [
       PracticeStep(
@@ -538,7 +548,8 @@ class VedicSutraExamples {
         ExampleStep(
           display: '51 × 49',
           description: 'Problem: Multiply 51 × 49',
-          audioText: 'Let\'s multiply 51 times 49 using addition and subtraction',
+          audioText:
+              'Let\'s multiply 51 times 49 using addition and subtraction',
         ),
         ExampleStep(
           display: '50² = 2500',
@@ -563,7 +574,7 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static List<PracticeStep> _getSutra7PracticeSteps(String problem) {
     return [
       PracticeStep(
@@ -626,7 +637,7 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static List<PracticeStep> _getSutra8PracticeSteps(String problem) {
     return [
       PracticeStep(
@@ -658,13 +669,16 @@ class VedicSutraExamples {
       steps: [
         ExampleStep(
           display: "1 + 2 + 3 + ... + 100 = ?",
-          description: "Find the sum of first 100 natural numbers using pattern recognition",
-          audioText: "Let's find the sum of numbers from 1 to 100 using the pattern method.",
+          description:
+              "Find the sum of first 100 natural numbers using pattern recognition",
+          audioText:
+              "Let's find the sum of numbers from 1 to 100 using the pattern method.",
         ),
         ExampleStep(
           display: "Pair numbers: (1+100), (2+99), (3+98)...",
           description: "Notice each pair sums to 101",
-          audioText: "Observe the pattern: first and last numbers sum to 101, second and second-last also sum to 101.",
+          audioText:
+              "Observe the pattern: first and last numbers sum to 101, second and second-last also sum to 101.",
         ),
         ExampleStep(
           display: "Total pairs = 100 ÷ 2 = 50 pairs",
@@ -679,12 +693,13 @@ class VedicSutraExamples {
         ExampleStep(
           display: "50 pairs × 101 = 5050",
           description: "Total sum is 5050",
-          audioText: "Multiply 50 pairs by 101 to get 5050. This is the sum of all numbers from 1 to 100.",
+          audioText:
+              "Multiply 50 pairs by 101 to get 5050. This is the sum of all numbers from 1 to 100.",
         ),
       ],
     );
   }
-  
+
   static SutraExample _getSutra10Example() {
     // Sutra 10: Yāvadūnam - Whatever the deficiency
     return SutraExample(
@@ -693,7 +708,8 @@ class VedicSutraExamples {
         ExampleStep(
           display: "88 × 89",
           description: "Multiply numbers near base 100 using deficiency method",
-          audioText: "Let's multiply 88 and 89 using the deficiency method with base 100.",
+          audioText:
+              "Let's multiply 88 and 89 using the deficiency method with base 100.",
         ),
         ExampleStep(
           display: "Base = 100",
@@ -708,7 +724,8 @@ class VedicSutraExamples {
         ExampleStep(
           display: "Left part: 88 - 11 = 77 (or 89 - 12 = 77)",
           description: "Cross-subtract the deficiencies",
-          audioText: "Subtract 11 from 88, or subtract 12 from 89. Both give 77.",
+          audioText:
+              "Subtract 11 from 88, or subtract 12 from 89. Both give 77.",
         ),
         ExampleStep(
           display: "Right part: 12 × 11 = 132",
@@ -723,7 +740,7 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static SutraExample _getSutra11Example() {
     // Sutra 11: Vyastisamastih - Part and whole
     return SutraExample(
@@ -762,7 +779,7 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static SutraExample _getSutra12Example() {
     // Sutra 12: Śeṣanyankena Cāramena - The remainders by the last
     return SutraExample(
@@ -771,7 +788,8 @@ class VedicSutraExamples {
         ExampleStep(
           display: "343 ÷ 7 = ?",
           description: "Check divisibility using remainder method",
-          audioText: "Let's check if 343 is divisible by 7 using the remainder method.",
+          audioText:
+              "Let's check if 343 is divisible by 7 using the remainder method.",
         ),
         ExampleStep(
           display: "Last digit = 3",
@@ -796,12 +814,13 @@ class VedicSutraExamples {
         ExampleStep(
           display: "28 ÷ 7 = 4 ✓",
           description: "28 is divisible by 7, so 343 is too!",
-          audioText: "Since 28 is divisible by 7, we know 343 is also divisible by 7.",
+          audioText:
+              "Since 28 is divisible by 7, we know 343 is also divisible by 7.",
         ),
       ],
     );
   }
-  
+
   static SutraExample _getSutra13Example() {
     // Sutra 13: Sopaantyadvayamantyam - Ultimate and twice penultimate
     return SutraExample(
@@ -809,8 +828,10 @@ class VedicSutraExamples {
       steps: [
         ExampleStep(
           display: "13 × 17",
-          description: "Multiply numbers with pattern using ultimate and penultimate",
-          audioText: "Let's multiply 13 and 17 using the special pattern method.",
+          description:
+              "Multiply numbers with pattern using ultimate and penultimate",
+          audioText:
+              "Let's multiply 13 and 17 using the special pattern method.",
         ),
         ExampleStep(
           display: "Both have same decade: 10",
@@ -830,7 +851,8 @@ class VedicSutraExamples {
         ExampleStep(
           display: "Left part: 1 × (1 + 1) = 1 × 2 = 2",
           description: "Multiply first digit by one more than itself",
-          audioText: "Take the first digit 1, multiply by one more: 1 times 2 equals 2.",
+          audioText:
+              "Take the first digit 1, multiply by one more: 1 times 2 equals 2.",
         ),
         ExampleStep(
           display: "Right part: 3 × 7 = 21",
@@ -845,7 +867,7 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static SutraExample _getSutra14Example() {
     // Sutra 14: Ekanyūnena Pūrvena - By one less than the previous
     return SutraExample(
@@ -854,7 +876,8 @@ class VedicSutraExamples {
         ExampleStep(
           display: "1 ÷ 9 = ?",
           description: "Convert fraction to decimal using one-less pattern",
-          audioText: "Let's convert 1 divided by 9 to a decimal using the one-less pattern.",
+          audioText:
+              "Let's convert 1 divided by 9 to a decimal using the one-less pattern.",
         ),
         ExampleStep(
           display: "Denominator = 9",
@@ -884,7 +907,7 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static SutraExample _getSutra15Example() {
     // Sutra 15: Gunitasamuchyah - Product of sum
     return SutraExample(
@@ -893,7 +916,8 @@ class VedicSutraExamples {
         ExampleStep(
           display: "xy = x + y",
           description: "Solve equation where product equals sum",
-          audioText: "Let's find values where the product of two numbers equals their sum.",
+          audioText:
+              "Let's find values where the product of two numbers equals their sum.",
         ),
         ExampleStep(
           display: "Rearrange: xy - x - y = 0",
@@ -918,12 +942,13 @@ class VedicSutraExamples {
         ExampleStep(
           display: "Answer: x = 2, y = 2",
           description: "Special case solution",
-          audioText: "Therefore x equals 2 and y equals 2. Check: 2 times 2 equals 4, and 2 plus 2 equals 4.",
+          audioText:
+              "Therefore x equals 2 and y equals 2. Check: 2 times 2 equals 4, and 2 plus 2 equals 4.",
         ),
       ],
     );
   }
-  
+
   static SutraExample _getSutra16Example() {
     // Sutra 16: Gunakasamuchyah - Factors of sum
     return SutraExample(
@@ -967,7 +992,7 @@ class VedicSutraExamples {
       ],
     );
   }
-  
+
   static List<PracticeStep> _getSutra9PracticeSteps(String problem) {
     // Sutra 9: Calana-Kalanābhyām - Pattern and sequence problems
     try {
@@ -996,7 +1021,7 @@ class VedicSutraExamples {
     } catch (e) {
       print('Error parsing Sutra 9 practice: $e');
     }
-    
+
     return [
       PracticeStep(
         instruction: "Find the sum using pair method",
@@ -1006,7 +1031,7 @@ class VedicSutraExamples {
       ),
     ];
   }
-  
+
   static List<PracticeStep> _getSutra10PracticeSteps(String problem) {
     // Sutra 10: Yāvadūnam - Deficiency method
     try {
@@ -1014,14 +1039,14 @@ class VedicSutraExamples {
       if (parts.length == 2) {
         final num1 = int.parse(parts[0].trim());
         final num2 = int.parse(parts[1].trim());
-        
+
         final base = 100;
         final def1 = base - num1;
         final def2 = base - num2;
         final leftPart = num1 - def2;
         final rightPart = def1 * def2;
         final answer = leftPart * 100 + rightPart;
-        
+
         return [
           PracticeStep(
             instruction: "What is the base?",
@@ -1058,7 +1083,7 @@ class VedicSutraExamples {
     } catch (e) {
       print('Error parsing Sutra 10 practice: $e');
     }
-    
+
     return [
       PracticeStep(
         instruction: "Solve using deficiency method",
@@ -1068,7 +1093,7 @@ class VedicSutraExamples {
       ),
     ];
   }
-  
+
   static List<PracticeStep> _getSutra11PracticeSteps(String problem) {
     // Sutra 11: Vyastisamastih - Part and whole (FOIL)
     try {
@@ -1097,7 +1122,7 @@ class VedicSutraExamples {
     } catch (e) {
       print('Error parsing Sutra 11 practice: $e');
     }
-    
+
     return [
       PracticeStep(
         instruction: "Expand the expression using FOIL",
@@ -1107,7 +1132,7 @@ class VedicSutraExamples {
       ),
     ];
   }
-  
+
   static List<PracticeStep> _getSutra12PracticeSteps(String problem) {
     // Sutra 12: Śeṣanyankena Cāramena - Remainder method
     return [
@@ -1131,7 +1156,7 @@ class VedicSutraExamples {
       ),
     ];
   }
-  
+
   static List<PracticeStep> _getSutra13PracticeSteps(String problem) {
     // Sutra 13: Sopaantyadvayamantyam - Ultimate and penultimate
     try {
@@ -1139,15 +1164,15 @@ class VedicSutraExamples {
       if (parts.length == 2) {
         final num1 = int.parse(parts[0].trim());
         final num2 = int.parse(parts[1].trim());
-        
+
         final tens1 = num1 ~/ 10;
         final ones1 = num1 % 10;
         final ones2 = num2 % 10;
-        
+
         if (ones1 + ones2 == 10 && tens1 == num2 ~/ 10) {
           final leftPart = tens1 * (tens1 + 1);
           final rightPart = ones1 * ones2;
-          
+
           return [
             PracticeStep(
               instruction: "Check: Do last digits sum to 10? ($ones1 + $ones2)",
@@ -1179,7 +1204,7 @@ class VedicSutraExamples {
     } catch (e) {
       print('Error parsing Sutra 13 practice: $e');
     }
-    
+
     return [
       PracticeStep(
         instruction: "Solve using ultimate-penultimate pattern",
@@ -1189,7 +1214,7 @@ class VedicSutraExamples {
       ),
     ];
   }
-  
+
   static List<PracticeStep> _getSutra14PracticeSteps(String problem) {
     // Sutra 14: Ekanyūnena Pūrvena - One less pattern for fractions
     return [
@@ -1213,7 +1238,7 @@ class VedicSutraExamples {
       ),
     ];
   }
-  
+
   static List<PracticeStep> _getSutra15PracticeSteps(String problem) {
     // Sutra 15: Gunitasamuchyah - Product equals sum
     return [
@@ -1237,7 +1262,7 @@ class VedicSutraExamples {
       ),
     ];
   }
-  
+
   static List<PracticeStep> _getSutra16PracticeSteps(String problem) {
     // Sutra 16: Gunakasamuchyah - Factorization
     try {
@@ -1266,7 +1291,7 @@ class VedicSutraExamples {
     } catch (e) {
       print('Error parsing Sutra 16 practice: $e');
     }
-    
+
     return [
       PracticeStep(
         instruction: "Factor the expression",

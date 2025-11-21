@@ -19,7 +19,7 @@ class HomeBinding extends Bindings {
     if (!Get.isRegistered<AuthService>()) {
       Get.lazyPut<AuthService>(() => AuthService(Get.find()));
     }
-    
+
     Get.lazyPut<HomeController>(() => HomeController());
   }
 }

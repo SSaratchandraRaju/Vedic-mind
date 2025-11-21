@@ -6,19 +6,22 @@ import 'package:get/get.dart';
 class FirebaseAuthService extends GetxService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  
+
   // Current user stream
   Stream<User?> get authStateChanges => _auth.authStateChanges();
-  
+
   // Current user
   User? get currentUser => _auth.currentUser;
-  
+
   // Phone verification ID
   String? _verificationId;
   String? get verificationId => _verificationId;
 
   // Sign in with Email and Password
-  Future<UserCredential?> signInWithEmailPassword(String email, String password) async {
+  Future<UserCredential?> signInWithEmailPassword(
+    String email,
+    String password,
+  ) async {
     try {
       final credential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -32,7 +35,10 @@ class FirebaseAuthService extends GetxService {
   }
 
   // Sign up with Email and Password
-  Future<UserCredential?> signUpWithEmailPassword(String email, String password) async {
+  Future<UserCredential?> signUpWithEmailPassword(
+    String email,
+    String password,
+  ) async {
     try {
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -50,14 +56,15 @@ class FirebaseAuthService extends GetxService {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      
+
       if (googleUser == null) {
         // User canceled the sign-in
         return null;
       }
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
@@ -149,10 +156,7 @@ class FirebaseAuthService extends GetxService {
   // Sign Out
   Future<void> signOut() async {
     try {
-      await Future.wait([
-        _auth.signOut(),
-        _googleSignIn.signOut(),
-      ]);
+      await Future.wait([_auth.signOut(), _googleSignIn.signOut()]);
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -206,7 +210,7 @@ class FirebaseAuthService extends GetxService {
       default:
         message = e.message ?? 'An error occurred. Please try again.';
     }
-    
+
     Get.snackbar(
       'Error',
       message,

@@ -3,7 +3,8 @@
 
 const vedicCourseData = {
   "course_title": "Master Vedic Mathematics: Multiply & Divide in Seconds",
-  "description": "Learn ancient Indian techniques to perform lightning-fast mental calculations. Master any multiplication and division up to 100×100 within seconds using proven Vedic sutras.",
+  "description":
+      "Learn ancient Indian techniques to perform lightning-fast mental calculations. Master any multiplication and division up to 100×100 within seconds using proven Vedic sutras.",
   "total_chapters": 9,
   "estimated_duration": "30 days",
   "difficulty": "Beginner to Advanced",
@@ -11,14 +12,16 @@ const vedicCourseData = {
     {
       "chapter_id": 1,
       "chapter_title": "Introduction to Vedic Maths",
-      "chapter_description": "Understanding the foundations of Vedic Mathematics and why it's faster than conventional methods",
+      "chapter_description":
+          "Understanding the foundations of Vedic Mathematics and why it's faster than conventional methods",
       "icon": "school",
       "color": "0xFF5B7FFF",
       "lessons": [
         {
           "lesson_id": 101,
           "lesson_title": "Why Vedic Maths is Faster",
-          "objective": "Understand the philosophy and advantages of Vedic Mathematics over traditional calculation methods",
+          "objective":
+              "Understand the philosophy and advantages of Vedic Mathematics over traditional calculation methods",
           "duration_minutes": 10,
           "content": """Welcome to the world of Vedic Mathematics!
 
@@ -34,37 +37,55 @@ How it Works:
 Instead of following rigid steps, Vedic methods use patterns and shortcuts that align with how our brain naturally thinks. You'll learn to see numbers differently and recognize patterns instantly.""",
           "examples": [
             {
-              "problem": "Square of 25",
-              "traditional": "25 × 25 = (20×25) + (5×25) = 500 + 125 = 625",
-              "vedic": "For numbers ending in 5: (2 × 3) | 25 = 6|25 = 625",
-              "explanation": "For any number ending in 5, multiply the first digit by the next number, then append 25"
+              "problem": "Compare calculation speeds: 25 × 25",
+              "step1":
+                  "Traditional method requires: (20 × 25) + (5 × 25) = multiple steps",
+              "step2":
+                  "Vedic method: For numbers ending in 5, take the first digit (2)",
+              "step3": "Multiply by next number: 2 × 3 = 6",
+              "step4": "Append 25 to the result",
+              "solution": "625",
+              "explanation":
+                  "Vedic method is 5x faster! Just multiply first digit by next number, then add 25 at the end.",
             },
             {
-              "problem": "98 × 102",
-              "traditional": "Long multiplication requiring multiple steps",
-              "vedic": "Both near 100: (98-2)|(−2×2) = 9996",
-              "explanation": "When numbers are near a base (100), use the base method for instant results"
-            }
+              "problem": "Calculate 98 × 102 using Vedic method",
+              "step1": "Both numbers are near base 100",
+              "step2": "Find distances from 100: 98 is -2, 102 is +2",
+              "step3": "Cross-subtract: 98 + 2 = 100 OR 102 - 2 = 100",
+              "step4":
+                  "Multiply the distances: (-2) × (+2) = -4, add 10000: 9996",
+              "solution": "9996",
+              "explanation":
+                  "Using the base method for numbers near 100 gives instant results without long multiplication!",
+            },
           ],
           "practice": [
             {
               "question": "What is the main advantage of Vedic Maths?",
               "type": "multiple_choice",
-              "options": ["It's older", "It's faster and mental", "It uses more steps", "It requires a calculator"],
-              "answer": "It's faster and mental"
+              "options": [
+                "It's older",
+                "It's faster and mental",
+                "It uses more steps",
+                "It requires a calculator",
+              ],
+              "answer": "It's faster and mental",
             },
             {
               "question": "Vedic Maths uses _____ and patterns",
               "type": "fill_blank",
-              "answer": "shortcuts"
-            }
+              "answer": "shortcuts",
+            },
           ],
-          "summary": "Vedic Mathematics offers faster, mental calculation methods using ancient techniques. It makes math fun, builds confidence, and allows you to solve complex problems in seconds."
+          "summary":
+              "Vedic Mathematics offers faster, mental calculation methods using ancient techniques. It makes math fun, builds confidence, and allows you to solve complex problems in seconds.",
         },
         {
           "lesson_id": 102,
           "lesson_title": "The Concept of Number Bases",
-          "objective": "Master the fundamental concept of base numbers (10, 50, 100) which is essential for Vedic techniques",
+          "objective":
+              "Master the fundamental concept of base numbers (10, 50, 100) which is essential for Vedic techniques",
           "duration_minutes": 15,
           "content": """Understanding bases is the key to unlocking Vedic speed!
 
@@ -86,44 +107,66 @@ Why This Matters:
 Once you know the distance from base, you can use special formulas to multiply or divide instantly!""",
           "examples": [
             {
-              "problem": "Find distance from base 100",
-              "numbers": "97, 103, 95, 108",
-              "solution": "97 → −3, 103 → +3, 95 → −5, 108 → +8",
-              "explanation": "Subtract 100 from each number. Negative means below base, positive means above."
+              "problem": "Find distance of 97 from base 100",
+              "step1":
+                  "Identify the nearest base: 100 (since 97 is close to 100)",
+              "step2": "Calculate: 97 - 100 = -3",
+              "step3": "The negative sign means 97 is BELOW the base",
+              "step4": "Result: Distance is -3",
+              "solution": "-3",
+              "explanation":
+                  "97 is 3 units below 100, so the distance is -3. This negative distance will be used in Vedic formulas.",
             },
             {
-              "problem": "Find distance from base 10",
-              "numbers": "8, 12, 7, 15",
-              "solution": "8 → −2, 12 → +2, 7 → −3, 15 → +5",
-              "explanation": "Subtract 10 from each number to get the distance."
-            }
+              "problem": "Find distance of 108 from base 100",
+              "step1": "Identify the nearest base: 100",
+              "step2": "Calculate: 108 - 100 = +8",
+              "step3": "The positive sign means 108 is ABOVE the base",
+              "step4": "Result: Distance is +8",
+              "solution": "+8",
+              "explanation":
+                  "108 is 8 units above 100, so the distance is +8. Positive means above the base.",
+            },
+            {
+              "problem": "Find distance of 13 from base 10",
+              "step1": "For numbers 5-15, use base 10",
+              "step2": "Calculate: 13 - 10 = +3",
+              "step3": "13 is above the base by 3 units",
+              "step4": "Distance is +3",
+              "solution": "+3",
+              "explanation":
+                  "13 is 3 more than 10, so distance is +3. This will make multiplication near 10 very easy!",
+            },
           ],
           "practice": [
             {
               "question": "What is the distance of 96 from base 100?",
               "type": "input",
-              "answer": "-4"
+              "answer": "-4",
             },
             {
               "question": "What is the distance of 13 from base 10?",
               "type": "input",
-              "answer": "3"
+              "answer": "3",
             },
             {
               "question": "Which base is best for calculating 92 × 98?",
               "type": "multiple_choice",
               "options": ["10", "50", "100"],
-              "answer": "100"
-            }
+              "answer": "100",
+            },
           ],
-          "summary": "Bases (10, 50, 100) are reference points for fast calculation. The distance from base determines how we apply Vedic formulas. Master this concept—it's used in almost every technique!"
+          "summary":
+              "Bases (10, 50, 100) are reference points for fast calculation. The distance from base determines how we apply Vedic formulas. Master this concept—it's used in almost every technique!",
         },
         {
           "lesson_id": 103,
           "lesson_title": "Mental Preparation Techniques",
-          "objective": "Develop mental visualization and focus skills essential for performing calculations in your head",
+          "objective":
+              "Develop mental visualization and focus skills essential for performing calculations in your head",
           "duration_minutes": 12,
-          "content": """Speed calculation requires mental clarity and visualization!
+          "content":
+              """Speed calculation requires mental clarity and visualization!
 
 Mental Screen Technique:
 Imagine a blank screen in your mind where numbers appear. Practice seeing numbers clearly in your imagination.
@@ -144,47 +187,77 @@ Practice Tips:
 • Visualize the steps before solving""",
           "examples": [
             {
-              "exercise": "Visualization Practice",
-              "steps": [
-                "Close your eyes",
-                "Visualize the number 25",
-                "See it multiply by 2 to become 50",
-                "See 50 multiply by 2 to become 100",
-                "Open your eyes"
-              ],
-              "explanation": "This builds your mental calculation muscle"
-            }
+              "problem": "Visualize and calculate: 25 × 4",
+              "step1":
+                  "Close your eyes and see the number 25 on your mental screen",
+              "step2": "Notice that 25 = 100 ÷ 4, so 25 × 4 must equal 100",
+              "step3": "Visualize: 25 + 25 = 50, then 50 + 50 = 100",
+              "step4": "Open your eyes with confidence in the answer",
+              "solution": "100",
+              "explanation":
+                  "Mental visualization makes complex calculations feel simple and natural!",
+            },
+            {
+              "problem": "Focus exercise: Calculate 8 × 9 mentally",
+              "step1": "Take a deep breath and clear distractions",
+              "step2": "Visualize 8 and 9 on your mental screen",
+              "step3": "See the pattern: 8 × 9 = (8 × 10) - 8 = 80 - 8",
+              "step4": "Visualize: 80 - 8 = 72",
+              "solution": "72",
+              "explanation":
+                  "Focus and pattern recognition make mental math effortless!",
+            },
+            {
+              "problem": "Mental screen practice: Double 17 three times",
+              "step1": "See 17 clearly in your mind",
+              "step2":
+                  "First doubling: 17 × 2 = 34 (visualize 34 replacing 17)",
+              "step3": "Second doubling: 34 × 2 = 68 (see 68 on your screen)",
+              "step4": "Third doubling: 68 × 2 = 136 (final answer appears)",
+              "solution": "136",
+              "explanation":
+                  "Step-by-step visualization builds your mental calculation muscle!",
+            },
           ],
           "practice": [
             {
               "question": "Mental visualization helps in:",
               "type": "multiple_choice",
-              "options": ["Writing faster", "Seeing numbers mentally", "Reading books", "Drawing"],
-              "answer": "Seeing numbers mentally"
+              "options": [
+                "Writing faster",
+                "Seeing numbers mentally",
+                "Reading books",
+                "Drawing",
+              ],
+              "answer": "Seeing numbers mentally",
             },
             {
               "question": "Before solving mentally, you should _____ your mind",
               "type": "fill_blank",
-              "answer": "clear"
-            }
+              "answer": "clear",
+            },
           ],
-          "summary": "Mental preparation is crucial for Vedic Maths. Practice visualization, stay relaxed, and trust the process. Your mental calculation speed will improve with daily practice."
-        }
-      ]
+          "summary":
+              "Mental preparation is crucial for Vedic Maths. Practice visualization, stay relaxed, and trust the process. Your mental calculation speed will improve with daily practice.",
+        },
+      ],
     },
     {
       "chapter_id": 2,
       "chapter_title": "Foundations of Speed Calculation",
-      "chapter_description": "Master the building blocks: complements, doubling, halving, and base arithmetic",
+      "chapter_description":
+          "Master the building blocks: complements, doubling, halving, and base arithmetic",
       "icon": "speed",
       "color": "0xFFFFA726",
       "lessons": [
         {
           "lesson_id": 201,
           "lesson_title": "Complement Numbers",
-          "objective": "Learn to find complements instantly - the foundation of Nikhilam Sutra",
+          "objective":
+              "Learn to find complements instantly - the foundation of Nikhilam Sutra",
           "duration_minutes": 15,
-          "content": """Complements are the key to lightning-fast subtraction from base numbers!
+          "content":
+              """Complements are the key to lightning-fast subtraction from base numbers!
 
 What is a Complement?
 A complement is what you add to a number to reach the base. It's the "missing piece."
@@ -211,51 +284,74 @@ This is THE fundamental technique used everywhere in Vedic Maths!""",
           "examples": [
             {
               "problem": "Find complement of 68 from 100",
-              "solution": "6 → (9-6)=3, 8 → (10-8)=2, Answer: 32",
-              "verification": "68 + 32 = 100 ✓"
+              "step1": "Apply rule: All from 9, last from 10",
+              "step2": "First digit: 9 - 6 = 3",
+              "step3": "Last digit: 10 - 8 = 2",
+              "step4": "Combine the results",
+              "solution": "32",
+              "explanation":
+                  "Verification: 68 + 32 = 100 ✓ This technique works instantly for any number!",
             },
             {
               "problem": "Find complement of 234 from 1000",
-              "solution": "2→7, 3→6, 4→6, Answer: 766",
-              "verification": "234 + 766 = 1000 ✓"
+              "step1": "All from 9, last from 10 rule for three digits",
+              "step2": "First digit: 9 - 2 = 7",
+              "step3": "Second digit: 9 - 3 = 6",
+              "step4": "Last digit: 10 - 4 = 6",
+              "solution": "766",
+              "explanation":
+                  "Verification: 234 + 766 = 1000 ✓ Works for any number of digits!",
             },
             {
               "problem": "Find complement of 8 from 10",
-              "solution": "10 - 8 = 2",
-              "verification": "8 + 2 = 10 ✓"
-            }
+              "step1": "For single digit from base 10, just subtract",
+              "step2": "Calculate: 10 - 8 = 2",
+              "step3": "No other steps needed",
+              "step4": "Answer is ready",
+              "solution": "2",
+              "explanation":
+                  "Verification: 8 + 2 = 10 ✓ Single digits are the easiest!",
+            },
           ],
           "practice": [
             {
               "question": "Complement of 45 from 100?",
               "type": "input",
-              "answer": "55"
+              "answer": "55",
             },
             {
               "question": "Complement of 83 from 100?",
               "type": "input",
-              "answer": "17"
+              "answer": "17",
             },
             {
               "question": "Complement of 156 from 1000?",
               "type": "input",
-              "answer": "844"
+              "answer": "844",
             },
             {
               "question": "For finding complement from 100, we use:",
               "type": "multiple_choice",
-              "options": ["All from 10", "All from 9 and last from 10", "Subtract from 50", "Divide by 2"],
-              "answer": "All from 9 and last from 10"
-            }
+              "options": [
+                "All from 10",
+                "All from 9 and last from 10",
+                "Subtract from 50",
+                "Divide by 2",
+              ],
+              "answer": "All from 9 and last from 10",
+            },
           ],
-          "summary": "Complements are found using 'All from 9 and last from 10' rule. Master this—it's used in most Vedic techniques! Practice until you can find complements instantly."
+          "summary":
+              "Complements are found using 'All from 9 and last from 10' rule. Master this—it's used in most Vedic techniques! Practice until you can find complements instantly.",
         },
         {
           "lesson_id": 202,
           "lesson_title": "Base Differences",
-          "objective": "Calculate the difference between a number and its base in under 2 seconds",
+          "objective":
+              "Calculate the difference between a number and its base in under 2 seconds",
           "duration_minutes": 12,
-          "content": """Base differences are shortcuts for measuring how far numbers are from reference points!
+          "content":
+              """Base differences are shortcuts for measuring how far numbers are from reference points!
 
 What is a Base Difference?
 The distance (positive or negative) from a round number like 10, 50, or 100.
@@ -280,50 +376,68 @@ Base differences are used directly in the Nikhilam multiplication formula!""",
           "examples": [
             {
               "problem": "Find base difference of 89 from 100",
-              "solution": "89 − 100 = −11",
-              "explanation": "89 is 11 below 100"
+              "step1": "Write the calculation: 89 − 100",
+              "step2": "Subtract: 89 − 100 = −11",
+              "step3": "The negative sign means 89 is BELOW base 100",
+              "step4": "Distance is 11 units below",
+              "solution": "-11",
+              "explanation":
+                  "89 is 11 below 100. This negative distance will be used in Nikhilam multiplication!",
             },
             {
               "problem": "Find base difference of 112 from 100",
-              "solution": "112 − 100 = +12",
-              "explanation": "112 is 12 above 100"
+              "step1": "Write the calculation: 112 − 100",
+              "step2": "Subtract: 112 − 100 = +12",
+              "step3": "The positive sign means 112 is ABOVE base 100",
+              "step4": "Distance is 12 units above",
+              "solution": "+12",
+              "explanation":
+                  "112 is 12 above 100. Positive distances make cross-addition easy!",
             },
             {
               "problem": "Find base difference of 7 from 10",
-              "solution": "7 − 10 = −3",
-              "explanation": "7 is 3 below 10"
-            }
+              "step1": "Write: 7 − 10",
+              "step2": "Calculate: 7 − 10 = −3",
+              "step3": "7 is below the base by 3",
+              "step4": "Mark as negative",
+              "solution": "-3",
+              "explanation":
+                  "7 is 3 below 10. This technique works for any base!",
+            },
           ],
           "practice": [
             {
               "question": "Base difference of 96 from 100?",
               "type": "input",
-              "answer": "-4"
+              "answer": "-4",
             },
             {
               "question": "Base difference of 105 from 100?",
               "type": "input",
-              "answer": "5"
+              "answer": "5",
             },
             {
               "question": "Base difference of 48 from 50?",
               "type": "input",
-              "answer": "-2"
+              "answer": "-2",
             },
             {
               "question": "Base difference of 9 from 10?",
               "type": "input",
-              "answer": "-1"
-            }
+              "answer": "-1",
+            },
           ],
-          "summary": "Base difference = Number − Base. Negative means below, positive means above. This simple concept unlocks powerful multiplication techniques!"
+          "summary":
+              "Base difference = Number − Base. Negative means below, positive means above. This simple concept unlocks powerful multiplication techniques!",
         },
         {
           "lesson_id": 203,
           "lesson_title": "Doubling & Halving Tricks",
-          "objective": "Master instant doubling and halving for any 2-digit number",
+          "objective":
+              "Master instant doubling and halving for any 2-digit number",
           "duration_minutes": 15,
-          "content": """Doubling and halving are fundamental skills that make complex calculations simple!
+          "content":
+              """Doubling and halving are fundamental skills that make complex calculations simple!
 
 Doubling Technique:
 
@@ -362,58 +476,72 @@ To multiply by 8: Double thrice
 To divide by 4: Halve twice""",
           "examples": [
             {
-              "problem": "Double 43",
-              "solution": "40×2=80, 3×2=6, Answer: 86",
-              "verification": "43 × 2 = 86 ✓"
+              "problem": "Double 43 mentally",
+              "step1": "Split the number: 43 = 40 + 3",
+              "step2": "Double each part: 40 × 2 = 80",
+              "step3": "Double the ones: 3 × 2 = 6",
+              "step4": "Add the results: 80 + 6 = 86",
+              "solution": "86",
+              "explanation":
+                  "Verification: 43 × 2 = 86 ✓ Split-and-double makes it effortless!",
             },
             {
               "problem": "Halve 94",
-              "solution": "90÷2=45, 4÷2=2, Answer: 47",
-              "verification": "94 ÷ 2 = 47 ✓"
+              "step1": "Split: 94 = 90 + 4",
+              "step2": "Halve the tens: 90 ÷ 2 = 45",
+              "step3": "Halve the ones: 4 ÷ 2 = 2",
+              "step4": "Combine: 45 + 2 = 47",
+              "solution": "47",
+              "explanation":
+                  "Verification: 94 ÷ 2 = 47 ✓ Works for any even number!",
             },
             {
-              "problem": "Multiply 17 by 4",
-              "solution": "17×2=34, 34×2=68",
-              "explanation": "Double twice for ×4"
+              "problem": "Multiply 17 by 4 using double-double",
+              "step1": "To multiply by 4, double twice",
+              "step2": "First doubling: 17 × 2 = 34",
+              "step3": "Second doubling: 34 × 2 = 68",
+              "step4": "Done in 2 steps!",
+              "solution": "68",
+              "explanation": "Double-double strategy: Perfect for ×4, ×8, ×16!",
             },
             {
-              "problem": "Divide 200 by 4",
-              "solution": "200÷2=100, 100÷2=50",
-              "explanation": "Halve twice for ÷4"
-            }
+              "problem": "Divide 200 by 4 using halve-halve",
+              "step1": "To divide by 4, halve twice",
+              "step2": "First halving: 200 ÷ 2 = 100",
+              "step3": "Second halving: 100 ÷ 2 = 50",
+              "step4": "Answer found!",
+              "solution": "50",
+              "explanation":
+                  "Halve-halve strategy makes division by 4, 8, 16 super easy!",
+            },
           ],
           "practice": [
-            {
-              "question": "Double 56",
-              "type": "input",
-              "answer": "112"
-            },
-            {
-              "question": "Halve 78",
-              "type": "input",
-              "answer": "39"
-            },
+            {"question": "Double 56", "type": "input", "answer": "112"},
+            {"question": "Halve 78", "type": "input", "answer": "39"},
             {
               "question": "What is 23 × 4?",
               "type": "input",
               "answer": "92",
-              "hint": "Double twice"
+              "hint": "Double twice",
             },
             {
               "question": "What is 160 ÷ 4?",
               "type": "input",
               "answer": "40",
-              "hint": "Halve twice"
-            }
+              "hint": "Halve twice",
+            },
           ],
-          "summary": "Doubling and halving are essential mental math skills. Double twice for ×4, double thrice for ×8. Halve twice for ÷4. Practice until automatic!"
+          "summary":
+              "Doubling and halving are essential mental math skills. Double twice for ×4, double thrice for ×8. Halve twice for ÷4. Practice until automatic!",
         },
         {
           "lesson_id": 204,
           "lesson_title": "Single-Digit Speed Practice",
-          "objective": "Achieve instant recall of all single-digit multiplication (1-10 tables)",
+          "objective":
+              "Achieve instant recall of all single-digit multiplication (1-10 tables)",
           "duration_minutes": 20,
-          "content": """Before mastering 2-digit calculations, you must be lightning-fast with single digits!
+          "content":
+              """Before mastering 2-digit calculations, you must be lightning-fast with single digits!
 
 Target Speed:
 Any single-digit multiplication in under 1 second
@@ -446,68 +574,72 @@ Memorize these—they're used constantly!""",
             {
               "problem": "Quick calculation of 9 × 7",
               "method": "10×7 − 7 = 70 − 7 = 63",
-              "explanation": "For ×9, multiply by 10 and subtract the number"
+              "explanation": "For ×9, multiply by 10 and subtract the number",
             },
             {
               "problem": "Quick calculation of 6 × 5",
               "method": "6÷2 = 3, add 0 = 30",
-              "explanation": "Even × 5 trick"
+              "explanation": "Even × 5 trick",
             },
             {
               "problem": "Quick calculation of 8²",
               "method": "Direct recall: 64",
-              "explanation": "Memorized square"
-            }
+              "explanation": "Memorized square",
+            },
           ],
           "practice": [
             {
               "question": "7 × 8 = ?",
               "type": "input",
               "answer": "56",
-              "time_limit": 3
+              "time_limit": 3,
             },
             {
               "question": "9 × 6 = ?",
               "type": "input",
               "answer": "54",
-              "time_limit": 3
+              "time_limit": 3,
             },
             {
               "question": "7² = ?",
               "type": "input",
               "answer": "49",
-              "time_limit": 2
+              "time_limit": 2,
             },
             {
               "question": "6 × 5 = ?",
               "type": "input",
               "answer": "30",
-              "time_limit": 2
+              "time_limit": 2,
             },
             {
               "question": "What is 10² ?",
               "type": "input",
               "answer": "100",
-              "time_limit": 2
-            }
+              "time_limit": 2,
+            },
           ],
-          "summary": "Master single-digit multiplication to perfection. Use tricks for 5, 9, and 11. Memorize squares 1-10. This foundation makes everything else easier!"
-        }
-      ]
+          "summary":
+              "Master single-digit multiplication to perfection. Use tricks for 5, 9, and 11. Memorize squares 1-10. This foundation makes everything else easier!",
+        },
+      ],
     },
     {
       "chapter_id": 3,
       "chapter_title": "Nikhilam Sutra – Multiplication Near Bases",
-      "chapter_description": "Multiply numbers near 10, 50, or 100 in seconds using the powerful Nikhilam technique",
+      "chapter_description":
+          "Multiply numbers near 10, 50, or 100 in seconds using the powerful Nikhilam technique",
       "icon": "functions",
       "color": "0xFF10B981",
       "lessons": [
         {
           "lesson_id": 301,
           "lesson_title": "Numbers Near Base 10",
-          "objective": "Multiply any two numbers close to 10 (7-13) in under 5 seconds",
+          "objective":
+              "Multiply any two numbers close to 10 (7-13) in under 5 seconds",
           "duration_minutes": 20,
-          "content": """The Nikhilam Sutra is your first superpower! It makes multiplication near bases incredibly easy.
+          "content":
+              """The Nikhilam Sutra is your first superpower! It makes multiplication near bases incredibly easy.
 
 Formula for Numbers Near 10:
 When multiplying numbers close to 10, use this pattern:
@@ -544,67 +676,65 @@ The Magic:
 This works because of algebraic properties. But you don't need to know why—just use it!""",
           "examples": [
             {
-              "problem": "7 × 9",
-              "step1": "Differences: −3, −1",
-              "step2": "Cross-add: 7+(−1)=6",
-              "step3": "Multiply: (−3)×(−1)=3",
-              "answer": "63",
-              "verification": "7 × 9 = 63 ✓"
+              "problem": "Calculate 7 × 9 using Nikhilam method",
+              "step1": "Find differences from base 10: 7 → −3, 9 → −1",
+              "step2":
+                  "Cross-add (either way gives same result): 7 + (−1) = 6 OR 9 + (−3) = 6",
+              "step3": "Multiply the differences: (−3) × (−1) = 3",
+              "step4": "Combine: Left part is 6, right part is 3",
+              "solution": "63",
+              "explanation":
+                  "Verification: 7 × 9 = 63 ✓ This method is 3x faster than traditional multiplication!",
             },
             {
-              "problem": "11 × 12",
-              "step1": "Differences: +1, +2",
-              "step2": "Cross-add: 11+2=13",
-              "step3": "Multiply: 1×2=2",
-              "answer": "132",
-              "verification": "11 × 12 = 132 ✓"
+              "problem": "Calculate 11 × 12 using Nikhilam method",
+              "step1": "Find differences from base 10: 11 → +1, 12 → +2",
+              "step2": "Cross-add: 11 + 2 = 13 OR 12 + 1 = 13",
+              "step3": "Multiply differences: 1 × 2 = 2",
+              "step4": "Combine: 13 | 2 = 132",
+              "solution": "132",
+              "explanation":
+                  "Verification: 11 × 12 = 132 ✓ Works for numbers above base too!",
             },
             {
-              "problem": "8 × 7",
-              "step1": "Differences: −2, −3",
-              "step2": "Cross-add: 8+(−3)=5",
-              "step3": "Multiply: (−2)×(−3)=6",
-              "answer": "56",
-              "verification": "8 × 7 = 56 ✓"
-            }
+              "problem": "Calculate 8 × 7 using Nikhilam method",
+              "step1": "Differences from 10: 8 → −2, 7 → −3",
+              "step2": "Cross-subtract: 8 + (−3) = 5 OR 7 + (−2) = 5",
+              "step3": "Multiply differences: (−2) × (−3) = 6",
+              "step4": "Combine: 5 | 6 = 56",
+              "solution": "56",
+              "explanation":
+                  "Verification: 8 × 7 = 56 ✓ Instant mental calculation!",
+            },
           ],
           "practice": [
             {
               "question": "9 × 7 = ?",
               "type": "input",
               "answer": "63",
-              "hint": "Differences: −1, −3"
+              "hint": "Differences: −1, −3",
             },
             {
               "question": "11 × 9 = ?",
               "type": "input",
               "answer": "99",
-              "hint": "Differences: +1, −1"
+              "hint": "Differences: +1, −1",
             },
-            {
-              "question": "12 × 11 = ?",
-              "type": "input",
-              "answer": "132"
-            },
-            {
-              "question": "8 × 8 = ?",
-              "type": "input",
-              "answer": "64"
-            },
-            {
-              "question": "13 × 12 = ?",
-              "type": "input",
-              "answer": "156"
-            }
+            {"question": "12 × 11 = ?", "type": "input", "answer": "132"},
+            {"question": "8 × 8 = ?", "type": "input", "answer": "64"},
+            {"question": "13 × 12 = ?", "type": "input", "answer": "156"},
           ],
-          "summary": "Nikhilam for base 10: (1) Find differences (2) Cross-add (3) Multiply differences (4) Combine. Master this pattern—it's the same for all bases!"
+          "summary":
+              "Nikhilam for base 10: (1) Find differences (2) Cross-add (3) Multiply differences (4) Combine. Master this pattern—it's the same for all bases!",
         },
         {
           "lesson_id": 302,
           "lesson_title": "Numbers Near Base 100",
-          "objective": "Multiply 2-digit numbers near 100 (90-110) mentally in seconds",
+          "objective":
+              "Multiply 2-digit numbers near 100 (90-110) mentally in seconds",
           "duration_minutes": 25,
-          "content": """Now we scale up the Nikhilam Sutra to base 100—this is where it gets powerful!
+          "content":
+              """Now we scale up the Nikhilam Sutra to base 100—this is where it gets powerful!
 
 Formula Structure:
 Same as base 10, but now we work with 2-digit differences
@@ -653,7 +783,7 @@ Answer: 9996""",
               "step3": "Multiply: (−4)×(−6) = 24",
               "step4": "Combine: 90|24",
               "answer": "9024",
-              "verification": "96 × 94 = 9024 ✓"
+              "verification": "96 × 94 = 9024 ✓",
             },
             {
               "problem": "105 × 103",
@@ -662,7 +792,7 @@ Answer: 9996""",
               "step3": "Multiply: 5×3 = 15",
               "step4": "Combine: 108|15",
               "answer": "10815",
-              "verification": "105 × 103 = 10815 ✓"
+              "verification": "105 × 103 = 10815 ✓",
             },
             {
               "problem": "99 × 99",
@@ -671,45 +801,32 @@ Answer: 9996""",
               "step3": "Multiply: (−1)×(−1) = 01",
               "step4": "Combine: 98|01",
               "answer": "9801",
-              "verification": "99 × 99 = 9801 ✓"
-            }
+              "verification": "99 × 99 = 9801 ✓",
+            },
           ],
           "practice": [
             {
               "question": "97 × 96 = ?",
               "type": "input",
               "answer": "9312",
-              "hint": "Differences: −3, −4"
+              "hint": "Differences: −3, −4",
             },
-            {
-              "question": "102 × 101 = ?",
-              "type": "input",
-              "answer": "10302"
-            },
-            {
-              "question": "95 × 95 = ?",
-              "type": "input",
-              "answer": "9025"
-            },
-            {
-              "question": "104 × 105 = ?",
-              "type": "input",
-              "answer": "10920"
-            },
-            {
-              "question": "98 × 99 = ?",
-              "type": "input",
-              "answer": "9702"
-            }
+            {"question": "102 × 101 = ?", "type": "input", "answer": "10302"},
+            {"question": "95 × 95 = ?", "type": "input", "answer": "9025"},
+            {"question": "104 × 105 = ?", "type": "input", "answer": "10920"},
+            {"question": "98 × 99 = ?", "type": "input", "answer": "9702"},
           ],
-          "summary": "Nikhilam for base 100: Same 4 steps as base 10, but right part must be 2 digits. Watch for negative results—borrow from left. Practice daily!"
+          "summary":
+              "Nikhilam for base 100: Same 4 steps as base 10, but right part must be 2 digits. Watch for negative results—borrow from left. Practice daily!",
         },
         {
           "lesson_id": 303,
           "lesson_title": "Cross-Adjustment Method",
-          "objective": "Handle cases when the product of differences exceeds the base portion",
+          "objective":
+              "Handle cases when the product of differences exceeds the base portion",
           "duration_minutes": 18,
-          "content": """Sometimes the right part gets too big and we need to carry over!
+          "content":
+              """Sometimes the right part gets too big and we need to carry over!
 
 The Problem:
 What if the product of differences is more than 2 digits for base 100?
@@ -746,45 +863,41 @@ Does your answer make sense?
           "examples": [
             {
               "problem": "86 × 85",
-              "working": "Diff: −14, −15 | Cross: 86−15=71 | Multiply: 14×15=210",
+              "working":
+                  "Diff: −14, −15 | Cross: 86−15=71 | Multiply: 14×15=210",
               "adjustment": "210 → Carry 2, keep 10 → 71+2=73",
               "answer": "7310",
-              "verification": "86 × 85 = 7310 ✓"
+              "verification": "86 × 85 = 7310 ✓",
             },
             {
               "problem": "92 × 89",
               "working": "Diff: −8, −11 | Cross: 92−11=81 | Multiply: 8×11=88",
               "adjustment": "88 fits, no carry needed",
               "answer": "8188",
-              "verification": "92 × 89 = 8188 ✓"
-            }
+              "verification": "92 × 89 = 8188 ✓",
+            },
           ],
           "practice": [
             {
               "question": "87 × 86 = ?",
               "type": "input",
               "answer": "7482",
-              "hint": "Watch for carrying"
+              "hint": "Watch for carrying",
             },
-            {
-              "question": "91 × 88 = ?",
-              "type": "input",
-              "answer": "8008"
-            },
-            {
-              "question": "84 × 83 = ?",
-              "type": "input",
-              "answer": "6972"
-            }
+            {"question": "91 × 88 = ?", "type": "input", "answer": "8008"},
+            {"question": "84 × 83 = ?", "type": "input", "answer": "6972"},
           ],
-          "summary": "When right part exceeds 2 digits, carry to the left. Always verify your answer makes sense. This adjustment is automatic with practice!"
+          "summary":
+              "When right part exceeds 2 digits, carry to the left. Always verify your answer makes sense. This adjustment is automatic with practice!",
         },
         {
           "lesson_id": 304,
           "lesson_title": "Practice: 2-Digit × 2-Digit Speed Drills",
-          "objective": "Achieve consistent speed solving any multiplication near base 100 in under 10 seconds",
+          "objective":
+              "Achieve consistent speed solving any multiplication near base 100 in under 10 seconds",
           "duration_minutes": 30,
-          "content": """Time to build muscle memory! This lesson is pure practice.
+          "content":
+              """Time to build muscle memory! This lesson is pure practice.
 
 Practice Structure:
 
@@ -819,74 +932,78 @@ Daily Practice Goal:
             {
               "level": "Easy",
               "problems": ["97×98", "96×97", "99×98", "95×96"],
-              "answers": ["9506", "9312", "9702", "9120"]
+              "answers": ["9506", "9312", "9702", "9120"],
             },
             {
               "level": "Medium",
               "problems": ["92×94", "103×104", "91×89", "106×105"],
-              "answers": ["8648", "10712", "8099", "11130"]
+              "answers": ["8648", "10712", "8099", "11130"],
             },
             {
               "level": "Advanced",
               "problems": ["87×93", "108×96", "84×91", "112×98"],
-              "answers": ["8091", "10368", "7644", "10976"]
-            }
+              "answers": ["8091", "10368", "7644", "10976"],
+            },
           ],
           "practice": [
             {
               "question": "96 × 98 = ?",
               "type": "input",
               "answer": "9408",
-              "difficulty": "easy"
+              "difficulty": "easy",
             },
             {
               "question": "103 × 102 = ?",
               "type": "input",
               "answer": "10506",
-              "difficulty": "easy"
+              "difficulty": "easy",
             },
             {
               "question": "91 × 93 = ?",
               "type": "input",
               "answer": "8463",
-              "difficulty": "medium"
+              "difficulty": "medium",
             },
             {
               "question": "107 × 104 = ?",
               "type": "input",
               "answer": "11128",
-              "difficulty": "medium"
+              "difficulty": "medium",
             },
             {
               "question": "88 × 92 = ?",
               "type": "input",
               "answer": "8096",
-              "difficulty": "advanced"
+              "difficulty": "advanced",
             },
             {
               "question": "109 × 97 = ?",
               "type": "input",
               "answer": "10573",
-              "difficulty": "advanced"
-            }
+              "difficulty": "advanced",
+            },
           ],
-          "summary": "Practice is everything! Start slow and accurate, then build speed. Use Nikhilam for all multiplications near 100. Track your progress daily!"
-        }
-      ]
+          "summary":
+              "Practice is everything! Start slow and accurate, then build speed. Use Nikhilam for all multiplications near 100. Track your progress daily!",
+        },
+      ],
     },
     {
       "chapter_id": 4,
       "chapter_title": "Urdhva Tiryak – Vertical & Crosswise Multiplication",
-      "chapter_description": "The universal method that works for ANY multiplication, no matter the numbers",
+      "chapter_description":
+          "The universal method that works for ANY multiplication, no matter the numbers",
       "icon": "grid_on",
       "color": "0xFF8B5CF6",
       "lessons": [
         {
           "lesson_id": 401,
           "lesson_title": "Understanding the Method",
-          "objective": "Learn the Urdhva Tiryak pattern for systematic multiplication",
+          "objective":
+              "Learn the Urdhva Tiryak pattern for systematic multiplication",
           "duration_minutes": 25,
-          "content": """Urdhva Tiryak means "Vertically and Crosswise"—the most versatile Vedic method!
+          "content":
+              """Urdhva Tiryak means "Vertically and Crosswise"—the most versatile Vedic method!
 
 Why This Method is Special:
 • Works for ANY two numbers
@@ -941,7 +1058,7 @@ We're building columns of partial products, just like traditional multiplication
               "step2": "Tens: (3×1)+(2×2) = 3+4 = 7",
               "step3": "Hundreds: 3×2 = 6",
               "answer": "672",
-              "verification": "32 × 21 = 672 ✓"
+              "verification": "32 × 21 = 672 ✓",
             },
             {
               "problem": "14 × 13",
@@ -949,36 +1066,36 @@ We're building columns of partial products, just like traditional multiplication
               "step2": "Tens: (1×3)+(4×1)+1 = 3+4+1 = 8",
               "step3": "Hundreds: 1×1 = 1",
               "answer": "182",
-              "verification": "14 × 13 = 182 ✓"
-            }
+              "verification": "14 × 13 = 182 ✓",
+            },
           ],
           "practice": [
             {
               "question": "In 34 × 21, what is the ones place calculation?",
               "type": "input",
               "answer": "4",
-              "hint": "4 × 1"
+              "hint": "4 × 1",
             },
             {
-              "question": "In 34 × 21, what is the tens place calculation before carrying?",
+              "question":
+                  "In 34 × 21, what is the tens place calculation before carrying?",
               "type": "input",
               "answer": "10",
-              "hint": "(3×1) + (4×2)"
+              "hint": "(3×1) + (4×2)",
             },
-            {
-              "question": "21 × 32 = ?",
-              "type": "input",
-              "answer": "672"
-            }
+            {"question": "21 × 32 = ?", "type": "input", "answer": "672"},
           ],
-          "summary": "Urdhva Tiryak works right to left: (1) Ones: last digits (2) Tens: cross products (3) Hundreds: first digits. Handle carries as you go!"
+          "summary":
+              "Urdhva Tiryak works right to left: (1) Ones: last digits (2) Tens: cross products (3) Hundreds: first digits. Handle carries as you go!",
         },
         {
           "lesson_id": 402,
           "lesson_title": "Solving Any 2-Digit × 2-Digit",
-          "objective": "Master the technique for all 2-digit multiplications with confidence",
+          "objective":
+              "Master the technique for all 2-digit multiplications with confidence",
           "duration_minutes": 30,
-          "content": """Let's perfect the 2×2 digit pattern with comprehensive examples!
+          "content":
+              """Let's perfect the 2×2 digit pattern with comprehensive examples!
 
 Standard Process:
 
@@ -1031,7 +1148,7 @@ When numbers are far apart:
               "step2": "Tens: (5×8)+(6×7)+4 = 40+42+4 = 86 → 6, carry 8",
               "step3": "Hundreds: (5×7)+8 = 35+8 = 43",
               "answer": "4368",
-              "check": "≈ 60×80 = 4800 ✓"
+              "check": "≈ 60×80 = 4800 ✓",
             },
             {
               "problem": "34 × 56",
@@ -1039,7 +1156,7 @@ When numbers are far apart:
               "step2": "Tens: (3×6)+(4×5)+2 = 18+20+2 = 40 → 0, carry 4",
               "step3": "Hundreds: (3×5)+4 = 15+4 = 19",
               "answer": "1904",
-              "check": "≈ 30×60 = 1800 ✓"
+              "check": "≈ 30×60 = 1800 ✓",
             },
             {
               "problem": "89 × 76",
@@ -1047,44 +1164,27 @@ When numbers are far apart:
               "step2": "Tens: (8×6)+(9×7)+5 = 48+63+5 = 116 → 6, carry 11",
               "step3": "Hundreds: (8×7)+11 = 56+11 = 67",
               "answer": "6764",
-              "check": "≈ 90×80 = 7200 ✓"
-            }
+              "check": "≈ 90×80 = 7200 ✓",
+            },
           ],
           "practice": [
-            {
-              "question": "23 × 45 = ?",
-              "type": "input",
-              "answer": "1035"
-            },
-            {
-              "question": "67 × 89 = ?",
-              "type": "input",
-              "answer": "5963"
-            },
-            {
-              "question": "54 × 76 = ?",
-              "type": "input",
-              "answer": "4104"
-            },
-            {
-              "question": "81 × 92 = ?",
-              "type": "input",
-              "answer": "7452"
-            },
-            {
-              "question": "39 × 47 = ?",
-              "type": "input",
-              "answer": "1833"
-            }
+            {"question": "23 × 45 = ?", "type": "input", "answer": "1035"},
+            {"question": "67 × 89 = ?", "type": "input", "answer": "5963"},
+            {"question": "54 × 76 = ?", "type": "input", "answer": "4104"},
+            {"question": "81 × 92 = ?", "type": "input", "answer": "7452"},
+            {"question": "39 × 47 = ?", "type": "input", "answer": "1833"},
           ],
-          "summary": "Urdhva Tiryak: rightmost digits → cross products → leftmost digits. Handle carries carefully. Always verify with estimation. Practice makes perfect!"
+          "summary":
+              "Urdhva Tiryak: rightmost digits → cross products → leftmost digits. Handle carries carefully. Always verify with estimation. Practice makes perfect!",
         },
         {
           "lesson_id": 403,
           "lesson_title": "Speed Drills – Building Fluency",
-          "objective": "Solve any 2×2 multiplication in under 15 seconds mentally",
+          "objective":
+              "Solve any 2×2 multiplication in under 15 seconds mentally",
           "duration_minutes": 25,
-          "content": """Speed comes from pattern recognition and practice. Let's build that speed!
+          "content":
+              """Speed comes from pattern recognition and practice. Let's build that speed!
 
 Progressive Training:
 
@@ -1128,53 +1228,56 @@ Practice Environment:
             {
               "difficulty": "Easy",
               "problems": ["21×34", "32×43", "41×52", "22×33"],
-              "target_time": "10 seconds each"
+              "target_time": "10 seconds each",
             },
             {
               "difficulty": "Medium",
               "problems": ["47×58", "63×74", "56×67", "48×59"],
-              "target_time": "15 seconds each"
+              "target_time": "15 seconds each",
             },
             {
               "difficulty": "Hard",
               "problems": ["87×96", "78×89", "93×84", "76×98"],
-              "target_time": "20 seconds each"
-            }
+              "target_time": "20 seconds each",
+            },
           ],
           "practice": [
             {
               "question": "31 × 22 = ?",
               "type": "input",
               "answer": "682",
-              "time_limit": 15
+              "time_limit": 15,
             },
             {
               "question": "45 × 56 = ?",
               "type": "input",
               "answer": "2520",
-              "time_limit": 15
+              "time_limit": 15,
             },
             {
               "question": "67 × 78 = ?",
               "type": "input",
               "answer": "5226",
-              "time_limit": 20
+              "time_limit": 20,
             },
             {
               "question": "89 × 91 = ?",
               "type": "input",
               "answer": "8099",
-              "time_limit": 20
-            }
+              "time_limit": 20,
+            },
           ],
-          "summary": "Speed builds gradually over weeks. Start accurate, then fast. Practice daily. Trust the process. You WILL get faster!"
+          "summary":
+              "Speed builds gradually over weeks. Start accurate, then fast. Practice daily. Trust the process. You WILL get faster!",
         },
         {
           "lesson_id": 404,
           "lesson_title": "Large Number Mental Multiplication",
-          "objective": "Extend Urdhva Tiryak to 3-digit numbers and understand the scaling pattern",
+          "objective":
+              "Extend Urdhva Tiryak to 3-digit numbers and understand the scaling pattern",
           "duration_minutes": 20,
-          "content": """The beautiful thing about Urdhva Tiryak? It scales to ANY size!
+          "content":
+              """The beautiful thing about Urdhva Tiryak? It scales to ANY size!
 
 The Pattern Extends:
 
@@ -1219,39 +1322,44 @@ Mental calculation of 3×3 digits is advanced!
               "method": "234×50 + 234×6",
               "step1": "234 × 50 = 234 × 100 ÷ 2 = 11700",
               "step2": "234 × 6 = 1404 (Urdhva Tiryak)",
-              "answer": "13104"
-            }
+              "answer": "13104",
+            },
           ],
           "practice": [
             {
-              "question": "Understanding check: How many columns for 3-digit × 3-digit?",
+              "question":
+                  "Understanding check: How many columns for 3-digit × 3-digit?",
               "type": "input",
-              "answer": "5"
+              "answer": "5",
             },
             {
               "question": "Calculate: 234 × 5",
               "type": "input",
               "answer": "1170",
-              "hint": "Half of 234 × 10"
-            }
+              "hint": "Half of 234 × 10",
+            },
           ],
-          "summary": "Urdhva Tiryak scales to any size, but for practical mental math, master 2×2 first. Use hybrid approaches for larger numbers!"
-        }
-      ]
+          "summary":
+              "Urdhva Tiryak scales to any size, but for practical mental math, master 2×2 first. Use hybrid approaches for larger numbers!",
+        },
+      ],
     },
     {
       "chapter_id": 5,
       "chapter_title": "Squaring Techniques",
-      "chapter_description": "Master instant squaring of any 2-digit number using specialized Vedic methods",
+      "chapter_description":
+          "Master instant squaring of any 2-digit number using specialized Vedic methods",
       "icon": "crop_square",
       "color": "0xFFEC4899",
       "lessons": [
         {
           "lesson_id": 501,
           "lesson_title": "Numbers Ending in 5",
-          "objective": "Square any number ending in 5 in under 3 seconds using Ekadhikena Purvena",
+          "objective":
+              "Square any number ending in 5 in under 3 seconds using Ekadhikena Purvena",
           "duration_minutes": 15,
-          "content": """The easiest and most impressive Vedic trick: squaring numbers ending in 5!
+          "content":
+              """The easiest and most impressive Vedic trick: squaring numbers ending in 5!
 
 The Sutra: Ekadhikena Purvena
 Meaning: "By one more than the previous one"
@@ -1305,61 +1413,64 @@ Notice the pattern in the endings!""",
               "problem": "45²",
               "calculation": "4 × 5 = 20, append 25",
               "answer": "2025",
-              "verification": "45 × 45 = 2025 ✓"
+              "verification": "45 × 45 = 2025 ✓",
             },
             {
               "problem": "85²",
               "calculation": "8 × 9 = 72, append 25",
               "answer": "7225",
-              "verification": "85 × 85 = 7225 ✓"
+              "verification": "85 × 85 = 7225 ✓",
             },
             {
               "problem": "105²",
               "calculation": "10 × 11 = 110, append 25",
               "answer": "11025",
-              "verification": "105 × 105 = 11025 ✓"
-            }
+              "verification": "105 × 105 = 11025 ✓",
+            },
           ],
           "practice": [
             {
               "question": "15² = ?",
               "type": "input",
               "answer": "225",
-              "time_limit": 3
+              "time_limit": 3,
             },
             {
               "question": "55² = ?",
               "type": "input",
               "answer": "3025",
-              "time_limit": 3
+              "time_limit": 3,
             },
             {
               "question": "65² = ?",
               "type": "input",
               "answer": "4225",
-              "time_limit": 3
+              "time_limit": 3,
             },
             {
               "question": "115² = ?",
               "type": "input",
               "answer": "13225",
-              "time_limit": 5
+              "time_limit": 5,
             },
             {
               "question": "What comes after the | in 75²?",
               "type": "input",
               "answer": "25",
-              "hint": "Always the same!"
-            }
+              "hint": "Always the same!",
+            },
           ],
-          "summary": "For numbers ending in 5: n × (n+1), then append 25. This is the fastest squaring method. Memorize 15² through 95²!"
+          "summary":
+              "For numbers ending in 5: n × (n+1), then append 25. This is the fastest squaring method. Memorize 15² through 95²!",
         },
         {
           "lesson_id": 502,
           "lesson_title": "Numbers Near Base Values",
-          "objective": "Square numbers near 10, 50, or 100 using the Nikhilam-based approach",
+          "objective":
+              "Square numbers near 10, 50, or 100 using the Nikhilam-based approach",
           "duration_minutes": 20,
-          "content": """When a number is near a base, we can use modified Nikhilam for squaring!
+          "content":
+              """When a number is near a base, we can use modified Nikhilam for squaring!
 
 Formula for Squaring Near Base:
 n² = (n + difference) | (difference²)
@@ -1414,7 +1525,7 @@ Near 100:
               "step1": "96 + (−4) = 92",
               "step2": "(−4)² = 16",
               "answer": "9216",
-              "verification": "96 × 96 = 9216 ✓"
+              "verification": "96 × 96 = 9216 ✓",
             },
             {
               "problem": "104²",
@@ -1422,7 +1533,7 @@ Near 100:
               "step1": "104 + 4 = 108",
               "step2": "4² = 16",
               "answer": "10816",
-              "verification": "104 × 104 = 10816 ✓"
+              "verification": "104 × 104 = 10816 ✓",
             },
             {
               "problem": "9²",
@@ -1430,45 +1541,32 @@ Near 100:
               "step1": "9 + (−1) = 8",
               "step2": "1² = 1",
               "answer": "81",
-              "verification": "9 × 9 = 81 ✓"
-            }
+              "verification": "9 × 9 = 81 ✓",
+            },
           ],
           "practice": [
             {
               "question": "99² = ?",
               "type": "input",
               "answer": "9801",
-              "hint": "Difference from 100 is −1"
+              "hint": "Difference from 100 is −1",
             },
-            {
-              "question": "101² = ?",
-              "type": "input",
-              "answer": "10201"
-            },
-            {
-              "question": "97² = ?",
-              "type": "input",
-              "answer": "9409"
-            },
-            {
-              "question": "11² = ?",
-              "type": "input",
-              "answer": "121"
-            },
-            {
-              "question": "13² = ?",
-              "type": "input",
-              "answer": "169"
-            }
+            {"question": "101² = ?", "type": "input", "answer": "10201"},
+            {"question": "97² = ?", "type": "input", "answer": "9409"},
+            {"question": "11² = ?", "type": "input", "answer": "121"},
+            {"question": "13² = ?", "type": "input", "answer": "169"},
           ],
-          "summary": "Square numbers near bases: (1) Add difference to number (2) Square the difference (3) Combine with proper digits. Perfect for 90-110 range!"
+          "summary":
+              "Square numbers near bases: (1) Add difference to number (2) Square the difference (3) Combine with proper digits. Perfect for 90-110 range!",
         },
         {
           "lesson_id": 503,
           "lesson_title": "General 2-Digit Squaring",
-          "objective": "Square ANY 2-digit number mentally using the Duplex method",
+          "objective":
+              "Square ANY 2-digit number mentally using the Duplex method",
           "duration_minutes": 25,
-          "content": """For numbers not ending in 5 or near a base, use the Duplex method!
+          "content":
+              """For numbers not ending in 5 or near a base, use the Duplex method!
 
 The Duplex Formula:
 For AB²:
@@ -1527,58 +1625,40 @@ Best Strategy:
               "duplex": "3²|2(3×4)|4² = 9|24|16",
               "combine": "9|24|16 → 9|(24+1)|6 → 9|25|6 → 1156",
               "answer": "1156",
-              "verification": "34 × 34 = 1156 ✓"
+              "verification": "34 × 34 = 1156 ✓",
             },
             {
               "problem": "67²",
               "duplex": "6²|2(6×7)|7² = 36|84|49",
               "combine": "36|84|49 → 36|(84+4)|9 → 36|88|9 → 4489",
               "answer": "4489",
-              "verification": "67 × 67 = 4489 ✓"
+              "verification": "67 × 67 = 4489 ✓",
             },
             {
               "problem": "81²",
               "duplex": "8²|2(8×1)|1² = 64|16|1",
               "combine": "64|16|1 → (64+1)|6|1 → 6561",
               "answer": "6561",
-              "verification": "81 × 81 = 6561 ✓"
-            }
+              "verification": "81 × 81 = 6561 ✓",
+            },
           ],
           "practice": [
-            {
-              "question": "21² = ?",
-              "type": "input",
-              "answer": "441"
-            },
-            {
-              "question": "38² = ?",
-              "type": "input",
-              "answer": "1444"
-            },
-            {
-              "question": "52² = ?",
-              "type": "input",
-              "answer": "2704"
-            },
-            {
-              "question": "76² = ?",
-              "type": "input",
-              "answer": "5776"
-            },
-            {
-              "question": "89² = ?",
-              "type": "input",
-              "answer": "7921"
-            }
+            {"question": "21² = ?", "type": "input", "answer": "441"},
+            {"question": "38² = ?", "type": "input", "answer": "1444"},
+            {"question": "52² = ?", "type": "input", "answer": "2704"},
+            {"question": "76² = ?", "type": "input", "answer": "5776"},
+            {"question": "89² = ?", "type": "input", "answer": "7921"},
           ],
-          "summary": "Duplex method: A² | 2(A×B) | B². Handle carries carefully. Choose the easiest method based on the number. Practice all squares 11-99!"
-        }
-      ]
+          "summary":
+              "Duplex method: A² | 2(A×B) | B². Handle carries carefully. Choose the easiest method based on the number. Practice all squares 11-99!",
+        },
+      ],
     },
     {
       "chapter_id": 6,
       "chapter_title": "Fast Division Techniques",
-      "chapter_description": "Master mental division using Paravartya Sutra and complement methods",
+      "chapter_description":
+          "Master mental division using Paravartya Sutra and complement methods",
       "icon": "percent",
       "color": "0xFFF59E0B",
       "lessons": [
@@ -1587,7 +1667,8 @@ Best Strategy:
           "lesson_title": "Paravartya Sutra Basics",
           "objective": "Understand the transpose and apply method for division",
           "duration_minutes": 20,
-          "content": """Paravartya means "Transpose and Apply"—the Vedic way to divide!
+          "content":
+              """Paravartya means "Transpose and Apply"—the Vedic way to divide!
 
 Traditional Division vs Vedic:
 • Traditional: Long division with multiple steps
@@ -1634,41 +1715,36 @@ Paravartya converts division into easier multiplication patterns!""",
               "method": "Flag = 1",
               "working": "1→1, 1+4=5→5, 5+4=9→0",
               "answer": "16 remainder 0",
-              "verification": "9 × 16 = 144 ✓"
+              "verification": "9 × 16 = 144 ✓",
             },
             {
               "problem": "156 ÷ 12",
               "method": "Use complement approach",
               "working": "156 ÷ 12 = 13 ",
               "answer": "13",
-              "verification": "12 × 13 = 156 ✓"
-            }
+              "verification": "12 × 13 = 156 ✓",
+            },
           ],
           "practice": [
-            {
-              "question": "81 ÷ 9 = ?",
-              "type": "input",
-              "answer": "9"
-            },
-            {
-              "question": "72 ÷ 8 = ?",
-              "type": "input",
-              "answer": "9"
-            },
+            {"question": "81 ÷ 9 = ?", "type": "input", "answer": "9"},
+            {"question": "72 ÷ 8 = ?", "type": "input", "answer": "9"},
             {
               "question": "What is the flag for divisor 9?",
               "type": "input",
-              "answer": "1"
-            }
+              "answer": "1",
+            },
           ],
-          "summary": "Paravartya uses flags (related to complements) to convert division into simpler operations. Start with division by 9 and 8!"
+          "summary":
+              "Paravartya uses flags (related to complements) to convert division into simpler operations. Start with division by 9 and 8!",
         },
         {
           "lesson_id": 602,
           "lesson_title": "Division by Numbers Near Base",
-          "objective": "Divide by numbers close to 10 or 100 using base complements",
+          "objective":
+              "Divide by numbers close to 10 or 100 using base complements",
           "duration_minutes": 22,
-          "content": """When the divisor is near a base, division becomes super easy!
+          "content":
+              """When the divisor is near a base, division becomes super easy!
 
 Division by Numbers Near 10:
 
@@ -1729,41 +1805,36 @@ The closer the divisor is to a base, the easier the calculation!""",
               "working": "4|5|6 with running total",
               "steps": "4, 4+5=9→0 carry 1, 1+0+6=7",
               "answer": "50 remainder 6",
-              "verification": "9 × 50 + 6 = 456 ✓"
+              "verification": "9 × 50 + 6 = 456 ✓",
             },
             {
               "problem": "1,234 ÷ 99",
               "working": "Group: 12|34",
               "steps": "12, 34+12=46",
               "answer": "12 remainder 46",
-              "verification": "99 × 12 + 46 = 1234 ✓"
-            }
+              "verification": "99 × 12 + 46 = 1234 ✓",
+            },
           ],
           "practice": [
-            {
-              "question": "180 ÷ 9 = ?",
-              "type": "input",
-              "answer": "20"
-            },
-            {
-              "question": "198 ÷ 99 = ?",
-              "type": "input",
-              "answer": "2"
-            },
+            {"question": "180 ÷ 9 = ?", "type": "input", "answer": "20"},
+            {"question": "198 ÷ 99 = ?", "type": "input", "answer": "2"},
             {
               "question": "What is the complement of 99 from 100?",
               "type": "input",
-              "answer": "1"
-            }
+              "answer": "1",
+            },
           ],
-          "summary": "Division by numbers near bases uses complements. For 9: add complements. For 99: pair and add. Practice these patterns!"
+          "summary":
+              "Division by numbers near bases uses complements. For 9: add complements. For 99: pair and add. Practice these patterns!",
         },
         {
           "lesson_id": 603,
           "lesson_title": "Mental 2-Digit by 2-Digit Division",
-          "objective": "Divide any 2-digit number by another 2-digit number mentally",
+          "objective":
+              "Divide any 2-digit number by another 2-digit number mentally",
           "duration_minutes": 25,
-          "content": """General division requires combining estimation with Vedic techniques.
+          "content":
+              """General division requires combining estimation with Vedic techniques.
 
 Strategy: Estimate + Refine
 
@@ -1824,47 +1895,36 @@ General Steps:
               "estimate": "384 ≈ 400, 16 ≈ 20, so ≈ 20",
               "refine": "Try 24: 16×24 = 384 exactly!",
               "answer": "24 remainder 0",
-              "verification": "16 × 24 = 384 ✓"
+              "verification": "16 × 24 = 384 ✓",
             },
             {
               "problem": "567 ÷ 27",
               "estimate": "567 ≈ 540, 27 ≈ 30, so ≈ 18",
               "refine": "Try 21: 27×21 = 567 exactly!",
               "answer": "21 remainder 0",
-              "verification": "27 × 21 = 567 ✓"
+              "verification": "27 × 21 = 567 ✓",
             },
             {
               "problem": "750 ÷ 25",
               "method": "Special: ×4 then ÷100",
               "working": "750 × 4 = 3000, shift: 30",
               "answer": "30",
-              "verification": "25 × 30 = 750 ✓"
-            }
+              "verification": "25 × 30 = 750 ✓",
+            },
           ],
           "practice": [
             {
               "question": "400 ÷ 25 = ?",
               "type": "input",
               "answer": "16",
-              "hint": "×4 method"
+              "hint": "×4 method",
             },
-            {
-              "question": "600 ÷ 50 = ?",
-              "type": "input",
-              "answer": "12"
-            },
-            {
-              "question": "288 ÷ 12 = ?",
-              "type": "input",
-              "answer": "24"
-            },
-            {
-              "question": "374 ÷ 17 = ?",
-              "type": "input",
-              "answer": "22"
-            }
+            {"question": "600 ÷ 50 = ?", "type": "input", "answer": "12"},
+            {"question": "288 ÷ 12 = ?", "type": "input", "answer": "24"},
+            {"question": "374 ÷ 17 = ?", "type": "input", "answer": "22"},
           ],
-          "summary": "Mental division: Estimate → Test with Vedic multiplication → Refine. Know special cases (÷25, ÷50, ÷11). Practice estimation skills!"
+          "summary":
+              "Mental division: Estimate → Test with Vedic multiplication → Refine. Know special cases (÷25, ÷50, ÷11). Practice estimation skills!",
         },
         {
           "lesson_id": 604,
@@ -1926,58 +1986,63 @@ Based on divisibility rules and modular arithmetic!""",
               "problem": "Remainder of 8,765 ÷ 9",
               "method": "Sum digits: 8+7+6+5 = 26 → 2+6 = 8",
               "answer": "8",
-              "verification": "8765 ÷ 9 = 973 remainder 8 ✓"
+              "verification": "8765 ÷ 9 = 973 remainder 8 ✓",
             },
             {
               "problem": "Remainder of 3,456 ÷ 11",
               "method": "Alternate: (3+5)−(4+6) = 8−10 = −2 → 11−2 = 9",
               "answer": "9",
-              "verification": "3456 ÷ 11 = 314 remainder 2... wait, let me recalculate"
+              "verification":
+                  "3456 ÷ 11 = 314 remainder 2... wait, let me recalculate",
             },
             {
               "problem": "Remainder of 12,345 ÷ 8",
               "method": "Last 3: 345 ÷ 8 = 43 remainder 1",
               "answer": "1",
-              "verification": "12345 ÷ 8 = 1543 remainder 1 ✓"
-            }
+              "verification": "12345 ÷ 8 = 1543 remainder 1 ✓",
+            },
           ],
           "practice": [
             {
               "question": "Remainder of 123 ÷ 9?",
               "type": "input",
               "answer": "6",
-              "hint": "Sum: 1+2+3"
+              "hint": "Sum: 1+2+3",
             },
             {
               "question": "Remainder of 456 ÷ 3?",
               "type": "input",
               "answer": "0",
-              "hint": "Sum: 4+5+6"
+              "hint": "Sum: 4+5+6",
             },
             {
               "question": "Remainder of 1,234 ÷ 4?",
               "type": "input",
               "answer": "2",
-              "hint": "Check last 2 digits"
-            }
+              "hint": "Check last 2 digits",
+            },
           ],
-          "summary": "Quick remainders: ÷9 & ÷3 (sum digits), ÷11 (alternate sum), ÷8 (last 3), ÷4 (last 2). These shortcuts save massive time!"
-        }
-      ]
+          "summary":
+              "Quick remainders: ÷9 & ÷3 (sum digits), ÷11 (alternate sum), ÷8 (last 3), ÷4 (last 2). These shortcuts save massive time!",
+        },
+      ],
     },
     {
       "chapter_id": 7,
       "chapter_title": "Advanced Speed Building",
-      "chapter_description": "Combine techniques, practice mixed operations, and develop competition-level speed",
+      "chapter_description":
+          "Combine techniques, practice mixed operations, and develop competition-level speed",
       "icon": "bolt",
       "color": "0xFF3B82F6",
       "lessons": [
         {
           "lesson_id": 701,
           "lesson_title": "Mixed Operations",
-          "objective": "Solve problems combining multiplication, division, and squaring",
+          "objective":
+              "Solve problems combining multiplication, division, and squaring",
           "duration_minutes": 25,
-          "content": """Real speed comes from switching between techniques seamlessly!
+          "content":
+              """Real speed comes from switching between techniques seamlessly!
 
 Strategy Selection:
 
@@ -2036,40 +2101,38 @@ Practice Workflow:
               "step2": "75² = 5625",
               "step3": "625 + 5625 = 6250",
               "step4": "6250 ÷ 50 = 125",
-              "answer": "125"
+              "answer": "125",
             },
             {
               "problem": "95 × 96 − 9000",
               "step1": "95 × 96 = 9120 (Nikhilam)",
               "step2": "9120 − 9000 = 120",
-              "answer": "120"
-            }
+              "answer": "120",
+            },
           ],
           "practice": [
             {
               "question": "(35² − 25²) ÷ 10 = ?",
               "type": "input",
-              "answer": "60"
+              "answer": "60",
             },
             {
               "question": "97 × 98 + 100 = ?",
               "type": "input",
-              "answer": "9606"
+              "answer": "9606",
             },
-            {
-              "question": "55² ÷ 25 = ?",
-              "type": "input",
-              "answer": "121"
-            }
+            {"question": "55² ÷ 25 = ?", "type": "input", "answer": "121"},
           ],
-          "summary": "Choose the right technique for each operation. Plan before solving. Combine methods smoothly. This is where mastery shows!"
+          "summary":
+              "Choose the right technique for each operation. Plan before solving. Combine methods smoothly. This is where mastery shows!",
         },
         {
           "lesson_id": 702,
           "lesson_title": "Rapid Estimation",
           "objective": "Estimate answers within 5% in under 2 seconds",
           "duration_minutes": 20,
-          "content": """Estimation is a crucial skill—it helps you verify and work faster!
+          "content":
+              """Estimation is a crucial skill—it helps you verify and work faster!
 
 Rounding Strategies:
 
@@ -2131,38 +2194,40 @@ Quick Checks:
               "round": "70 × 90 = 6300",
               "adjust": "Both rounded up, so actual is less",
               "estimate": "~6000",
-              "actual": "5963 ✓"
+              "actual": "5963 ✓",
             },
             {
               "problem": "Estimate 3,456 ÷ 23",
               "round": "3,500 ÷ 25 = 140",
               "adjust": "Divisor rounded up, so actual is higher",
               "estimate": "~150",
-              "actual": "150.26 ✓"
-            }
+              "actual": "150.26 ✓",
+            },
           ],
           "practice": [
             {
               "question": "Estimate 48 × 52 (within 10%)",
               "type": "input",
               "answer": "2500",
-              "hint": "50 × 50"
+              "hint": "50 × 50",
             },
             {
               "question": "Is 67 × 89 closer to 5000 or 6000?",
               "type": "multiple_choice",
               "options": ["5000", "6000"],
-              "answer": "6000"
-            }
+              "answer": "6000",
+            },
           ],
-          "summary": "Always estimate before calculating exactly. Round smartly. Use estimates to verify. Fast estimation = confidence + accuracy!"
+          "summary":
+              "Always estimate before calculating exactly. Round smartly. Use estimates to verify. Fast estimation = confidence + accuracy!",
         },
         {
           "lesson_id": 703,
           "lesson_title": "Timed Drills",
           "objective": "Complete 10 problems in 60 seconds with 90% accuracy",
           "duration_minutes": 30,
-          "content": """Timed practice builds the pressure-handling skills for competitions!
+          "content":
+              """Timed practice builds the pressure-handling skills for competitions!
 
 Progressive Timing:
 
@@ -2238,39 +2303,53 @@ Mental State:
                 "48 × 52",
                 "225 ÷ 15",
                 "105²",
-                "94 × 93"
+                "94 × 93",
               ],
-              "answers": ["9408", "3025", "9603", "16", "4225", "10712", "2496", "15", "11025", "8742"]
-            }
+              "answers": [
+                "9408",
+                "3025",
+                "9603",
+                "16",
+                "4225",
+                "10712",
+                "2496",
+                "15",
+                "11025",
+                "8742",
+              ],
+            },
           ],
           "practice": [
             {
               "question": "TIMED: 97 × 98 = ?",
               "type": "input",
               "answer": "9506",
-              "time_limit": 5
+              "time_limit": 5,
             },
             {
               "question": "TIMED: 45² = ?",
               "type": "input",
               "answer": "2025",
-              "time_limit": 3
+              "time_limit": 3,
             },
             {
               "question": "TIMED: 600 ÷ 25 = ?",
               "type": "input",
               "answer": "24",
-              "time_limit": 4
-            }
+              "time_limit": 4,
+            },
           ],
-          "summary": "Timed drills build competition skills. Start slow, build speed gradually. Aim for 10 problems in 60 seconds. Practice daily!"
+          "summary":
+              "Timed drills build competition skills. Start slow, build speed gradually. Aim for 10 problems in 60 seconds. Practice daily!",
         },
         {
           "lesson_id": 704,
           "lesson_title": "Competition Mode",
-          "objective": "Perform under pressure with 95% accuracy at competition speed",
+          "objective":
+              "Perform under pressure with 95% accuracy at competition speed",
           "duration_minutes": 35,
-          "content": """Final preparation for actual competition or certification!
+          "content":
+              """Final preparation for actual competition or certification!
 
 Competition Strategies:
 
@@ -2341,36 +2420,41 @@ Simulate real conditions:
                 "85²",
                 "96 × 94",
                 "35²",
-                "101 × 99"
+                "101 × 99",
               ],
-              "scoring": "1 point each, −0.25 for wrong"
-            }
+              "scoring": "1 point each, −0.25 for wrong",
+            },
           ],
           "practice": [
             {
-              "question": "COMPETITION: Solve as many as possible in 30 seconds",
+              "question":
+                  "COMPETITION: Solve as many as possible in 30 seconds",
               "type": "timed_set",
               "problems": ["97×98", "45²", "104×105", "65²", "99×97"],
-              "time_limit": 30
-            }
+              "time_limit": 30,
+            },
           ],
-          "summary": "Competition mode: Triage problems, manage time, prevent errors, maintain stamina. Practice under real conditions. Trust your training!"
-        }
-      ]
+          "summary":
+              "Competition mode: Triage problems, manage time, prevent errors, maintain stamina. Practice under real conditions. Trust your training!",
+        },
+      ],
     },
     {
       "chapter_id": 8,
       "chapter_title": "Mastery Challenges",
-      "chapter_description": "100 multiplication + 100 division challenges to cement your skills",
+      "chapter_description":
+          "100 multiplication + 100 division challenges to cement your skills",
       "icon": "emoji_events",
       "color": "0xFFFF9800",
       "lessons": [
         {
           "lesson_id": 801,
           "lesson_title": "100 Multiplication Challenge",
-          "objective": "Complete 100 varied multiplication problems demonstrating mastery of all techniques",
+          "objective":
+              "Complete 100 varied multiplication problems demonstrating mastery of all techniques",
           "duration_minutes": 60,
-          "content": """The ultimate test: 100 multiplication problems using all Vedic techniques!
+          "content":
+              """The ultimate test: 100 multiplication problems using all Vedic techniques!
 
 Challenge Structure:
 
@@ -2422,45 +2506,68 @@ Study Plan:
           "examples": [
             {
               "sample_problems": "Problems 1-10",
-              "problems": ["15²", "25×35", "45²", "55×65", "75²", "85×95", "35×45", "65²", "15×95", "75×85"],
+              "problems": [
+                "15²",
+                "25×35",
+                "45²",
+                "55×65",
+                "75²",
+                "85×95",
+                "35×45",
+                "65²",
+                "15×95",
+                "75×85",
+              ],
               "techniques": ["All use ending-in-5 methods"],
-              "target_time": "20 seconds total"
+              "target_time": "20 seconds total",
             },
             {
               "sample_problems": "Problems 51-60",
-              "problems": ["96×97", "103×104", "98×99", "105×106", "94×95", "107×108", "92×93", "109×111", "91×94", "108×112"],
+              "problems": [
+                "96×97",
+                "103×104",
+                "98×99",
+                "105×106",
+                "94×95",
+                "107×108",
+                "92×93",
+                "109×111",
+                "91×94",
+                "108×112",
+              ],
               "techniques": ["All use Nikhilam base 100"],
-              "target_time": "60 seconds total"
-            }
+              "target_time": "60 seconds total",
+            },
           ],
           "practice": [
             {
               "question": "Challenge Problem 1: 15² = ?",
               "type": "input",
-              "answer": "225"
+              "answer": "225",
             },
             {
               "question": "Challenge Problem 2: 25² = ?",
               "type": "input",
-              "answer": "625"
+              "answer": "625",
             },
             {
               "question": "Challenge Problem 21: 8 × 9 = ?",
               "type": "input",
-              "answer": "72"
+              "answer": "72",
             },
             {
               "question": "Challenge Problem 41: 96 × 97 = ?",
               "type": "input",
-              "answer": "9312"
+              "answer": "9312",
             },
             {
               "question": "Challenge Problem 61: 47 × 53 = ?",
               "type": "input",
-              "answer": "2491"
-            }
+              "answer": "2491",
+            },
           ],
-          "summary": "100 multiplication problems test ALL techniques. Complete in multiple sessions. Track accuracy and speed. Achieve 90%+ for mastery!"
+          "summary":
+              "100 multiplication problems test ALL techniques. Complete in multiple sessions. Track accuracy and speed. Achieve 90%+ for mastery!",
         },
         {
           "lesson_id": 802,
@@ -2518,45 +2625,69 @@ Key Skills Tested:
           "examples": [
             {
               "sample_problems": "Problems 1-10",
-              "problems": ["100÷25", "200÷50", "500÷25", "400÷50", "750÷25", "900÷50", "625÷25", "1000÷50", "375÷25", "650÷50"],
+              "problems": [
+                "100÷25",
+                "200÷50",
+                "500÷25",
+                "400÷50",
+                "750÷25",
+                "900÷50",
+                "625÷25",
+                "1000÷50",
+                "375÷25",
+                "650÷50",
+              ],
               "techniques": ["Special methods"],
-              "target_time": "30 seconds total"
+              "target_time": "30 seconds total",
             },
             {
               "sample_problems": "Problems 21-30",
-              "problems": ["81÷9", "99÷9", "180÷9", "198÷99", "297÷99", "450÷9", "396÷99", "720÷9", "594÷99", "900÷9"],
+              "problems": [
+                "81÷9",
+                "99÷9",
+                "180÷9",
+                "198÷99",
+                "297÷99",
+                "450÷9",
+                "396÷99",
+                "720÷9",
+                "594÷99",
+                "900÷9",
+              ],
               "techniques": ["Complement methods"],
-              "target_time": "50 seconds total"
-            }
+              "target_time": "50 seconds total",
+            },
           ],
           "practice": [
             {
               "question": "Division Challenge 1: 100 ÷ 25 = ?",
               "type": "input",
-              "answer": "4"
+              "answer": "4",
             },
             {
               "question": "Division Challenge 2: 200 ÷ 50 = ?",
               "type": "input",
-              "answer": "4"
+              "answer": "4",
             },
             {
               "question": "Division Challenge 21: 81 ÷ 9 = ?",
               "type": "input",
-              "answer": "9"
+              "answer": "9",
             },
             {
               "question": "Division Challenge 61: 456 ÷ 12 = ?",
               "type": "input",
-              "answer": "38"
-            }
+              "answer": "38",
+            },
           ],
-          "summary": "100 division problems cover all Vedic division methods. Division is trickier than multiplication—85% accuracy is excellent!"
+          "summary":
+              "100 division problems cover all Vedic division methods. Division is trickier than multiplication—85% accuracy is excellent!",
         },
         {
           "lesson_id": 803,
           "lesson_title": "60-Second Speed Tests",
-          "objective": "Solve maximum problems in 60 seconds across multiple attempts",
+          "objective":
+              "Solve maximum problems in 60 seconds across multiple attempts",
           "duration_minutes": 45,
           "content": """Speed test format: How many can you solve in 60 seconds?
 
@@ -2633,42 +2764,60 @@ Mental Preparation:
               "test_name": "Speed Test Alpha",
               "time_limit": "60 seconds",
               "problems": [
-                "95×96", "45²", "97×98", "35²", "103×104",
-                "65²", "99×98", "55²", "106×107", "75²",
-                "94×93", "25²", "101×99", "85²", "108×109",
-                "15²", "92×91", "95²", "105×104", "105²"
+                "95×96",
+                "45²",
+                "97×98",
+                "35²",
+                "103×104",
+                "65²",
+                "99×98",
+                "55²",
+                "106×107",
+                "75²",
+                "94×93",
+                "25²",
+                "101×99",
+                "85²",
+                "108×109",
+                "15²",
+                "92×91",
+                "95²",
+                "105×104",
+                "105²",
               ],
-              "target": "15+ correct for Expert level"
-            }
+              "target": "15+ correct for Expert level",
+            },
           ],
           "practice": [
             {
               "question": "SPEED TEST: Start now! 97×98=?",
               "type": "input",
               "answer": "9506",
-              "time_limit": 3
+              "time_limit": 3,
             },
             {
               "question": "SPEED TEST: 45²=?",
               "type": "input",
               "answer": "2025",
-              "time_limit": 2
+              "time_limit": 2,
             },
             {
               "question": "SPEED TEST: 103×104=?",
               "type": "input",
               "answer": "10712",
-              "time_limit": 4
-            }
+              "time_limit": 4,
+            },
           ],
-          "summary": "60-second speed tests measure pure calculation speed. Take multiple tests, track improvement. Aim for 15+ correct. This is the ultimate speed measure!"
-        }
-      ]
+          "summary":
+              "60-second speed tests measure pure calculation speed. Take multiple tests, track improvement. Aim for 15+ correct. This is the ultimate speed measure!",
+        },
+      ],
     },
     {
       "chapter_id": 9,
       "chapter_title": "Final Certification Test",
-      "chapter_description": "Comprehensive assessment covering all Vedic techniques with performance scoring and achievement badges",
+      "chapter_description":
+          "Comprehensive assessment covering all Vedic techniques with performance scoring and achievement badges",
       "icon": "verified",
       "color": "0xFF10B981",
       "lessons": [
@@ -2744,22 +2893,23 @@ Preparation:
               "section": "Sample Section A Problems",
               "problems": ["45²", "96×97", "47×53", "85²", "103×104"],
               "points": "10 points",
-              "time": "90 seconds"
-            }
+              "time": "90 seconds",
+            },
           ],
           "practice": [
             {
               "question": "What percentage is needed for Master level?",
               "type": "input",
-              "answer": "95"
+              "answer": "95",
             },
             {
               "question": "How many sections are in the certification exam?",
               "type": "input",
-              "answer": "4"
-            }
+              "answer": "4",
+            },
           ],
-          "summary": "Certification exam has 4 sections: Multiplication, Division, Squaring, Speed Round. Total 100 points in 15 minutes. Master level needs 95%!"
+          "summary":
+              "Certification exam has 4 sections: Multiplication, Division, Squaring, Speed Round. Total 100 points in 15 minutes. Master level needs 95%!",
         },
         {
           "lesson_id": 902,
@@ -2920,24 +3070,27 @@ Answer Key Provided Separately
 Good luck! Trust your training!""",
           "examples": [
             {
-              "note": "This is the actual exam. No examples provided. Apply all techniques learned!"
-            }
+              "note":
+                  "This is the actual exam. No examples provided. Apply all techniques learned!",
+            },
           ],
           "practice": [
             {
               "question": "EXAM Question 1: 15² = ?",
               "type": "input",
-              "answer": "225"
-            }
+              "answer": "225",
+            },
           ],
-          "summary": "Complete certification exam: 100 problems, 15 minutes, 4 sections. This tests everything you've learned. Your certificate level depends on your score!"
+          "summary":
+              "Complete certification exam: 100 problems, 15 minutes, 4 sections. This tests everything you've learned. Your certificate level depends on your score!",
         },
         {
           "lesson_id": 903,
           "lesson_title": "Achievement Badges & Next Steps",
           "objective": "Earn badges and understand paths for continued growth",
           "duration_minutes": 10,
-          "content": """Congratulations on completing the Vedic Mathematics course!
+          "content":
+              """Congratulations on completing the Vedic Mathematics course!
 
 Achievement Badges:
 
@@ -3027,8 +3180,8 @@ May the sutras guide your calculations! 🙏""",
               "badge_example": "Speed Demon Achievement",
               "requirement": "Solve 10 problems in 60 seconds",
               "reward": "Special badge + Speed Master title",
-              "tips": "Practice daily drills, master numbers ending in 5 first"
-            }
+              "tips": "Practice daily drills, master numbers ending in 5 first",
+            },
           ],
           "practice": [
             {
@@ -3038,14 +3191,15 @@ May the sutras guide your calculations! 🙏""",
                 "Compete in math competitions",
                 "Teach others Vedic Math",
                 "Use in daily life",
-                "All of the above"
+                "All of the above",
               ],
-              "answer": "All of the above"
-            }
+              "answer": "All of the above",
+            },
           ],
-          "summary": "Earn achievement badges by practicing and progressing. Continue daily practice, teach others, compete, and explore advanced topics. The journey never ends!"
-        }
-      ]
-    }
-  ]
+          "summary":
+              "Earn achievement badges by practicing and progressing. Continue daily practice, teach others, compete, and explore advanced topics. The journey never ends!",
+        },
+      ],
+    },
+  ],
 };

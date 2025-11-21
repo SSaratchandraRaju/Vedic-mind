@@ -41,7 +41,7 @@ List<VedicMethodCategory> getVedicMethodCategories() {
         ),
       ],
     ),
-    
+
     // ADDITION
     VedicMethodCategory(
       name: 'Addition',
@@ -143,7 +143,7 @@ List<VedicMethodCategory> getVedicMethodCategories() {
         ),
       ],
     ),
-    
+
     // MULTIPLICATION
     VedicMethodCategory(
       name: 'Multiplication',
@@ -212,7 +212,7 @@ List<VedicMethodCategory> getVedicMethodCategories() {
         ),
       ],
     ),
-    
+
     // DIVISION
     VedicMethodCategory(
       name: 'Division',

@@ -8,6 +8,7 @@ class MethodCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String? badge;
+  final int? points; // Optional points to display
   final VoidCallback onTap;
 
   const MethodCard({
@@ -17,6 +18,7 @@ class MethodCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     this.badge,
+    this.points,
     required this.onTap,
   });
 
@@ -40,11 +42,7 @@ class MethodCard extends StatelessWidget {
                 color: iconColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: 24,
-              ),
+              child: Icon(icon, color: iconColor, size: 24),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -58,10 +56,29 @@ class MethodCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: AppTextStyles.bodySmall,
-                  ),
+                  Text(subtitle, style: AppTextStyles.bodySmall),
+                  if (points != null && points! > 0) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.emoji_events,
+                          color: Color(0xFFFF9800),
+                          size: 14,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$points pts',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFFF9800),
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -69,25 +86,26 @@ class MethodCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: _getBadgeColor(badge!).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.emoji_events,
-                      color: AppColors.primary,
+                    Icon(
+                      _getBadgeIcon(badge!),
+                      color: _getBadgeColor(badge!),
                       size: 14,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       badge!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
-                      fontFamily: 'Poppins'),
+                        color: _getBadgeColor(badge!),
+                        fontFamily: 'Poppins',
+                      ),
                     ),
                   ],
                 ),
@@ -102,5 +120,39 @@ class MethodCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _getBadgeColor(String badgeText) {
+    // Check if badge is a percentage
+    if (badgeText.contains('%')) {
+      final percentageStr = badgeText.replaceAll('%', '');
+      final percentage = int.tryParse(percentageStr);
+      if (percentage != null) {
+        if (percentage >= 80) return const Color(0xFF4CAF50); // Green
+        if (percentage >= 60) return const Color(0xFFFF9800); // Orange
+        if (percentage >= 40) return const Color(0xFFFFA726); // Light orange
+        return const Color(0xFFEF5350); // Red
+      }
+    }
+    // Default color for non-percentage badges (like "Start", "New")
+    return AppColors.primary;
+  }
+
+  IconData _getBadgeIcon(String badgeText) {
+    // Check if badge is a percentage
+    if (badgeText.contains('%')) {
+      final percentageStr = badgeText.replaceAll('%', '');
+      final percentage = int.tryParse(percentageStr);
+      if (percentage != null) {
+        if (percentage >= 80) return Icons.check_circle;
+        if (percentage >= 60) return Icons.trending_up;
+        if (percentage >= 40) return Icons.show_chart;
+        return Icons.trending_down;
+      }
+    }
+    // For "Start" or other text badges
+    if (badgeText.toLowerCase() == 'start') return Icons.play_arrow;
+    if (badgeText.toLowerCase() == 'new') return Icons.fiber_new;
+    return Icons.emoji_events;
   }
 }

@@ -1,110 +1,120 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 import 'app_colors.dart';
 
 class AppTextStyles {
-  // Headings
-  static const h1 = TextStyle(
-    fontSize: 32,
+  // Headings - Using responsive .sp units with adjusted sizes
+  static TextStyle h1 = TextStyle(
+    fontSize: 20.sp, // Reduced from 32.sp
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
     letterSpacing: -0.5,
     fontFamily: 'Poppins',
   );
-  
-  static const h2 = TextStyle(
-    fontSize: 28,
+
+  static TextStyle h2 = TextStyle(
+    fontSize: 18.sp, // Reduced from 28.sp
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
     letterSpacing: -0.5,
     fontFamily: 'Poppins',
   );
-  
-  static const h3 = TextStyle(
-    fontSize: 24,
+
+  static TextStyle h3 = TextStyle(
+    fontSize: 15.sp, // Reduced from 24.sp
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     letterSpacing: -0.3,
     fontFamily: 'Poppins',
   );
-  
-  static const h4 = TextStyle(
-    fontSize: 20,
+
+  static TextStyle h4 = TextStyle(
+    fontSize: 13.sp, // Reduced from 20.sp
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     letterSpacing: -0.3,
     fontFamily: 'Poppins',
   );
-  
-  static const h5 = TextStyle(
-    fontSize: 18,
+
+  static TextStyle h5 = TextStyle(
+    fontSize: 11.5.sp, // Reduced from 18.sp
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     letterSpacing: -0.2,
     fontFamily: 'Poppins',
   );
-  
-  // Body Text
-  static const bodyLarge = TextStyle(
-    fontSize: 16,
+
+  // Body Text - Using responsive .sp units with adjusted sizes
+  static TextStyle bodyLarge = TextStyle(
+    fontSize: 10.sp, // Reduced from 16.sp
     fontWeight: FontWeight.w400,
     color: AppColors.textPrimary,
     fontFamily: 'Poppins',
   );
-  
-  static const bodyMedium = TextStyle(
-    fontSize: 14,
+
+  static TextStyle bodyMedium = TextStyle(
+    fontSize: 9.sp, // Reduced from 14.sp
     fontWeight: FontWeight.w400,
     color: AppColors.textPrimary,
     fontFamily: 'Poppins',
   );
-  
-  static const bodySmall = TextStyle(
-    fontSize: 12,
+
+  static TextStyle bodySmall = TextStyle(
+    fontSize: 7.5.sp, // Reduced from 12.sp
     fontWeight: FontWeight.w400,
     color: AppColors.textSecondary,
     fontFamily: 'Poppins',
   );
-  
-  // Button Text
-  static const button = TextStyle(
-    fontSize: 16,
+
+  // Button Text - Using responsive .sp units with adjusted sizes
+  static TextStyle button = TextStyle(
+    fontSize: 10.sp, // Reduced from 16.sp
     fontWeight: FontWeight.w600,
     color: AppColors.textWhite,
     fontFamily: 'Poppins',
   );
-  
-  static const buttonSmall = TextStyle(
-    fontSize: 14,
+
+  static TextStyle buttonSmall = TextStyle(
+    fontSize: 9.sp, // Reduced from 14.sp
     fontWeight: FontWeight.w600,
     color: AppColors.textWhite,
     fontFamily: 'Poppins',
   );
-  
-  // Caption & Label
-  static const caption = TextStyle(
-    fontSize: 12,
+
+  // Caption & Label - Using responsive .sp units with adjusted sizes
+  static TextStyle caption = TextStyle(
+    fontSize: 7.5.sp, // Reduced from 12.sp
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
     fontFamily: 'Poppins',
   );
-  
-  static const label = TextStyle(
-    fontSize: 14,
+
+  static TextStyle label = TextStyle(
+    fontSize: 9.sp, // Reduced from 14.sp
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
     fontFamily: 'Poppins',
   );
-  
-  // Special
-  static const overline = TextStyle(
-    fontSize: 10,
+
+  // Special - Using responsive .sp units with adjusted sizes
+  static TextStyle overline = TextStyle(
+    fontSize: 6.5.sp, // Reduced from 10.sp
     fontWeight: FontWeight.w600,
     color: AppColors.textTertiary,
     letterSpacing: 1.5,
     fontFamily: 'Poppins',
   );
-  
-  // Legacy (for backward compatibility)
-  static const title = TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Poppins');
-  static const subtitle = TextStyle(fontSize: 16, color: Color(0xFF6B7280), fontFamily: 'Poppins');
+
+  // Legacy (for backward compatibility) - Using responsive .sp units with adjusted sizes
+  static TextStyle title = TextStyle(
+    fontSize: 13.sp, // Reduced from 20.sp
+    fontWeight: FontWeight.bold,
+    fontFamily: 'Poppins',
+  );
+
+  static TextStyle subtitle = TextStyle(
+    fontSize: 10.sp, // Reduced from 16.sp
+    color: const Color(0xFF6B7280),
+    fontFamily: 'Poppins',
+  );
 }

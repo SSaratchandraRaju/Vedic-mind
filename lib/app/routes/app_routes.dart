@@ -9,6 +9,7 @@ abstract class Routes {
   static const DASHBOARD = '/dashboard';
   static const HOME = '/home';
   static const MATH_TABLES = '/math-tables';
+  static const MATH_TABLES_TEST = '/math-tables-test';
   static const SECTION_DETAIL = '/section-detail';
   static const LESSONS = '/lessons';
   static const VEDIC_METHODS = '/vedic-methods';
@@ -16,6 +17,7 @@ abstract class Routes {
   static const VEDIC_COURSE = '/vedic-course';
   static const CHAPTER_DETAIL = '/chapter-detail';
   static const LESSON_DETAIL = '/lesson-detail';
+  static const ALL_LESSONS = '/all-lessons';
   static const LESSON_STEPS = '/lesson-steps';
   static const LESSON_PRACTICE = '/lesson-practice';
   static const VEDIC_16_SUTRAS = '/vedic-16-sutras';
@@ -23,6 +25,12 @@ abstract class Routes {
   static const INTERACTIVE_LESSON = '/interactive-lesson';
   static const QUIZ = '/quiz';
   static const PRACTICE = '/practice';
+  static const PRACTICE_HUB = '/practice-hub';
+  static const PRACTICE_ARITHMETIC_SETUP = '/practice-arithmetic-setup';
+  static const PRACTICE_TABLES_SETUP = '/practice-tables-setup';
+  static const PRACTICE_SUTRAS = '/practice-sutras';
+  static const PRACTICE_TACTICS = '/practice-tactics';
+  static const PRACTICE_GAMES = '/practice-games';
   static const PRACTICE_RESULTS = '/practice-results';
   static const LEADERBOARD = '/leaderboard';
   static const HISTORY = '/history';
@@ -30,7 +38,7 @@ abstract class Routes {
   static const SETTINGS = '/settings';
   static const EDIT_PROFILE = '/edit-profile';
   static const PROGRESS = '/progress';
-  
+
   // Mini Game Routes
   static const SUTRA1_GAME = '/sutra1-game';
   static const SUTRA2_GAME = '/sutra2-game';
@@ -49,4 +57,3 @@ abstract class Routes {
   static const SUTRA15_GAME = '/sutra15-game';
   static const SUTRA16_GAME = '/sutra16-game';
 }
-

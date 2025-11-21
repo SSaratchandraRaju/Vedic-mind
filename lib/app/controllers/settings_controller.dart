@@ -5,10 +5,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import '../routes/app_routes.dart';
-import '../widgets/common/alert_dialog_util.dart';
+import 'package:vedic_maths/app/ui/widgets/alert_dialog_util.dart';
 
 class SettingsController extends GetxController {
-  final AuthService _authService = Get.find<AuthService>();
+  // Acquire AuthService lazily in onInit to avoid construction-time Get.find errors
+  AuthService? _authService;
   final ImagePicker _imagePicker = ImagePicker();
 
   // Observable variables
@@ -26,8 +27,17 @@ class SettingsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _safeInitAuthService();
     _loadSettings();
     _loadUserProfile();
+  }
+
+  void _safeInitAuthService() {
+    try {
+      _authService = Get.find<AuthService>();
+    } catch (e) {
+      debugPrint('AuthService not available yet: $e');
+    }
   }
 
   @override
@@ -51,13 +61,14 @@ class SettingsController extends GetxController {
 
   // Load user profile data
   Future<void> _loadUserProfile() async {
+    if (_authService == null) return; // Graceful skip if auth not ready
     try {
-      final user = await _authService.getCurrentUser();
+      final user = await _authService!.getCurrentUser();
       if (user != null) {
         profileName.value = user.displayName ?? 'User';
         profileEmail.value = user.email;
         nameController.text = profileName.value;
-        
+
         // Load saved profile image path from SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         final savedImagePath = prefs.getString('profileImagePath');
@@ -74,14 +85,14 @@ class SettingsController extends GetxController {
   Future<void> toggleTheme() async {
     try {
       isDarkMode.value = !isDarkMode.value;
-      
+
       // Update app theme
       Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
-      
+
       // Save preference
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isDarkMode', isDarkMode.value);
-      
+
       Get.snackbar(
         'Theme Updated',
         'Theme changed to ${isDarkMode.value ? 'Dark' : 'Light'} mode',
@@ -129,11 +140,11 @@ class SettingsController extends GetxController {
 
       if (image != null) {
         profileImage.value = File(image.path);
-        
+
         // Save image path to SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('profileImagePath', image.path);
-        
+
         Get.snackbar(
           'Success',
           'Profile image updated',
@@ -167,19 +178,25 @@ class SettingsController extends GetxController {
       );
       return;
     }
+    if (_authService == null) {
+      Get.snackbar('Auth', 'Auth not initialized', snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
 
     try {
       isLoading.value = true;
-      
+
       // Update user profile using AuthService
-      final user = await _authService.getCurrentUser();
+      final user = await _authService!.getCurrentUser();
       if (user != null) {
-        final updatedUser = user.copyWith(displayName: nameController.text.trim());
-        final success = await _authService.updateUserProfile(updatedUser);
-        
+        final updatedUser = user.copyWith(
+          displayName: nameController.text.trim(),
+        );
+        final success = await _authService!.updateUserProfile(updatedUser);
+
         if (success) {
           profileName.value = nameController.text.trim();
-          
+
           Get.back(); // Close dialog
           Get.snackbar(
             'Success',
@@ -238,20 +255,19 @@ class SettingsController extends GetxController {
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          Obx(
+            () => ElevatedButton(
+              onPressed: isLoading.value ? null : updateProfileName,
+              child: isLoading.value
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Save'),
+            ),
           ),
-          Obx(() => ElevatedButton(
-                onPressed: isLoading.value ? null : updateProfileName,
-                child: isLoading.value
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Save'),
-              )),
         ],
       ),
     );
@@ -285,26 +301,30 @@ class SettingsController extends GetxController {
       );
       return;
     }
+    if (_authService == null) {
+      Get.snackbar('Auth', 'Auth not initialized', snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
 
     try {
       isLoading.value = true;
-      
+
       // Update user profile using AuthService
-      final user = await _authService.getCurrentUser();
+      final user = await _authService!.getCurrentUser();
       if (user != null) {
         final updatedUser = user.copyWith(
           displayName: nameController.text.trim(),
           ageCategory: userType.value.toLowerCase(),
         );
-        final success = await _authService.updateUserProfile(updatedUser);
-        
+        final success = await _authService!.updateUserProfile(updatedUser);
+
         if (success) {
           profileName.value = nameController.text.trim();
-          
+
           // Save user type
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('userType', userType.value);
-          
+
           Get.back(); // Close edit profile screen
           Get.snackbar(
             'Success',
@@ -341,6 +361,10 @@ class SettingsController extends GetxController {
 
   // Sign out
   Future<void> signOut() async {
+    if (_authService == null) {
+      Get.snackbar('Auth', 'Auth not initialized', snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
     try {
       await AlertDialogUtil.showConfirmation(
         title: 'Sign Out',
@@ -350,9 +374,9 @@ class SettingsController extends GetxController {
         isDestructive: true,
         onConfirm: () async {
           isLoading.value = true;
-          await _authService.signOut();
+          await _authService!.signOut();
           isLoading.value = false;
-          
+
           // Navigate to login screen and clear navigation stack
           Get.offAllNamed(Routes.LOGIN);
         },

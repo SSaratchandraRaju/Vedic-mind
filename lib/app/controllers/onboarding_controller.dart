@@ -3,13 +3,14 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../routes/app_routes.dart';
 
-class OnboardingController extends GetxController with GetSingleTickerProviderStateMixin {
+class OnboardingController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   final pageController = PageController();
   final currentPage = 0.obs;
-  
+
   // Animation controller for floating elements
   late AnimationController animationController;
-  
+
   @override
   void onInit() {
     super.onInit();
@@ -22,7 +23,7 @@ class OnboardingController extends GetxController with GetSingleTickerProviderSt
 
   void onPageChanged(int page) {
     currentPage.value = page;
-    
+
     // Reset and replay animation when page changes
     animationController.reset();
     animationController.forward();

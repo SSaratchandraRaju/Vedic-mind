@@ -22,7 +22,8 @@ class VedicSutrasAccessButton extends StatelessWidget {
       onPressed: () => Get.toNamed(Routes.VEDIC_16_SUTRAS),
       icon: Icon(icon ?? Icons.auto_stories),
       label: Text(buttonText ?? '16 Vedic Sutras'),
-      style: style ??
+      style:
+          style ??
           ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF6B4EFF),
             foregroundColor: Colors.white,
@@ -73,9 +74,16 @@ class VedicSutrasFeatureCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Icon(Icons.auto_stories, size: 48, color: Colors.white),
+                    const Icon(
+                      Icons.auto_stories,
+                      size: 48,
+                      color: Colors.white,
+                    ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.3),
                         borderRadius: BorderRadius.circular(20),
@@ -113,7 +121,11 @@ class VedicSutrasFeatureCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
+                        const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 16,
+                        ),
                       ],
                     ),
                   ],
@@ -137,13 +149,14 @@ class VedicSutrasDrawerTile extends StatelessWidget {
       leading: const Icon(Icons.auto_stories, color: Color(0xFF6B4EFF)),
       title: const Text(
         '16 Vedic Sutras',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       ),
       subtitle: const Text('Complete interactive course'),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+      trailing: const Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: Colors.grey,
+      ),
       onTap: () {
         Get.back(); // Close drawer
         Get.toNamed(Routes.VEDIC_16_SUTRAS);
@@ -198,7 +211,10 @@ class VedicSutrasCompactCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(12),
@@ -228,13 +244,14 @@ class VedicSutrasNavChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ActionChip(
-      avatar: const Icon(Icons.auto_stories, size: 20, color: Color(0xFF6B4EFF)),
+      avatar: const Icon(
+        Icons.auto_stories,
+        size: 20,
+        color: Color(0xFF6B4EFF),
+      ),
       label: const Text(
         '16 Sutras',
-        style: TextStyle(
-          color: Color(0xFF6B4EFF),
-          fontWeight: FontWeight.w600,
-        ),
+        style: TextStyle(color: Color(0xFF6B4EFF), fontWeight: FontWeight.w600),
       ),
       backgroundColor: const Color(0xFF6B4EFF).withOpacity(0.1),
       onPressed: () => Get.toNamed(Routes.VEDIC_16_SUTRAS),

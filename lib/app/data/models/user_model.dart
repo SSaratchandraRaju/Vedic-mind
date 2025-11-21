@@ -6,7 +6,7 @@ class UserModel {
   final String? ageCategory; // 'kid' or 'adult'
   final DateTime createdAt;
   final DateTime? lastLoginAt;
-  
+
   UserModel({
     required this.id,
     required this.email,
@@ -16,7 +16,7 @@ class UserModel {
     required this.createdAt,
     this.lastLoginAt,
   });
-  
+
   // Convert to JSON (for saving to database)
   Map<String, dynamic> toJson() {
     return {
@@ -29,7 +29,7 @@ class UserModel {
       'lastLoginAt': lastLoginAt?.toIso8601String(),
     };
   }
-  
+
   // Create from JSON (from database)
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -39,12 +39,12 @@ class UserModel {
       photoUrl: json['photoUrl'] as String?,
       ageCategory: json['ageCategory'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      lastLoginAt: json['lastLoginAt'] != null 
-          ? DateTime.parse(json['lastLoginAt'] as String) 
+      lastLoginAt: json['lastLoginAt'] != null
+          ? DateTime.parse(json['lastLoginAt'] as String)
           : null,
     );
   }
-  
+
   // Create a copy with updated fields
   UserModel copyWith({
     String? id,

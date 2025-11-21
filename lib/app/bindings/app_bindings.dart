@@ -6,6 +6,7 @@ import '../data/repositories/auth_repository.dart';
 import '../data/repositories/auth_repository_impl.dart';
 import '../services/auth_service.dart';
 import '../services/tts_service.dart';
+import '../controllers/global_progress_controller.dart';
 
 /// Application bindings for dependency injection
 /// This is where you configure which backend to use
@@ -15,24 +16,27 @@ class AppBindings extends Bindings {
     // ========================================
     // CONFIGURE YOUR BACKEND HERE
     // ========================================
-    
+
     // OPTION 1: Use Firebase (Default)
     Get.lazyPut<AuthDataSource>(() => FirebaseAuthDataSource());
-    
+
     // OPTION 2: Use MongoDB (Uncomment to switch)
     // Get.lazyPut<AuthDataSource>(() => MongoAuthDataSource());
-    
+
     // OPTION 3: Use REST API (Create your own implementation)
     // Get.lazyPut<AuthDataSource>(() => RestApiAuthDataSource());
-    
+
     // ========================================
     // Repository and Service (Same for all backends)
     // ========================================
     Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(Get.find()));
     Get.lazyPut<AuthService>(() => AuthService(Get.find()));
-    
+
     // Text-to-Speech Service
     Get.put(TtsService(), permanent: true);
+
+    // Global Progress Controller
+    Get.put(GlobalProgressController(), permanent: true);
   }
 }
 

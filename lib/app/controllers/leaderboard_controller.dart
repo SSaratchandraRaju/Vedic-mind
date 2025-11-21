@@ -10,10 +10,11 @@ class LeaderboardController extends GetxController {
   }
 
   void onNavTap(int index) {
-    if (currentNavIndex.value == index) return; // Prevent navigation to same page
-    
+    if (currentNavIndex.value == index)
+      return; // Prevent navigation to same page
+
     currentNavIndex.value = index;
-    
+
     switch (index) {
       case 0:
         // Already on leaderboard

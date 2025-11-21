@@ -5,8 +5,14 @@ import '../models/auth_result_model.dart';
 /// This acts as a contract that can be implemented by any backend
 abstract class AuthRepository {
   Future<AuthResultModel> signInWithGoogle();
-  Future<AuthResultModel> signInWithEmailPassword(String email, String password);
-  Future<AuthResultModel> signUpWithEmailPassword(String email, String password);
+  Future<AuthResultModel> signInWithEmailPassword(
+    String email,
+    String password,
+  );
+  Future<AuthResultModel> signUpWithEmailPassword(
+    String email,
+    String password,
+  );
   Future<void> signOut();
   Future<UserModel?> getCurrentUser();
   Future<bool> isAuthenticated();

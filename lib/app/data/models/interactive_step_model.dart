@@ -12,12 +12,12 @@ class InteractiveStep {
   final Map<String, dynamic>? interactionData;
   final String? animationDescription;
   final List<String>? highlightedTerms;
-  
+
   // Progress tracking
   bool isCompleted;
   bool isRevealed;
   DateTime? completedAt;
-  
+
   InteractiveStep({
     required this.id,
     required this.stepNumber,
@@ -33,10 +33,10 @@ class InteractiveStep {
     this.isRevealed = false,
     this.completedAt,
   });
-  
+
   /// Get the text to be read by TTS
   String get textForTTS => ttsText ?? content;
-  
+
   factory InteractiveStep.fromJson(Map<String, dynamic> json) {
     return InteractiveStep(
       id: json['id'] as String,
@@ -61,7 +61,7 @@ class InteractiveStep {
       isRevealed: json['is_revealed'] as bool? ?? false,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -72,20 +72,21 @@ class InteractiveStep {
       'interaction_type': interactionType.name,
       'visual_type': visualType.name,
       if (interactionData != null) 'interaction_data': interactionData,
-      if (animationDescription != null) 'animation_description': animationDescription,
+      if (animationDescription != null)
+        'animation_description': animationDescription,
       if (highlightedTerms != null) 'highlighted_terms': highlightedTerms,
       'is_completed': isCompleted,
       'is_revealed': isRevealed,
       if (completedAt != null) 'completed_at': completedAt!.toIso8601String(),
     };
   }
-  
+
   /// Mark the step as completed
   void complete() {
     isCompleted = true;
     completedAt = DateTime.now();
   }
-  
+
   /// Reveal the step content
   void reveal() {
     isRevealed = true;
@@ -94,29 +95,29 @@ class InteractiveStep {
 
 /// Types of interactions available for learning steps
 enum InteractionType {
-  tapToReveal,        // Tap to show hidden content
-  fillInBlank,        // Fill in the missing information
-  dragAndDrop,        // Drag numbers or operations to correct places
-  numberPuzzle,       // Interactive number puzzle
-  calculation,        // Real-time calculation practice
-  multipleChoice,     // Choose the correct answer
-  slider,             // Adjust values with a slider
-  animation,          // Watch an animated demonstration
-  quiz,               // Mini quiz question
-  practice,           // Practice problem to solve
+  tapToReveal, // Tap to show hidden content
+  fillInBlank, // Fill in the missing information
+  dragAndDrop, // Drag numbers or operations to correct places
+  numberPuzzle, // Interactive number puzzle
+  calculation, // Real-time calculation practice
+  multipleChoice, // Choose the correct answer
+  slider, // Adjust values with a slider
+  animation, // Watch an animated demonstration
+  quiz, // Mini quiz question
+  practice, // Practice problem to solve
 }
 
 /// Visual presentation types for steps
 enum StepVisualType {
-  text,               // Plain text content
-  card,               // Card-style presentation
-  calculation,        // Mathematical calculation display
-  diagram,            // Visual diagram
-  table,              // Data in table format
-  animation,          // Animated content
-  interactive,        // Interactive widget
-  highlighted,        // Text with highlights
-  stepByStep,         // Sequential step presentation
+  text, // Plain text content
+  card, // Card-style presentation
+  calculation, // Mathematical calculation display
+  diagram, // Visual diagram
+  table, // Data in table format
+  animation, // Animated content
+  interactive, // Interactive widget
+  highlighted, // Text with highlights
+  stepByStep, // Sequential step presentation
 }
 
 /// Challenge Model for interactive learning challenges
@@ -130,7 +131,7 @@ class Challenge {
   final int pointsReward;
   final List<ChallengeProblem> problems;
   final String? badgeId; // Badge earned on completion
-  
+
   // Progress
   bool isCompleted;
   int currentProblemIndex;
@@ -138,7 +139,7 @@ class Challenge {
   int timeElapsed;
   DateTime? startedAt;
   DateTime? completedAt;
-  
+
   Challenge({
     required this.id,
     required this.title,
@@ -156,13 +157,13 @@ class Challenge {
     this.startedAt,
     this.completedAt,
   });
-  
+
   double get accuracy {
     if (problems.isEmpty) return 0;
     final correctCount = problems.where((p) => p.isCorrect == true).length;
     return correctCount / problems.length;
   }
-  
+
   factory Challenge.fromJson(Map<String, dynamic> json) {
     return Challenge(
       id: json['id'] as String,
@@ -188,7 +189,7 @@ class Challenge {
       timeElapsed: json['time_elapsed'] as int? ?? 0,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -211,21 +212,14 @@ class Challenge {
 }
 
 enum ChallengeType {
-  speedDrill,         // Solve as many as possible in time limit
-  accuracyTest,       // Focus on getting all correct
-  timedRace,          // Beat the clock
-  survival,           // Continue until mistake
-  progressive,        // Gets harder as you progress
+  speedDrill, // Solve as many as possible in time limit
+  accuracyTest, // Focus on getting all correct
+  timedRace, // Beat the clock
+  survival, // Continue until mistake
+  progressive, // Gets harder as you progress
 }
 
-enum DifficultyLevel {
-  beginner,
-  easy,
-  medium,
-  hard,
-  expert,
-  master,
-}
+enum DifficultyLevel { beginner, easy, medium, hard, expert, master }
 
 /// Single problem within a challenge
 class ChallengeProblem {
@@ -234,13 +228,13 @@ class ChallengeProblem {
   final String correctAnswer;
   final int pointValue;
   final int timeLimitSeconds;
-  
+
   // User interaction
   String? userAnswer;
   bool? isCorrect;
   int timeSpent;
   int attempts;
-  
+
   ChallengeProblem({
     required this.id,
     required this.problem,
@@ -252,14 +246,14 @@ class ChallengeProblem {
     this.timeSpent = 0,
     this.attempts = 0,
   });
-  
+
   void submitAnswer(String answer, int elapsedTime) {
     userAnswer = answer;
     timeSpent = elapsedTime;
     attempts++;
     isCorrect = answer.trim() == correctAnswer.trim();
   }
-  
+
   factory ChallengeProblem.fromJson(Map<String, dynamic> json) {
     return ChallengeProblem(
       id: json['id'] as String,
@@ -273,7 +267,7 @@ class ChallengeProblem {
       attempts: json['attempts'] as int? ?? 0,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -299,12 +293,12 @@ class Badge {
   final BadgeTier tier;
   final int requirement;
   final int xpReward;
-  
+
   // Progress
   bool isEarned;
   int currentProgress;
   DateTime? earnedAt;
-  
+
   Badge({
     required this.id,
     required this.title,
@@ -318,12 +312,12 @@ class Badge {
     this.currentProgress = 0,
     this.earnedAt,
   });
-  
+
   double get progressPercentage {
     if (requirement == 0) return 0;
     return (currentProgress / requirement).clamp(0.0, 1.0);
   }
-  
+
   factory Badge.fromJson(Map<String, dynamic> json) {
     return Badge(
       id: json['id'] as String,
@@ -347,7 +341,7 @@ class Badge {
           : null,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -375,10 +369,4 @@ enum BadgeCategory {
   mastery,
 }
 
-enum BadgeTier {
-  bronze,
-  silver,
-  gold,
-  platinum,
-  diamond,
-}
+enum BadgeTier { bronze, silver, gold, platinum, diamond }

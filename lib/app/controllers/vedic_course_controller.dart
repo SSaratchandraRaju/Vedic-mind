@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../data/models/vedic_course_models.dart';
 import '../data/repositories/vedic_course_repository.dart';
+import 'global_progress_controller.dart';
 
 class VedicCourseController extends GetxController {
   final VedicCourseRepository _repository = VedicCourseRepository();
@@ -24,14 +25,17 @@ class VedicCourseController extends GetxController {
       final loadedCourse = await _repository.getCourse();
       course.value = loadedCourse;
       chapters.value = loadedCourse.chapters;
-      
+
       // Initialize user progress (in real app, load from Firebase)
       userProgress.value = UserProgress(userId: 'current_user');
     } catch (e, stackTrace) {
       print('Error loading course: $e');
       print('Stack trace: $stackTrace');
-      Get.snackbar('Error', 'Failed to load course: $e',
-        duration: const Duration(seconds: 5));
+      Get.snackbar(
+        'Error',
+        'Failed to load course: $e',
+        duration: const Duration(seconds: 5),
+      );
     } finally {
       isLoading.value = false;
     }
@@ -64,31 +68,46 @@ class VedicCourseController extends GetxController {
   void completeLesson(int lessonId) {
     if (userProgress.value != null) {
       userProgress.value!.completedLessons[lessonId] = true;
-      
-      // Update the actual lesson object's isCompleted flag
+
+      // Find the lesson to get its name and points
+      String lessonName = 'Lesson $lessonId';
       for (var chapter in chapters) {
         for (var lesson in chapter.lessons) {
           if (lesson.lessonId == lessonId) {
+            lessonName = lesson.lessonTitle;
             lesson.isCompleted = true;
-            
+
             // Unlock next lesson if exists
             final lessonIndex = chapter.lessons.indexOf(lesson);
             if (lessonIndex < chapter.lessons.length - 1) {
               chapter.lessons[lessonIndex + 1].isUnlocked = true;
             }
+
+            // Add history entry for lesson completion (100 points per lesson)
+            try {
+              final globalProgress = Get.find<GlobalProgressController>();
+              globalProgress.addHistoryEntry(
+                section: 'Vedic Tactics',
+                points: 100,
+                description: 'Completed: $lessonName',
+                type: 'lesson',
+              );
+            } catch (e) {
+              print('Error adding history entry: $e');
+            }
             break;
           }
         }
       }
-      
+
       userProgress.refresh();
-      
+
       // Update chapter progress
       updateChapterProgress();
-      
+
       // Check for achievements
       checkAchievements();
-      
+
       // In real app, save to Firebase
       saveProgressToFirebase();
     }
@@ -119,19 +138,19 @@ class VedicCourseController extends GetxController {
     List<String> newBadges = [];
 
     // First Lesson
-    if (progress.completedLessons.isNotEmpty && 
+    if (progress.completedLessons.isNotEmpty &&
         !progress.earnedBadges.contains('first_lesson')) {
       newBadges.add('first_lesson');
     }
 
     // 50 Problems
-    if (progress.totalProblemsAttempted >= 50 && 
+    if (progress.totalProblemsAttempted >= 50 &&
         !progress.earnedBadges.contains('50_problems')) {
       newBadges.add('50_problems');
     }
 
     // 90% Club
-    if (progress.overallAccuracy >= 0.9 && 
+    if (progress.overallAccuracy >= 0.9 &&
         progress.totalProblemsAttempted >= 100 &&
         !progress.earnedBadges.contains('90_club')) {
       newBadges.add('90_club');
@@ -199,5 +218,18 @@ class VedicCourseController extends GetxController {
 
   int getLessonScore(int lessonId) {
     return userProgress.value?.lessonScores[lessonId] ?? 0;
+  }
+
+  /// Get all lessons from all chapters with their parent chapter info
+  List<Map<String, dynamic>> getAllLessons() {
+    final List<Map<String, dynamic>> allLessons = [];
+
+    for (var chapter in chapters) {
+      for (var lesson in chapter.lessons) {
+        allLessons.add({'lesson': lesson, 'chapter': chapter});
+      }
+    }
+
+    return allLessons;
   }
 }

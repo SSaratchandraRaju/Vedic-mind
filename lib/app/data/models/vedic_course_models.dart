@@ -49,7 +49,7 @@ class Chapter {
   final String icon;
   final String color;
   final List<Lesson> lessons;
-  
+
   // Progress tracking
   int completedLessons;
   double progress;
@@ -104,7 +104,7 @@ class Lesson {
   final List<Example> examples;
   final List<PracticeQuestion> practice;
   final String summary;
-  
+
   // Progress tracking
   bool isCompleted;
   bool isUnlocked;
@@ -162,7 +162,7 @@ class Example {
   final String? solution;
   final String? explanation;
   final String? verification;
-  
+
   // Additional fields for varied example types
   final String? method;
   final String? working;
@@ -338,7 +338,7 @@ class PracticeQuestion {
   final int? timeLimit;
   final String? difficulty;
   final List<String>? problems;
-  
+
   // User response tracking
   String? userAnswer;
   bool? isCorrect;
@@ -363,11 +363,15 @@ class PracticeQuestion {
       question: json['question'] as String? ?? '',
       type: json['type'] as String? ?? 'input',
       answer: json['answer'] as String? ?? '',
-      options: json['options'] != null ? List<String>.from(json['options']) : null,
+      options: json['options'] != null
+          ? List<String>.from(json['options'])
+          : null,
       hint: json['hint'] as String?,
       timeLimit: json['time_limit'] as int?,
       difficulty: json['difficulty'] as String?,
-      problems: json['problems'] != null ? List<String>.from(json['problems']) : null,
+      problems: json['problems'] != null
+          ? List<String>.from(json['problems'])
+          : null,
     );
   }
 
@@ -401,7 +405,7 @@ class UserProgress {
   DateTime lastStudyDate;
   int studyStreak;
   final List<String> earnedBadges;
-  
+
   UserProgress({
     required this.userId,
     this.currentChapterId = 1,
@@ -413,10 +417,10 @@ class UserProgress {
     DateTime? lastStudyDate,
     this.studyStreak = 0,
     List<String>? earnedBadges,
-  })  : completedLessons = completedLessons ?? {},
-        lessonScores = lessonScores ?? {},
-        lastStudyDate = lastStudyDate ?? DateTime.now(),
-        earnedBadges = earnedBadges ?? [];
+  }) : completedLessons = completedLessons ?? {},
+       lessonScores = lessonScores ?? {},
+       lastStudyDate = lastStudyDate ?? DateTime.now(),
+       earnedBadges = earnedBadges ?? [];
 
   double get overallAccuracy {
     if (totalProblemsAttempted == 0) return 0;
@@ -469,7 +473,7 @@ class Achievement {
   final String icon;
   final String category; // 'beginner', 'intermediate', 'advanced', 'master'
   final int requirement;
-  
+
   bool isEarned;
   int currentProgress;
 

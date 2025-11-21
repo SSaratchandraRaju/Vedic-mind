@@ -63,7 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '360187297494',
     projectId: 'vedicmind-4c15e',
     storageBucket: 'vedicmind-4c15e.firebasestorage.app',
-    iosClientId: '360187297494-6litn5cs4njf51lfj855suoaa4aiq9ha.apps.googleusercontent.com',
+    iosClientId:
+        '360187297494-6litn5cs4njf51lfj855suoaa4aiq9ha.apps.googleusercontent.com',
     iosBundleId: 'com.example.vedicMaths',
   );
 }

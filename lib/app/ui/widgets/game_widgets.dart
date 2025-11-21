@@ -41,7 +41,7 @@ class GameAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 /// Custom Number Pad for all Sutra Games
-/// Features: 
+/// Features:
 /// - 0-9 number buttons
 /// - Tick (✓) for submit
 /// - Cross (✗) for delete
@@ -172,7 +172,10 @@ class GameNumberPad extends StatelessWidget {
             children: [
               Text(
                 digit,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               if (enableDecimal)
                 const Text(
@@ -345,13 +348,15 @@ class GameStartScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  ...instructions.map((instruction) => Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Text(
-                          instruction,
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                      )),
+                  ...instructions.map(
+                    (instruction) => Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        instruction,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -361,7 +366,10 @@ class GameStartScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: buttonColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 48,
+                  vertical: 16,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
@@ -404,11 +412,7 @@ class GameOverScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.emoji_events,
-              size: 80,
-              color: Colors.amber,
-            ),
+            const Icon(Icons.emoji_events, size: 80, color: Colors.amber),
             const SizedBox(height: 16),
             const Text(
               'Game Over!',
@@ -423,9 +427,19 @@ class GameOverScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _buildStatRow('Final Score', score.toString(), Icons.star, Colors.amber),
+                  _buildStatRow(
+                    'Final Score',
+                    score.toString(),
+                    Icons.star,
+                    Colors.amber,
+                  ),
                   const SizedBox(height: 12),
-                  _buildStatRow('Max Combo', 'x$maxCombo', Icons.whatshot, Colors.orange),
+                  _buildStatRow(
+                    'Max Combo',
+                    'x$maxCombo',
+                    Icons.whatshot,
+                    Colors.orange,
+                  ),
                 ],
               ),
             ),
@@ -440,7 +454,10 @@ class GameOverScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonColor,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -453,7 +470,10 @@ class GameOverScreen extends StatelessWidget {
                   label: const Text('EXIT'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: buttonColor,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -558,9 +578,303 @@ class GameProblemDisplay extends StatelessWidget {
   }
 }
 
+/// Practice Keyboard - Comprehensive keyboard for all practice problems
+/// Features:
+/// - Numbers (0-9)
+/// - Alphabets (A-Z)
+/// - Special characters (negative sign, decimal point)
+/// - Tab switching between numbers and alphabets
+/// - Delete and Submit buttons
+class PracticeKeyboard extends StatefulWidget {
+  final Function(String) onCharacterPressed;
+  final VoidCallback onSubmit;
+  final VoidCallback onDelete;
+  final Color? backgroundColor;
+  final Color submitColor;
+  final Color deleteColor;
+  final Color tabColor;
+
+  const PracticeKeyboard({
+    Key? key,
+    required this.onCharacterPressed,
+    required this.onSubmit,
+    required this.onDelete,
+    this.backgroundColor,
+    this.submitColor = Colors.green,
+    this.deleteColor = Colors.red,
+    this.tabColor = Colors.blue,
+  }) : super(key: key);
+
+  @override
+  State<PracticeKeyboard> createState() => _PracticeKeyboardState();
+}
+
+class _PracticeKeyboardState extends State<PracticeKeyboard> {
+  bool _showNumbers = true; // true = numbers, false = alphabets
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      color: widget.backgroundColor ?? Colors.grey[100],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Tab switcher
+          Row(
+            children: [
+              Expanded(
+                child: _buildTabButton(
+                  label: '123',
+                  isActive: _showNumbers,
+                  onTap: () => setState(() => _showNumbers = true),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildTabButton(
+                  label: 'ABC',
+                  isActive: !_showNumbers,
+                  onTap: () => setState(() => _showNumbers = false),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Keyboard content
+          _showNumbers ? _buildNumberKeyboard() : _buildAlphabetKeyboard(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabButton({
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? widget.tabColor : Colors.grey[300],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: isActive ? Colors.white : Colors.grey[600],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNumberKeyboard() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Row 1: 1, 2, 3
+        Row(
+          children: [
+            for (int i = 1; i <= 3; i++)
+              Expanded(child: _buildKeyButton(i.toString())),
+          ],
+        ),
+        const SizedBox(height: 6),
+
+        // Row 2: 4, 5, 6
+        Row(
+          children: [
+            for (int i = 4; i <= 6; i++)
+              Expanded(child: _buildKeyButton(i.toString())),
+          ],
+        ),
+        const SizedBox(height: 6),
+
+        // Row 3: 7, 8, 9
+        Row(
+          children: [
+            for (int i = 7; i <= 9; i++)
+              Expanded(child: _buildKeyButton(i.toString())),
+          ],
+        ),
+        const SizedBox(height: 6),
+
+        // Row 4: -, 0, .
+        Row(
+          children: [
+            Expanded(child: _buildKeyButton('-')),
+            Expanded(child: _buildKeyButton('0')),
+            Expanded(child: _buildKeyButton('.')),
+          ],
+        ),
+        const SizedBox(height: 6),
+
+        // Row 5: Delete, Submit
+        Row(
+          children: [
+            Expanded(
+              child: _buildActionButton(
+                label: '⌫',
+                onPressed: widget.onDelete,
+                color: widget.deleteColor,
+              ),
+            ),
+            Expanded(
+              child: _buildActionButton(
+                label: '✓',
+                onPressed: widget.onSubmit,
+                color: widget.submitColor,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAlphabetKeyboard() {
+    // QWERTY keyboard layout
+    final rows = [
+      'QWERTYUIOP'.split(''),
+      'ASDFGHJKL'.split(''),
+      'ZXCVBNM'.split(''),
+    ];
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Row 1: Q W E R T Y U I O P
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (final char in rows[0])
+              Expanded(child: _buildKeyButton(char, fontSize: 16)),
+          ],
+        ),
+        const SizedBox(height: 6),
+
+        // Row 2: A S D F G H J K L
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(width: 15), // Offset for QWERTY layout
+            for (final char in rows[1])
+              Expanded(child: _buildKeyButton(char, fontSize: 16)),
+            const SizedBox(width: 15), // Offset for QWERTY layout
+          ],
+        ),
+        const SizedBox(height: 6),
+
+        // Row 3: Z X C V B N M
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(width: 30), // Offset for QWERTY layout
+            for (final char in rows[2])
+              Expanded(child: _buildKeyButton(char, fontSize: 16)),
+            const SizedBox(width: 30), // Offset for QWERTY layout
+          ],
+        ),
+        const SizedBox(height: 6),
+
+        // Row 4: Delete, Space, Submit
+        Row(
+          children: [
+            Expanded(
+              child: _buildActionButton(
+                label: '⌫',
+                onPressed: widget.onDelete,
+                color: widget.deleteColor,
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: _buildKeyButton('Space', isSpaceBar: true),
+            ),
+            Expanded(
+              child: _buildActionButton(
+                label: '✓',
+                onPressed: widget.onSubmit,
+                color: widget.submitColor,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildKeyButton(
+    String character, {
+    double fontSize = 18,
+    bool isSpaceBar = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(3),
+      child: ElevatedButton(
+        onPressed: () {
+          if (isSpaceBar) {
+            widget.onCharacterPressed(' ');
+          } else {
+            widget.onCharacterPressed(character);
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          padding: EdgeInsets.symmetric(
+            vertical: isSpaceBar ? 12 : 14,
+            horizontal: 4,
+          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          elevation: 2,
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: Text(
+          character,
+          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required String label,
+    required VoidCallback onPressed,
+    required Color color,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(3),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          elevation: 2,
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+}
+
 /// Game Feedback Snackbar - Shows feedback for correct/wrong answers
 class GameFeedbackSnackbar {
-  static void show(BuildContext context, {
+  static void show(
+    BuildContext context, {
     required bool isCorrect,
     String? message,
   }) {
@@ -589,9 +903,7 @@ class GameFeedbackSnackbar {
       behavior: SnackBarBehavior.floating,
       duration: Duration(milliseconds: isCorrect ? 1000 : 1500),
       margin: const EdgeInsets.all(16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 6,
     );
 

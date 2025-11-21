@@ -8,7 +8,7 @@ class SutraSimpleModel {
   final String objective;
   final String miniGame;
   final List<PracticeProblem> practice;
-  
+
   SutraSimpleModel({
     required this.sutraId,
     required this.name,
@@ -20,7 +20,7 @@ class SutraSimpleModel {
     required this.miniGame,
     required this.practice,
   });
-  
+
   factory SutraSimpleModel.fromJson(Map<String, dynamic> json) {
     return SutraSimpleModel(
       sutraId: json['sutra_id'],
@@ -33,8 +33,8 @@ class SutraSimpleModel {
       miniGame: json['mini_game'] ?? '',
       practice: json['practice'] != null
           ? (json['practice'] as List)
-              .map((p) => PracticeProblem.fromJson(p))
-              .toList()
+                .map((p) => PracticeProblem.fromJson(p))
+                .toList()
           : [],
     );
   }
@@ -44,13 +44,13 @@ class PracticeProblem {
   final String problem;
   final String answer;
   final String hint;
-  
+
   PracticeProblem({
     required this.problem,
     required this.answer,
     required this.hint,
   });
-  
+
   factory PracticeProblem.fromJson(Map<String, dynamic> json) {
     return PracticeProblem(
       problem: json['problem'],
