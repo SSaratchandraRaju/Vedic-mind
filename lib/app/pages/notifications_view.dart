@@ -21,89 +21,54 @@ class NotificationsView extends GetView<NotificationsController> {
         title:  Text('Notifications', style: AppTextStyles.h5),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              children: [
-                _buildNotificationItem(
-                  icon: Icons.calculate,
-                  iconColor: AppColors.primary,
-                  iconBackground: AppColors.primary.withOpacity(0.1),
-                  title: 'Math Tables',
-                  subtitle: 'You can resume the math test.',
-                  time: '30m ago',
-                ),
-                _buildNotificationItem(
-                  icon: Icons.stars,
-                  iconColor: Colors.white,
-                  iconBackground: const Color(0xFF8B5CF6),
-                  title: 'Practice and level up',
-                  subtitle: 'You can resume the math test.',
-                  time: '30m ago',
-                ),
-                _buildNotificationItem(
-                  icon: Icons.calculate,
-                  iconColor: AppColors.primary,
-                  iconBackground: AppColors.primary.withOpacity(0.1),
-                  title: 'Math Tables',
-                  subtitle: 'You can resume the math test.',
-                  time: '30m ago',
-                ),
-                _buildNotificationItem(
-                  icon: Icons.stars,
-                  iconColor: Colors.white,
-                  iconBackground: const Color(0xFFFFB020),
-                  title: 'Practice and level up',
-                  subtitle: 'You can resume the math test.',
-                  time: '30m ago',
-                ),
-                _buildNotificationItem(
-                  icon: Icons.stars,
-                  iconColor: Colors.white,
-                  iconBackground: const Color(0xFF8B5CF6),
-                  title: 'Practice and level up',
-                  subtitle: 'You can resume the math test.',
-                  time: '30m ago',
-                ),
-                _buildNotificationItem(
-                  icon: Icons.calculate,
-                  iconColor: AppColors.primary,
-                  iconBackground: AppColors.primary.withOpacity(0.1),
-                  title: 'Math Tables',
-                  subtitle: 'You can resume the math test.',
-                  time: '30m ago',
-                ),
-                _buildNotificationItem(
-                  icon: Icons.stars,
-                  iconColor: Colors.white,
-                  iconBackground: const Color(0xFFFFB020),
-                  title: 'Practice and level up',
-                  subtitle: 'You can resume the math test.',
-                  time: '30m ago',
-                ),
-                _buildNotificationItem(
-                  icon: Icons.stars,
-                  iconColor: Colors.white,
-                  iconBackground: const Color(0xFF8B5CF6),
-                  title: 'Practice and level up',
-                  subtitle: 'You can resume the math test.',
-                  time: '30m ago',
-                ),
-                _buildNotificationItem(
-                  icon: Icons.calculate,
-                  iconColor: AppColors.primary,
-                  iconBackground: AppColors.primary.withOpacity(0.1),
-                  title: 'Math Tables',
-                  subtitle: 'You can resume the math test.',
-                  time: '30m ago',
-                ),
-              ],
+      body: Obx(() {
+        final items = controller.notifications;
+        if (items.isEmpty) {
+          return Center(
+            child: Text(
+              'No notifications yet',
+              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
             ),
-          ),
-        ],
-      ),
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final n = items[index];
+            final now = DateTime.now();
+            final diff = now.difference(n.timestamp);
+            String timeLabel;
+            if (diff.inMinutes < 60) {
+              timeLabel = '${diff.inMinutes}m ago';
+            } else if (diff.inHours < 24) {
+              timeLabel = '${diff.inHours}h ago';
+            } else {
+              timeLabel = '${diff.inDays}d ago';
+            }
+            // Basic heuristic: choose icon by keywords
+            final lower = n.title.toLowerCase();
+            IconData icon = Icons.notifications;
+            Color iconBg = AppColors.primary.withOpacity(0.1);
+            Color iconColor = AppColors.primary;
+            if (lower.contains('practice') || lower.contains('level')) {
+              icon = Icons.stars;
+              iconBg = const Color(0xFF8B5CF6);
+              iconColor = Colors.white;
+            } else if (lower.contains('math') || lower.contains('table')) {
+              icon = Icons.calculate;
+            }
+            return _buildNotificationItem(
+              icon: icon,
+              iconColor: iconColor,
+              iconBackground: iconBg,
+              title: n.title,
+              subtitle: n.body,
+              time: timeLabel,
+            );
+          },
+        );
+      }),
     );
   }
 

@@ -1,7 +1,8 @@
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import '../routes/app_routes.dart';
 import 'global_progress_controller.dart';
+import '../data/repositories/firestore_progress_repository.dart';
+import '../services/auth_service.dart';
 
 class MathTablesController extends GetxController {
   final selectedOperation = 2.obs; // Default to × (multiplication) - fixed
@@ -10,7 +11,10 @@ class MathTablesController extends GetxController {
   final currentNavIndex = 1.obs;
   final RxSet<int> completedSections =
       <int>{}.obs; // Track completed section indices
-  final storage = GetStorage();
+  final FirestoreProgressRepository _progressRepo = FirestoreProgressRepository();
+  AuthService? _authService;
+  String? _userId;
+  bool _autoSelectedApplied = false;
 
   // Progress tracking
   final RxInt totalQuestionsAttempted = 0.obs;
@@ -28,48 +32,64 @@ class MathTablesController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _loadProgress();
+    _initAuthAndLoad();
     _autoSelectSection();
   }
 
-  void _loadProgress() {
-    // Load completed sections from storage
-    final saved = storage.read<List>('completed_math_sections');
-    if (saved != null) {
-      completedSections.clear();
-      completedSections.addAll(saved.cast<int>());
+  Future<void> _initAuthAndLoad() async {
+    try {
+      _authService = Get.find<AuthService>();
+      final user = await _authService!.getCurrentUser();
+      _userId = user?.id;
+    } catch (_) {}
+    if (_userId != null) {
+      // Listen to aggregate updates for math tables portion
+      _progressRepo.watchAggregate(_userId!).listen((agg) {
+        totalQuestionsAttempted.value = agg.mathTablesTotalQuestions;
+        totalCorrectAnswers.value = agg.mathTablesCorrectAnswers;
+        totalPoints.value = agg.mathTablesPoints;
+        completedSections.clear();
+        completedSections.addAll(agg.completedMathSections);
+        // After first aggregate load, auto-select first unlocked section if not already applied
+        if (!_autoSelectedApplied) {
+          _autoSelectSection();
+          _autoSelectedApplied = true;
+        }
+      });
     }
-
-    // Load progress statistics
-    totalQuestionsAttempted.value =
-        storage.read<int>('math_tables_total_questions') ?? 0;
-    totalCorrectAnswers.value =
-        storage.read<int>('math_tables_correct_answers') ?? 0;
-    totalPoints.value = storage.read<int>('math_tables_points') ?? 0;
   }
 
   void _autoSelectSection() {
-    // Auto-select the last completed section, or first section if none completed
-    if (completedSections.isNotEmpty) {
-      // Find the highest completed section
-      final lastCompleted = completedSections.reduce((a, b) => a > b ? a : b);
-      // Select it (or the next one if it's not the last section)
-      final sectionToSelect =
-          lastCompleted < totalSections - 1 ? lastCompleted + 1 : lastCompleted;
-      selectedSection.value = sectionToSelect;
-      selectedNumber.value = sectionToSelect * 5 + 1;
-    } else {
-      // No sections completed, select first
-      selectedSection.value = 0;
-      selectedNumber.value = 1;
+    final idx = getFirstUnlockedNotCompletedSectionIndex();
+    selectedSection.value = idx;
+    selectedNumber.value = idx * 5 + 1;
+  }
+
+  int getFirstUnlockedNotCompletedSectionIndex() {
+    // Find the first section that is unlocked and not yet completed
+    for (int i = 0; i < totalSections; i++) {
+      if (isSectionUnlocked(i) && !isSectionCompleted(i)) {
+        return i;
+      }
     }
+    // If all unlocked are completed (e.g., user finished everything), select highest completed
+    if (completedSections.isNotEmpty) {
+      return completedSections.reduce((a, b) => a > b ? a : b);
+    }
+    // Fallback to first section
+    return 0;
   }
 
   void _saveProgress() {
-    storage.write('completed_math_sections', completedSections.toList());
-    storage.write('math_tables_total_questions', totalQuestionsAttempted.value);
-    storage.write('math_tables_correct_answers', totalCorrectAnswers.value);
-    storage.write('math_tables_points', totalPoints.value);
+    if (_userId != null) {
+      _progressRepo.saveMathTablesProgress(
+        userId: _userId!,
+        completedSections: completedSections.toList(),
+        totalQuestions: totalQuestionsAttempted.value,
+        correctAnswers: totalCorrectAnswers.value,
+        points: totalPoints.value,
+      );
+    }
   }
 
   bool isSectionUnlocked(int sectionIndex) {

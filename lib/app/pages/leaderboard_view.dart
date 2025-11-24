@@ -57,57 +57,67 @@ class LeaderboardView extends GetView<LeaderboardController> {
                     ),
                   ),
 
-                  // Top 3 Podium
-                  SizedBox(
-                    height: 250,
-                    child: Stack(
-                      children: [
-                        // Second place (left)
-                        Positioned(
-                          left: 20,
-                          bottom: 0,
-                          child: _PodiumCard(
-                            rank: 2,
-                            name: 'Bradley',
-                            username: '@bradley',
-                            score: '948',
-                            height: 180,
-                            color: AppColors.gray200,
-                          ),
-                        ),
-                        // First place (center)
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          bottom: 20,
-                          child: Center(
-                            child: _PodiumCard(
-                              rank: 1,
-                              name: 'Brooklyn Simna',
-                              username: '@brooklyn',
-                              score: '1248',
-                              height: 220,
-                              color: AppColors.yellow,
-                              hasCrown: true,
+                  // Dynamic Top 3 Podium
+                  Obx(() {
+                    final users = controller.topUsers.take(3).toList();
+                    if (users.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    // Ensure ordering by XP already descending
+                    // Layout positions: 2nd, 1st, 3rd
+                    return SizedBox(
+                      height: 250,
+                      child: Stack(
+                        children: [
+                          if (users.length > 1)
+                            Positioned(
+                              left: 20,
+                              bottom: 0,
+                              child: _PodiumCard(
+                                rank: 2,
+                                name: users[1].displayName,
+                                username: '@${users[1].userId.substring(0, users[1].userId.length > 8 ? 8 : users[1].userId.length)}',
+                                score: users[1].totalXp.toString(),
+                                height: 180,
+                                color: AppColors.gray200,
+                              ),
+                            ),
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: 20,
+                            child: Center(
+                              child: _PodiumCard(
+                                rank: 1,
+                                name: users[0].displayName,
+                                username: '@${users[0].userId.substring(0, users[0].userId.length > 8 ? 8 : users[0].userId.length)}',
+                                score: users[0].totalXp.toString(),
+                                height: 220,
+                                color: AppColors.yellow,
+                                hasCrown: true,
+                              ),
                             ),
                           ),
-                        ),
-                        // Third place (right)
-                        Positioned(
-                          right: 20,
-                          bottom: 0,
-                          child: _PodiumCard(
-                            rank: 3,
-                            name: 'Rustion',
-                            username: '@rustion',
-                            score: '848',
-                            height: 160,
-                            color: AppColors.gray300,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                          if (users.length > 2)
+                            Positioned(
+                              right: 20,
+                              bottom: 0,
+                              child: _PodiumCard(
+                                rank: 3,
+                                name: users[2].displayName,
+                                username: '@${users[2].userId.substring(0, users[2].userId.length > 8 ? 8 : users[2].userId.length)}',
+                                score: users[2].totalXp.toString(),
+                                height: 160,
+                                color: AppColors.gray300,
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  }),
                   const SizedBox(height: 32),
 
                   // Players Around You
@@ -133,32 +143,30 @@ class LeaderboardView extends GetView<LeaderboardController> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Player List
-                  _PlayerListItem(
-                    rank: 4,
-                    name: 'Wade Warren',
-                    score: '748',
-                    isUp: true,
-                  ),
-                  _PlayerListItem(
-                    rank: 5,
-                    name: 'Jenny Wilson',
-                    score: '648',
-                    isUp: false,
-                  ),
-                  _PlayerListItem(
-                    rank: 6,
-                    name: 'You',
-                    score: '648',
-                    isUp: true,
-                    isCurrentUser: true,
-                  ),
-                  _PlayerListItem(
-                    rank: 7,
-                    name: 'Marvin McKinney',
-                    score: '548',
-                    isUp: false,
-                  ),
+                  Obx(() {
+                    final around = controller.aroundYou;
+                    if (controller.loading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (around.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text('No leaderboard data yet.'),
+                      );
+                    }
+                    return Column(
+                      children: [
+                        for (int i = 0; i < around.length; i++)
+                          _PlayerListItem(
+                            rank: controller.topUsers.indexWhere((u) => u.userId == around[i].userId) + 1,
+                            name: around[i].displayName,
+                            score: around[i].totalXp.toString(),
+                            isUp: true, // Placeholder trend; could compute delta
+                            isCurrentUser: around[i].userId == controller.currentUserId,
+                          ),
+                      ],
+                    );
+                  }),
                   const SizedBox(height: 20),
                 ],
               ),

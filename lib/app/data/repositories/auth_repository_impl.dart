@@ -60,4 +60,20 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<bool> sendPasswordResetEmail(String email) {
     return _dataSource.sendPasswordResetEmail(email);
   }
+
+  @override
+  Future<OtpSendResult> sendPhoneOtp(String phoneNumber) {
+    return _dataSource.sendPhoneOtp(phoneNumber);
+  }
+
+  @override
+  Future<AuthResultModel> verifyPhoneOtp({
+    required String verificationId,
+    required String smsCode,
+  }) {
+    return _dataSource.verifyPhoneOtp(
+      verificationId: verificationId,
+      smsCode: smsCode,
+    );
+  }
 }

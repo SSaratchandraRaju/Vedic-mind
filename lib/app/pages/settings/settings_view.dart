@@ -69,7 +69,7 @@ class SettingsView extends GetView<SettingsController> {
                 () => Switch(
                   value: controller.isDarkMode.value,
                   onChanged: (_) => controller.toggleTheme(),
-                  activeColor: AppColors.primary,
+                  activeThumbColor: AppColors.primary,
                 ),
               ),
             ),
@@ -182,7 +182,8 @@ class SettingsView extends GetView<SettingsController> {
         children: [
           // Profile Image
           Obx(() {
-            final imageFile = controller.profileImage.value;
+            final imageFile = controller.profileImage.value; // local temp selection
+            final photoUrl = controller.profilePhotoUrl.value; // from Firestore
             return GestureDetector(
               onTap: controller.pickProfileImage,
               child: Container(
@@ -191,20 +192,39 @@ class SettingsView extends GetView<SettingsController> {
                 decoration: BoxDecoration(
                   color: AppColors.gray200,
                   borderRadius: BorderRadius.circular(28),
-                  image: imageFile != null
-                      ? DecorationImage(
-                          image: FileImage(File(imageFile.path)),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
                 ),
-                child: imageFile == null
-                    ? const Icon(
-                        Icons.person,
-                        size: 32,
-                        color: AppColors.gray400,
+                child: (imageFile != null)
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(28),
+                        child: Image.file(
+                          File(imageFile.path),
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                        ),
                       )
-                    : null,
+                    : (photoUrl.isNotEmpty)
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(28),
+                            child: Image.network(
+                              photoUrl,
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons.person,
+                                  size: 32,
+                                  color: AppColors.gray400,
+                                );
+                              },
+                            ),
+                          )
+                        : const Icon(
+                            Icons.person,
+                            size: 32,
+                            color: AppColors.gray400,
+                          ),
               ),
             );
           }),
@@ -214,16 +234,14 @@ class SettingsView extends GetView<SettingsController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Obx(
-                  () => Text(
-                    controller.profileName.value,
-                    style: AppTextStyles.bodyLarge.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ),
+                Obx(() => Text(
+                      controller.profileName.value,
+                      style: AppTextStyles.bodyLarge.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    )),
                 const SizedBox(height: 4),
                 Row(
                   children: [
@@ -330,7 +348,7 @@ class SettingsView extends GetView<SettingsController> {
             () => Switch(
               value: value.value,
               onChanged: onChanged,
-              activeColor: AppColors.primary,
+              activeThumbColor: AppColors.primary,
             ),
           ),
         ],

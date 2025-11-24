@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import '../data/models/vedic_course_models.dart';
 import '../data/repositories/vedic_course_repository.dart';
+import '../data/repositories/firestore_progress_repository.dart';
+import '../services/auth_service.dart';
 import 'global_progress_controller.dart';
 
 class VedicCourseController extends GetxController {
@@ -65,9 +67,70 @@ class VedicCourseController extends GetxController {
     }
   }
 
-  void completeLesson(int lessonId) {
+  Future<void> completeLesson(int lessonId) async {
     if (userProgress.value != null) {
       userProgress.value!.completedLessons[lessonId] = true;
+
+      // Determine authenticated user id for Firestore writes (await to avoid placeholder usage)
+      String userId = userProgress.value!.userId;
+      try {
+        final auth = Get.find<AuthService>();
+        final u = await auth.getCurrentUser();
+        if (u != null && u.id.isNotEmpty) {
+          userId = u.id; // override placeholder id with real auth id
+        }
+      } catch (e) {
+        // ignore: print_used
+        print('[tactics] AuthService not available or failed: $e');
+      }
+
+      // Compute per-lesson attempts/correct if lesson cached
+      int lessonAttempts = 0;
+      int lessonCorrect = 0;
+      Lesson? target;
+      for (final chapter in chapters) {
+        for (final l in chapter.lessons) {
+          if (l.lessonId == lessonId) {
+            target = l;
+            break;
+          }
+        }
+        if (target != null) break;
+      }
+      if (target != null) {
+        for (final q in target.practice) {
+          if (q.userAnswer != null && q.userAnswer!.isNotEmpty) {
+            lessonAttempts++;
+            if (q.isCorrect == true) lessonCorrect++;
+          }
+        }
+      }
+      // Fallback to global if lesson has no tracked practice
+      if (lessonAttempts == 0) {
+        lessonAttempts = userProgress.value!.totalProblemsAttempted;
+        lessonCorrect = userProgress.value!.totalProblemsCorrect;
+      }
+
+      // Persist to Firestore tactics_stats subcollection with per-lesson metrics
+      try {
+        final repo = FirestoreProgressRepository();
+        await repo.upsertLessonProgress(
+          userId: userId,
+          lessonId: lessonId,
+          progressFields: {
+            'is_completed': true,
+            'points': 100, // fixed per lesson for now
+            'total_attempts': lessonAttempts,
+            'correct_answers': lessonCorrect,
+            'accuracy': lessonAttempts == 0 ? 0 : ((lessonCorrect / lessonAttempts) * 100).round(),
+          },
+        );
+        // ignore: print_used
+        print('[tactics] upsert lessonId=$lessonId userId=$userId attempts=$lessonAttempts correct=$lessonCorrect');
+      } catch (e) {
+        // ignore: print_used
+        print('Error persisting tactics lesson progress: $e');
+      }
 
       // Find the lesson to get its name and points
       String lessonName = 'Lesson $lessonId';
@@ -101,15 +164,9 @@ class VedicCourseController extends GetxController {
       }
 
       userProgress.refresh();
-
-      // Update chapter progress
       updateChapterProgress();
-
-      // Check for achievements
       checkAchievements();
-
-      // In real app, save to Firebase
-      saveProgressToFirebase();
+      await saveProgressToFirebase();
     }
   }
 
@@ -184,11 +241,10 @@ class VedicCourseController extends GetxController {
   }
 
   Future<void> saveProgressToFirebase() async {
-    // TODO: Implement Firebase save
-    // await FirebaseFirestore.instance
-    //     .collection('user_progress')
-    //     .doc(userProgress.value?.userId)
-    //     .set(userProgress.value!.toJson());
+  // TODO: Implement Firebase save -> aggregate progress now stored on users/{userId} document.
+  // await FirebaseFirestore.instance.collection('users')
+  //   .doc(userProgress.value?.userId)
+  //   .set(userProgress.value!.toJson(), SetOptions(merge: true));
   }
 
   double getOverallProgress() {

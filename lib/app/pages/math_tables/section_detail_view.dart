@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' show FontFeature; // For tabular figures (monospaced digits)
 import 'package:get/get.dart';
 import '../../controllers/section_detail_controller.dart';
+import '../../controllers/math_tables_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../ui/theme/app_colors.dart';
 import '../../ui/theme/app_text_styles.dart';
@@ -87,8 +89,7 @@ class SectionDetailView extends GetView<SectionDetailController> {
 
                   // Table Container
                   Obx(() {
-                    final operation = '×'; // Fixed to multiplication only
-                    final operationLabel = 'Multiplication';
+                    final operation = '×';
 
                     return Container(
                       width: double.infinity,
@@ -118,7 +119,7 @@ class SectionDetailView extends GetView<SectionDetailController> {
                               ),
                             ),
                             child: Text(
-                              'Here is your  $operationLabel Operation with ${controller.selectedNumber.value}',
+                              'Here is ${controller.selectedNumber.value} Table',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -161,7 +162,7 @@ class SectionDetailView extends GetView<SectionDetailController> {
                                     width: 1,
                                     color: AppColors.border,
                                     margin: const EdgeInsets.symmetric(
-                                      horizontal: 20,
+                                      horizontal: 25,
                                     ),
                                   ),
                                   // Right column (11-20)
@@ -198,12 +199,38 @@ class SectionDetailView extends GetView<SectionDetailController> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         final sectionIndex = getSectionIndex(
                           controller.selectedNumber.value,
                         );
                         final startNum = sectionIndex * 5 + 1;
                         final endNum = startNum + 4;
+                        // If section already completed, show alert that retake won't affect score/accuracy
+                        final mtController = Get.find<MathTablesController>();
+                        bool isRetake = false;
+                        if (mtController.isSectionCompleted(sectionIndex)) {
+                          final proceed = await Get.dialog<bool>(
+                                AlertDialog(
+                                  title: const Text('Retake Completed Section'),
+                                  content: const Text(
+                                    'You have already completed this section. Retaking will not change your score or accuracy.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Get.back(result: false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => Get.back(result: true),
+                                      child: const Text('Proceed'),
+                                    ),
+                                  ],
+                                ),
+                              ) ??
+                              false;
+                          if (!proceed) return;
+                          isRetake = true;
+                        }
 
                         Get.toNamed(
                           Routes.MATH_TABLES_TEST,
@@ -211,6 +238,7 @@ class SectionDetailView extends GetView<SectionDetailController> {
                             'section': sectionIndex,
                             'startNumber': startNum,
                             'endNumber': endNum,
+                            'retake': isRetake,
                           },
                         );
                       },
@@ -273,61 +301,97 @@ class SectionDetailView extends GetView<SectionDetailController> {
         operatorSymbol = '×';
     }
 
-    return RichText(
-      text: TextSpan(
-        style: const TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-          height: 1.0,
-          // letterSpacing: 0.2,
-          fontFamily: 'Poppins',
-        ),
+    // Ensure consistent, aligned single-line layout across all equations.
+    const double gap = 10.0; // spacing between cells
+    const double baseCellWidth = 48.0; // up to 3 digits (1..100)
+    const double operandCellWidth = 40.0; // up to 2 digits (1..20)
+    // Result can be up to 4 digits for multiplication (2000), and more for division with decimals.
+    final double resultCellWidth = operation == '÷' ? 88.0 : 68.0;
+    const double symbolCellWidth = 18.0; // for single character symbols like × and =
+
+    final baseTextStyle = TextStyle(
+      color: AppColors.textPrimary,
+      fontSize: 20,
+      fontWeight: FontWeight.w500,
+      height: 1.0,
+      fontFamily: 'Poppins',
+      // Use tabular figures so digits take equal width and align nicely.
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
+
+    final symbolTextStyle = TextStyle(
+      color: AppColors.textSecondary.withOpacity(0.5),
+      fontSize: 20,
+      fontWeight: FontWeight.w300,
+      height: 1.0,
+      fontFamily: 'Poppins',
+    );
+
+    final resultTextStyle = baseTextStyle.copyWith(fontWeight: FontWeight.w600);
+
+  final String resultText = operation == '÷'
+    ? (result is int ? result.toString() : result.toStringAsFixed(2))
+    : '${result.toInt()}';
+
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextSpan(
-            text: '$baseNumber',
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Poppins',
+          SizedBox(
+            width: baseCellWidth,
+            child: Text(
+              '$baseNumber',
+              textAlign: TextAlign.right,
+              softWrap: false,
+              overflow: TextOverflow.visible,
+              style: baseTextStyle,
             ),
           ),
-          const TextSpan(text: '  '),
-          TextSpan(
-            text: '$operatorSymbol',
-            style: TextStyle(
-              color: AppColors.textSecondary.withOpacity(0.5),
-              fontWeight: FontWeight.w300,
-              fontFamily: 'Poppins',
+          const SizedBox(width: gap),
+          SizedBox(
+            width: symbolCellWidth,
+            child: Text(
+              operatorSymbol,
+              textAlign: TextAlign.center,
+              softWrap: false,
+              overflow: TextOverflow.visible,
+              style: symbolTextStyle,
             ),
           ),
-          const TextSpan(text: '  '),
-          TextSpan(
-            text: '$operand',
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Poppins',
+          const SizedBox(width: gap),
+          SizedBox(
+            width: operandCellWidth,
+            child: Text(
+              '$operand',
+              textAlign: TextAlign.right,
+              softWrap: false,
+              overflow: TextOverflow.visible,
+              style: baseTextStyle,
             ),
           ),
-          const TextSpan(text: '  '),
-          TextSpan(
-            text: '=',
-            style: TextStyle(
-              color: AppColors.textSecondary.withOpacity(0.5),
-              fontWeight: FontWeight.w300,
-              fontFamily: 'Poppins',
+          const SizedBox(width: gap),
+          SizedBox(
+            width: symbolCellWidth,
+            child: Text(
+              '=',
+              textAlign: TextAlign.center,
+              softWrap: false,
+              overflow: TextOverflow.visible,
+              style: symbolTextStyle,
             ),
           ),
-          const TextSpan(text: '  '),
-          TextSpan(
-            text: operation == '÷'
-                ? result.toStringAsFixed(2)
-                : '${result.toInt()}',
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
+          const SizedBox(width: gap),
+          SizedBox(
+            width: resultCellWidth,
+            child: Text(
+              resultText,
+              textAlign: TextAlign.right,
+              softWrap: false,
+              overflow: TextOverflow.visible,
+              style: resultTextStyle,
             ),
           ),
         ],

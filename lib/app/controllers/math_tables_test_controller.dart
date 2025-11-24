@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:get/get.dart';
+import 'package:vibration/vibration.dart';
 import '../routes/app_routes.dart';
 import 'math_tables_controller.dart';
 import 'global_progress_controller.dart';
@@ -19,6 +20,7 @@ class MathTablesTestController extends GetxController {
   late int startNumber;
   late int endNumber;
   late List<Question> questions;
+  late bool retakeMode;
 
   Timer? _questionTimer;
 
@@ -31,6 +33,7 @@ class MathTablesTestController extends GetxController {
     sectionIndex = args?['section'] ?? 0;
     startNumber = args?['startNumber'] ?? 1;
     endNumber = args?['endNumber'] ?? 5;
+    retakeMode = args?['retake'] ?? false;
 
     _generateQuestions();
     _startQuestionTimer();
@@ -43,10 +46,6 @@ class MathTablesTestController extends GetxController {
   }
 
   int _getTimeForQuestion(int questionIndex) {
-    // Easier questions get more time, harder questions get less time
-    // Question 1 (easiest): 20 seconds
-    // Question 10 (hardest): 10 seconds
-    // Linear decrease: 20 - (questionIndex * 1) seconds
     return (20 - questionIndex).clamp(10, 20);
   }
 
@@ -60,12 +59,11 @@ class MathTablesTestController extends GetxController {
       if (questionTimeRemaining.value > 0) {
         questionTimeRemaining.value--;
       } else {
-        // Time's up - mark as incorrect and move to next question
         timer.cancel();
         if (!showFeedback.value) {
           isCorrect.value = false;
           showFeedback.value = true;
-
+          _hapticError();
           Future.delayed(const Duration(milliseconds: 1500), () {
             nextQuestion();
           });
@@ -78,52 +76,36 @@ class MathTablesTestController extends GetxController {
     questions = [];
     final random = Random();
 
-    // Generate 10 questions with gradually increasing difficulty
     for (int i = 0; i < totalQuestions; i++) {
-      int tableNumber;
-      int multiplier;
-
-      // Gradual difficulty progression from 1-20
-      // Question 1: multiplier 1-2
-      // Question 2: multiplier 3-4
-      // Question 3: multiplier 5-6
-      // ...
-      // Question 10: multiplier 19-20
-
       final minMultiplier = (i * 2) + 1;
-
-      tableNumber = startNumber + random.nextInt(endNumber - startNumber + 1);
-      multiplier = minMultiplier + random.nextInt(2);
-
-      // Clamp multiplier to max 20
+      final tableNumber = startNumber + random.nextInt(endNumber - startNumber + 1);
+      int multiplier = minMultiplier + random.nextInt(2);
       multiplier = multiplier.clamp(1, 20);
-
-      questions.add(
-        Question(
-          number1: tableNumber,
-          number2: multiplier,
-          answer: tableNumber * multiplier,
-        ),
-      );
+      questions.add(Question(number1: tableNumber, number2: multiplier, answer: tableNumber * multiplier));
     }
   }
 
   void onNumberTap(String number) {
     if (showFeedback.value) return;
-
     if (userAnswer.value.length < 4) {
       userAnswer.value += number;
+      _attemptAutoSubmit();
+    }
+  }
+
+  void _attemptAutoSubmit() {
+    if (showFeedback.value) return;
+    final currentQuestion = questions[currentQuestionIndex.value];
+    final expectedLength = currentQuestion.answer.toString().length;
+    if (userAnswer.value.length >= expectedLength) {
+      checkAnswer();
     }
   }
 
   void onBackspace() {
     if (showFeedback.value) return;
-
     if (userAnswer.value.isNotEmpty) {
-      userAnswer.value = userAnswer.value.substring(
-        0,
-        userAnswer.value.length - 1,
-      );
+      userAnswer.value = userAnswer.value.substring(0, userAnswer.value.length - 1);
     }
   }
 
@@ -143,11 +125,13 @@ class MathTablesTestController extends GetxController {
     isCorrect.value = userAnswerInt == currentQuestion.answer;
     if (isCorrect.value) {
       score.value++;
+      _hapticSuccess();
+    } else {
+      _hapticError();
     }
 
     showFeedback.value = true;
 
-    // Auto advance after 1.5 seconds
     Future.delayed(const Duration(milliseconds: 1500), () {
       nextQuestion();
     });
@@ -161,53 +145,39 @@ class MathTablesTestController extends GetxController {
       isCorrect.value = false;
       _startQuestionTimer();
     } else {
-      // Test completed
       _completeTest();
     }
   }
 
   void _completeTest() {
     _questionTimer?.cancel();
-
-    // Import the main controller to mark section completed and update progress
     final mathTablesController = Get.find<MathTablesController>();
-
-    // Calculate points based on score (10 points per correct answer)
     final points = score.value * 10;
-
-    // Update overall progress
-    mathTablesController.updateProgress(
-      questionsAttempted: totalQuestions,
-      correctAnswers: score.value,
-      points: points,
-    );
-
-    // Mark section as completed if score is at least 5/10 (50%)
-    if (score.value >= 5) {
-      mathTablesController.markSectionCompleted(sectionIndex);
+    if (!retakeMode) {
+      mathTablesController.updateProgress(
+        questionsAttempted: totalQuestions,
+        correctAnswers: score.value,
+        points: points,
+      );
+      if (score.value >= 5) {
+        mathTablesController.markSectionCompleted(sectionIndex);
+      }
     }
-
-    // Refresh global progress
     try {
       final globalProgress = Get.find<GlobalProgressController>();
       globalProgress.refreshProgress();
     } catch (e) {
       print('Global progress controller not found: $e');
     }
-
-    // Navigate to results or back
-    Get.back(
-      result: {
-        'score': score.value,
-        'total': totalQuestions,
-        'passed': score.value >= 5,
-      },
-    );
+    Get.back(result: {
+      'score': score.value,
+      'total': totalQuestions,
+      'passed': score.value >= 5,
+    });
   }
 
   void onNavTap(int index) {
     currentNavIndex.value = index;
-
     switch (index) {
       case 0:
         Get.toNamed(Routes.LEADERBOARD);
@@ -220,16 +190,29 @@ class MathTablesTestController extends GetxController {
         break;
     }
   }
+
+  Future<void> _hapticSuccess() async {
+    try {
+      final hasVibrator = await Vibration.hasVibrator();
+      if (hasVibrator == true) {
+        Vibration.vibrate(duration: 40, amplitude: 140);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _hapticError() async {
+    try {
+      final hasVibrator = await Vibration.hasVibrator();
+      if (hasVibrator == true) {
+        Vibration.vibrate(pattern: [0, 30, 70], intensities: [100, 180]);
+      }
+    } catch (_) {}
+  }
 }
 
 class Question {
   final int number1;
   final int number2;
   final int answer;
-
-  Question({
-    required this.number1,
-    required this.number2,
-    required this.answer,
-  });
+  Question({required this.number1, required this.number2, required this.answer});
 }

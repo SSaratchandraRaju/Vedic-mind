@@ -7,14 +7,20 @@ import '../data/models/interactive_step_model.dart';
 import '../data/models/sutra_simple_model.dart';
 import '../data/models/sutra_progress_model.dart';
 import '../services/tts_service.dart';
+import '../services/progress_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'global_progress_controller.dart';
+import '../data/repositories/firestore_progress_repository.dart';
+import '../services/auth_service.dart';
 
 /// Enhanced Vedic Course Controller with TTS and Gamification
 /// Manages course progress, interactive learning, and achievements
 class EnhancedVedicCourseController extends GetxController {
   final TtsService _ttsService = Get.find<TtsService>();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirestoreProgressRepository _progressRepo = FirestoreProgressRepository();
+  final ProgressService _progressService = ProgressService();
+  AuthService? _authService;
 
   // Observable state
   final Rx<VedicCourse?> currentCourse = Rx<VedicCourse?>(null);
@@ -53,8 +59,11 @@ class EnhancedVedicCourseController extends GetxController {
 
   // Sutra-specific progress tracking
   final RxMap<int, SutraProgress> sutraProgress = <int, SutraProgress>{}.obs;
+  // Tactics (lessons) granular progress (attempts & correct answers) if needed later
+  final RxMap<int, Map<String, dynamic>> lessonGranular = <int, Map<String, dynamic>>{}.obs;
 
   String? userId;
+  DateTime? _lastGranularRefresh; // track last granular reload to avoid excessive network hits
 
   @override
   void onInit() {
@@ -63,6 +72,22 @@ class EnhancedVedicCourseController extends GetxController {
     _loadUserProgress();
     _initializeBadges();
     loadSutrasFromJson();
+    _initAuth();
+  }
+
+  @override
+  void onReady() {
+    // Ensure we have fresh granular data once the controller is fully ready.
+    refreshGranularProgress(force: true);
+    super.onReady();
+  }
+
+  Future<void> _initAuth() async {
+    try {
+      _authService = Get.find<AuthService>();
+      final user = await _authService!.getCurrentUser();
+      userId = user?.id;
+    } catch (_) {}
   }
 
   @override
@@ -86,10 +111,10 @@ class EnhancedVedicCourseController extends GetxController {
     if (userId == null) return;
 
     try {
-      final doc = await _firestore
-          .collection('user_progress')
-          .doc(userId)
-          .get();
+    final doc = await _firestore
+      .collection('users')
+      .doc(userId)
+      .get();
 
       if (doc.exists) {
         final data = doc.data()!;
@@ -108,27 +133,99 @@ class EnhancedVedicCourseController extends GetxController {
           _loadEarnedBadges(badgeIds);
         }
       }
+
+      // Load sutra granular progress and merge into local models
+      final sutraMap = await _progressService.loadAllSutraProgress(userId!);
+      for (final entry in sutraMap.entries) {
+        final id = entry.key;
+        final data = entry.value;
+        final current = sutraProgress[id] ?? SutraProgress(sutraId: id);
+        sutraProgress[id] = current.copyWith(
+          totalAttempts: (data['total_attempts'] ?? current.totalAttempts) as int,
+          correctAnswers: (data['correct_answers'] ?? current.correctAnswers) as int,
+          wrongAnswers: (data['wrong_answers'] ?? current.wrongAnswers) as int,
+          hintsUsed: (data['hints_used'] ?? current.hintsUsed) as int,
+          hasCompletedInteractive: (data['has_completed_interactive'] ?? current.hasCompletedInteractive) as bool,
+          isCompleted: (data['is_completed'] ?? current.isCompleted) as bool,
+          lastAttemptDate: _parseDate(data['last_attempt_date']) ?? current.lastAttemptDate,
+          completedDate: _parseDate(data['completed_date']) ?? current.completedDate,
+        );
+      }
+
+      // Load lesson granular progress (for tactics accuracy later)
+      final lessonMap = await _progressService.loadAllLessonProgress(userId!);
+      lessonGranular.assignAll(lessonMap);
     } catch (e) {
       print('Error loading user progress: $e');
     }
   }
 
+  /// Public method to refresh granular progress (sutras + lessons) from Firestore.
+  /// Will skip if recently refreshed unless force = true.
+  Future<void> refreshGranularProgress({bool force = false}) async {
+    if (userId == null) {
+      await _initAuth();
+    }
+    if (userId == null) return; // still not available
+
+    final now = DateTime.now();
+    if (!force && _lastGranularRefresh != null &&
+        now.difference(_lastGranularRefresh!) < const Duration(seconds: 30)) {
+      return; // throttle
+    }
+
+    try {
+      // Reload sutra granular progress
+      final sutraMap = await _progressService.loadAllSutraProgress(userId!);
+      for (final entry in sutraMap.entries) {
+        final id = entry.key;
+        final data = entry.value;
+        final current = sutraProgress[id] ?? SutraProgress(sutraId: id);
+        sutraProgress[id] = current.copyWith(
+          totalAttempts: (data['total_attempts'] ?? current.totalAttempts) as int,
+          correctAnswers: (data['correct_answers'] ?? current.correctAnswers) as int,
+          wrongAnswers: (data['wrong_answers'] ?? current.wrongAnswers) as int,
+          hintsUsed: (data['hints_used'] ?? current.hintsUsed) as int,
+          hasCompletedInteractive: (data['has_completed_interactive'] ?? current.hasCompletedInteractive) as bool,
+          isCompleted: (data['is_completed'] ?? current.isCompleted) as bool,
+          lastAttemptDate: _parseDate(data['last_attempt_date']) ?? current.lastAttemptDate,
+          completedDate: _parseDate(data['completed_date']) ?? current.completedDate,
+        );
+      }
+
+      // Reload lesson granular progress
+      final lessonMap = await _progressService.loadAllLessonProgress(userId!);
+      lessonGranular.assignAll(lessonMap);
+    } catch (e) {
+      print('Error refreshing granular progress: $e');
+    } finally {
+      _lastGranularRefresh = now;
+    }
+  }
+
+  DateTime? _parseDate(dynamic v) {
+    if (v == null) return null;
+    if (v is String) {
+      try { return DateTime.parse(v); } catch (_) { return null; }
+    }
+    return null;
+  }
+
   /// Save user progress to Firestore
   Future<void> _saveUserProgress() async {
     if (userId == null) return;
-
     try {
-      await _firestore.collection('user_progress').doc(userId).set({
+      final data = {
         'completed_lessons': Map<String, dynamic>.from(completedLessons),
         'lesson_scores': Map<String, dynamic>.from(lessonScores),
         'total_problems_attempted': totalProblemsAttempted.value,
         'total_problems_correct': totalProblemsCorrect.value,
-        'total_xp': totalXP.value,
-        'current_level': currentLevel.value,
         'streak': streak.value,
         'earned_badges': earnedBadges.map((b) => b.id).toList(),
         'last_updated': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      };
+      await _firestore.collection('users').doc(userId).set(data, SetOptions(merge: true));
+      // Removed direct leaderboard write; central recompute handles leaderboard consistency.
     } catch (e) {
       print('Error saving user progress: $e');
     }
@@ -234,6 +331,32 @@ class EnhancedVedicCourseController extends GetxController {
     final lessonId = currentLesson.value!.lessonId;
     completedLessons[lessonId] = true;
 
+    // Persist lesson completion (points: 100 base + bonus XP just awarded)
+    if (userId != null) {
+      final existing = lessonGranular[lessonId] ?? {};
+  final int totalAttempts = (existing['total_attempts'] ?? 0) is int ? existing['total_attempts'] : 0;
+  final int correctAnswers = (existing['correct_answers'] ?? 0) is int ? existing['correct_answers'] : 0;
+  final int points = ((existing['points'] ?? 0) is int ? existing['points'] : 0) + 100;
+      await _progressService.upsertLesson(
+        userId: userId!,
+        lessonId: lessonId,
+        fields: {
+          'is_completed': true,
+          'total_attempts': totalAttempts,
+          'correct_answers': correctAnswers,
+          'points': points,
+          'accuracy': totalAttempts == 0 ? 0 : ((correctAnswers / totalAttempts) * 100).round(),
+        },
+      );
+      lessonGranular[lessonId] = {
+        'is_completed': true,
+        'total_attempts': totalAttempts,
+        'correct_answers': correctAnswers,
+        'points': points,
+        'accuracy': totalAttempts == 0 ? 0 : ((correctAnswers / totalAttempts) * 100).round(),
+      };
+    }
+
     final xpEarned = _calculateLessonXP();
     await awardXP(xpEarned);
     await _checkBadgeEligibility();
@@ -265,11 +388,14 @@ class EnhancedVedicCourseController extends GetxController {
   /// Award XP and check for level up
   Future<void> awardXP(int xp) async {
     totalXP.value += xp;
-
     final newLevel = (totalXP.value / 500).floor() + 1;
     if (newLevel > currentLevel.value) {
       currentLevel.value = newLevel;
       _showLevelUpDialog();
+    }
+    if (userId != null) {
+      // Delegate to progress repository which also recomputes leaderboard
+      await _progressRepo.awardXP(userId: userId!, xp: xp);
     }
   }
 
@@ -293,6 +419,41 @@ class EnhancedVedicCourseController extends GetxController {
   Future<void> submitAnswer(PracticeQuestion question, String answer) async {
     question.checkAnswer(answer);
     totalProblemsAttempted.value++;
+
+    // Track attempts per active lesson (tactics)
+    if (currentLesson.value != null && userId != null) {
+      final lessonId = currentLesson.value!.lessonId;
+      final existing = lessonGranular[lessonId] ?? {
+        'total_attempts': 0,
+        'correct_answers': 0,
+        'is_completed': false,
+        'points': 0,
+      };
+  int attempts = ((existing['total_attempts'] ?? 0) is int ? existing['total_attempts'] : 0) + 1;
+  int correct = ((existing['correct_answers'] ?? 0) is int ? existing['correct_answers'] : 0) + (question.isCorrect == true ? 1 : 0);
+  int points = ((existing['points'] ?? 0) is int ? existing['points'] : 0) + (question.isCorrect == true ? 5 : 0);
+
+      // Optimistic local update
+      lessonGranular[lessonId] = {
+        'total_attempts': attempts,
+        'correct_answers': correct,
+        'is_completed': existing['is_completed'] ?? false,
+        'points': points,
+      };
+
+      // Persist granular attempt
+      await _progressService.upsertLesson(
+        userId: userId!,
+        lessonId: lessonId,
+        fields: {
+          'total_attempts': attempts,
+          'correct_answers': correct,
+          'is_completed': existing['is_completed'] ?? false,
+          'points': points,
+          'accuracy': attempts == 0 ? 0 : ((correct / attempts) * 100).round(),
+        },
+      );
+    }
 
     if (question.isCorrect == true) {
       totalProblemsCorrect.value++;
@@ -415,6 +576,14 @@ class EnhancedVedicCourseController extends GetxController {
     earnedBadges.add(badge);
 
     await awardXP(badge.xpReward);
+
+    if (userId != null) {
+      await _progressRepo.awardBadge(
+        userId: userId!,
+        badgeId: badge.id,
+        xpReward: 0,
+      );
+    }
 
     Get.dialog(
       AlertDialog(
@@ -540,6 +709,25 @@ class EnhancedVedicCourseController extends GetxController {
     if (isCorrect) {
       totalProblemsCorrect.value++;
     }
+
+    if (userId != null) {
+      _progressService.upsertSutra(
+        userId: userId!,
+        sutraId: sutraId,
+        fields: {
+          'total_attempts': updated.totalAttempts,
+          'correct_answers': updated.correctAnswers,
+          'wrong_answers': updated.wrongAnswers,
+          'hints_used': updated.hintsUsed,
+          'has_completed_interactive': updated.hasCompletedInteractive,
+          'is_completed': updated.isCompleted,
+          'last_attempt_date': updated.lastAttemptDate?.toIso8601String(),
+          'completed_date': updated.completedDate?.toIso8601String(),
+          'accuracy': updated.accuracy,
+          'points': updated.points,
+        },
+      );
+    }
   }
 
   /// Mark sutra as completed
@@ -567,6 +755,26 @@ class EnhancedVedicCourseController extends GetxController {
     } catch (e) {
       print('Error adding history entry: $e');
     }
+
+    if (userId != null) {
+      final updated = sutraProgress[sutraId]!;
+      _progressService.upsertSutra(
+        userId: userId!,
+        sutraId: sutraId,
+        fields: {
+          'total_attempts': updated.totalAttempts,
+          'correct_answers': updated.correctAnswers,
+          'wrong_answers': updated.wrongAnswers,
+          'hints_used': updated.hintsUsed,
+          'has_completed_interactive': updated.hasCompletedInteractive,
+          'is_completed': updated.isCompleted,
+          'last_attempt_date': updated.lastAttemptDate?.toIso8601String(),
+          'completed_date': updated.completedDate?.toIso8601String(),
+          'accuracy': updated.accuracy,
+          'points': updated.points,
+        },
+      );
+    }
   }
 
   /// Mark interactive lesson as completed for a sutra
@@ -577,6 +785,26 @@ class EnhancedVedicCourseController extends GetxController {
 
     // Check if sutra should be auto-completed
     checkAndCompleteSutra(sutraId);
+
+    if (userId != null) {
+      final updated = sutraProgress[sutraId]!;
+      _progressService.upsertSutra(
+        userId: userId!,
+        sutraId: sutraId,
+        fields: {
+          'total_attempts': updated.totalAttempts,
+          'correct_answers': updated.correctAnswers,
+          'wrong_answers': updated.wrongAnswers,
+          'hints_used': updated.hintsUsed,
+          'has_completed_interactive': updated.hasCompletedInteractive,
+          'is_completed': updated.isCompleted,
+          'last_attempt_date': updated.lastAttemptDate?.toIso8601String(),
+          'completed_date': updated.completedDate?.toIso8601String(),
+          'accuracy': updated.accuracy,
+          'points': updated.points,
+        },
+      );
+    }
   }
 
   /// Check if sutra meets completion criteria and auto-complete if so

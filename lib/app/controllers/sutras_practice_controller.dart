@@ -2,15 +2,18 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'enhanced_vedic_course_controller.dart';
 import 'global_progress_controller.dart';
 import '../data/models/sutra_simple_model.dart';
+import '../data/repositories/firestore_progress_repository.dart';
+import '../services/auth_service.dart';
 
 class SutrasPracticeController extends GetxController {
   final EnhancedVedicCourseController vedicController =
       Get.find<EnhancedVedicCourseController>();
-  final storage = GetStorage();
+  final FirestoreProgressRepository _progressRepo = FirestoreProgressRepository();
+  AuthService? _authService;
+  String? _userId;
 
   final isLoading = true.obs;
   final currentQuestionIndex = 0.obs;
@@ -33,7 +36,16 @@ class SutrasPracticeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _initAuth();
     _loadQuestions();
+  }
+
+  Future<void> _initAuth() async {
+    try {
+      _authService = Get.find<AuthService>();
+      final user = await _authService!.getCurrentUser();
+      _userId = user?.id;
+    } catch (_) {}
   }
 
   @override
@@ -216,30 +228,22 @@ class SutrasPracticeController extends GetxController {
 
     final accuracy = (correctAnswers / totalQuestions.value * 100).round();
 
-    // Save progress to storage
-    final currentPoints = storage.read<int>('practice_sutras_points') ?? 0;
-    final currentQuestions =
-        storage.read<int>('practice_sutras_questions') ?? 0;
-    final currentCorrect = storage.read<int>('practice_sutras_correct') ?? 0;
+    // Removed local GetStorage mirrors; Firestore aggregation handles persistence.
 
-    storage.write('practice_sutras_points', currentPoints + totalPoints.value);
-    storage.write(
-      'practice_sutras_questions',
-      currentQuestions + totalQuestions.value,
-    );
-    storage.write('practice_sutras_correct', currentCorrect + correctAnswers);
-
-    // Update global practice stats
-    final globalPoints = storage.read<int>('practice_total_points') ?? 0;
-    final globalQuestions = storage.read<int>('practice_total_questions') ?? 0;
-    final globalCorrect = storage.read<int>('practice_correct_answers') ?? 0;
-
-    storage.write('practice_total_points', globalPoints + totalPoints.value);
-    storage.write(
-      'practice_total_questions',
-      globalQuestions + totalQuestions.value,
-    );
-    storage.write('practice_correct_answers', globalCorrect + correctAnswers);
+    // Firestore remote persistence
+    if (_userId != null) {
+      _progressRepo.recordPracticeSession(
+        userId: _userId!,
+        mode: 'sutras',
+        operation: 'mixed',
+        questionsAttempted: totalQuestions.value,
+        correctAnswers: correctAnswers,
+        pointsEarned: totalPoints.value,
+        durationSeconds: totalQuestions.value * questionTimeLimit.value,
+        source: 'sutras_practice_controller',
+      );
+      // Totals recomputed automatically via recordPracticeSession.
+    }
 
     // Refresh global progress
     try {

@@ -150,14 +150,44 @@ class MathTablesView extends GetView<MathTablesController> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: () => Get.toNamed(
-                      Routes.MATH_TABLES_TEST,
-                      arguments: {
-                        'section': controller.selectedSection.value,
-                        'startNumber': controller.selectedSection.value * 5 + 1,
-                        'endNumber': controller.selectedSection.value * 5 + 5,
-                      },
-                    ),
+                    onPressed: () async {
+                      final section = controller.selectedSection.value;
+                      final startNum = section * 5 + 1;
+                      final endNum = section * 5 + 5;
+                      bool isRetake = false;
+                      if (controller.isSectionCompleted(section)) {
+                        final proceed = await Get.dialog<bool>(
+                              AlertDialog(
+                                title: const Text('Retake Completed Section'),
+                                content: const Text(
+                                  'You have already completed this section. Retaking will not change your score or accuracy.',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Get.back(result: false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () => Get.back(result: true),
+                                    child: const Text('Proceed'),
+                                  ),
+                                ],
+                              ),
+                            ) ??
+                            false;
+                        if (!proceed) return;
+                        isRetake = true;
+                      }
+                      Get.toNamed(
+                        Routes.MATH_TABLES_TEST,
+                        arguments: {
+                          'section': section,
+                          'startNumber': startNum,
+                          'endNumber': endNum,
+                          'retake': isRetake,
+                        },
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,

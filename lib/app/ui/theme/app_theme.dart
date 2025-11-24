@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vedic_maths/app/ui/theme/app_colors.dart';
+import 'package:vedicmind/app/ui/theme/app_colors.dart';
 
 class AppTheme {
   static final lightTheme = ThemeData(

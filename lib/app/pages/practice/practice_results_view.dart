@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import '../../data/repositories/firestore_progress_repository.dart';
+import '../../services/auth_service.dart';
 import '../../controllers/practice_controller.dart';
 import '../../controllers/global_progress_controller.dart';
 import '../../ui/theme/app_colors.dart';
@@ -14,20 +15,33 @@ class PracticeResultsView extends StatefulWidget {
 }
 
 class _PracticeResultsViewState extends State<PracticeResultsView> {
-  final storage = GetStorage();
+  final FirestoreProgressRepository _progressRepo = FirestoreProgressRepository();
+  AuthService? _authService;
+  String? _userId;
 
   @override
   void initState() {
     super.initState();
     // Save practice results when view is loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initAuth().then((_) {
       _savePracticeResults();
+      });
     });
+  }
+
+  Future<void> _initAuth() async {
+    try {
+      _authService = Get.find<AuthService>();
+      final user = await _authService!.getCurrentUser();
+      _userId = user?.id;
+    } catch (_) {}
   }
 
   void _savePracticeResults() {
     final args = Get.arguments as Map<String, dynamic>;
     final questions = args['questions'] as List<PracticeQuestion>;
+    final totalTime = args['totalTime'] as int? ?? 0;
 
     final questionsAnswered = questions.where((q) => q.userAnswer != null).length;
     final correctAnswers = questions.where((q) => q.isCorrect).length;
@@ -35,15 +49,22 @@ class _PracticeResultsViewState extends State<PracticeResultsView> {
     // Calculate points (10 points per correct answer)
     final pointsEarned = correctAnswers * 10;
 
-    // Get existing totals
-    final existingPoints = storage.read<int>('practice_total_points') ?? 0;
-    final existingQuestions = storage.read<int>('practice_total_questions') ?? 0;
-    final existingCorrect = storage.read<int>('practice_correct_answers') ?? 0;
+  // Local aggregate mirrors removed; relying solely on Firestore aggregation.
 
-    // Update totals
-    storage.write('practice_total_points', existingPoints + pointsEarned);
-    storage.write('practice_total_questions', existingQuestions + questionsAnswered);
-    storage.write('practice_correct_answers', existingCorrect + correctAnswers);
+    // Firestore remote update
+    if (_userId != null) {
+      _progressRepo.recordPracticeSession(
+        userId: _userId!,
+        mode: 'arithmetic',
+        operation: 'mixed',
+        questionsAttempted: questionsAnswered,
+        correctAnswers: correctAnswers,
+        pointsEarned: pointsEarned,
+        durationSeconds: totalTime,
+        source: 'practice_results_view',
+      );
+      // Totals recomputed automatically inside recordPracticeSession.
+    }
 
     // Add history entry
     if (pointsEarned > 0) {

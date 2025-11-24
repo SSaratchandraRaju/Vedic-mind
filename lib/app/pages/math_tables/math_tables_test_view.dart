@@ -139,6 +139,7 @@ class MathTablesTestView extends GetView<MathTablesTestController> {
 
                         // Question Display
                         Text(
+        
                           '${question.number1} × ${question.number2}',
                           style: const TextStyle(
                             fontSize: 56,
@@ -252,43 +253,6 @@ class MathTablesTestView extends GetView<MathTablesTestController> {
             ),
           ),
 
-          // Submit Button
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-            child: Obx(() {
-              final showFeedback = controller.showFeedback.value;
-              final hasAnswer = controller.userAnswer.value.isNotEmpty;
-
-              return SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: hasAnswer && !showFeedback
-                      ? controller.checkAnswer
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColors.gray100,
-                    disabledForegroundColor: AppColors.textSecondary,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'Submit Answer',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ),
 
           Obx(
             () => BottomNavBar(

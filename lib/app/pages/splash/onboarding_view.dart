@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,8 +35,8 @@ class OnboardingView extends GetView<OnboardingController> {
               () => Stack(
                 children: [
                   // Animated floating elements
-                  if (controller.currentPage.value < 2)
-                    ..._buildFloatingElements(controller.currentPage.value),
+                  // Always show unified floating elements (same layout for all pages)
+                  ..._buildFloatingElements(),
 
                   // Main content
                   Column(
@@ -62,6 +61,12 @@ class OnboardingView extends GetView<OnboardingController> {
                               description:
                                   'Enjoy best in the math and\nimprove your brain',
                             ),
+                            _OnboardingPage(
+                              illustration: _buildIllustration3(),
+                              title: 'Multiple delivery options',
+                              description:
+                                  'Enjoy best in the math and\nimprove your brain',
+                            ),
                           ],
                         ),
                       ),
@@ -69,7 +74,7 @@ class OnboardingView extends GetView<OnboardingController> {
                       const SizedBox(height: 20),
 
                       // Progress and skip button
-                      if (controller.currentPage.value < 2) ...[
+                      if (controller.currentPage.value < 3) ...[
                         GestureDetector(
                           onTap: controller.nextPage,
                           child: SizedBox(
@@ -82,8 +87,7 @@ class OnboardingView extends GetView<OnboardingController> {
                                   width: 90,
                                   height: 90,
                                   child: CircularProgressIndicator(
-                                    value:
-                                        (controller.currentPage.value + 1) / 2,
+                                    value: (controller.currentPage.value + 1) / 3,
                                     strokeWidth: 3,
                                     backgroundColor: Colors.white.withOpacity(
                                       0.3,
@@ -148,10 +152,9 @@ class OnboardingView extends GetView<OnboardingController> {
     );
   }
 
-  List<Widget> _buildFloatingElements(int pageIndex) {
+  List<Widget> _buildFloatingElements() {
+    // Unified set of floating elements (original page 0 layout reused)
     return [
-      // Page 0 - Screen 1 elements
-      if (pageIndex == 0) ...[
         _AnimatedFloatingElement(
           animation: controller.animationController,
           startTop: -10,
@@ -236,104 +239,6 @@ class OnboardingView extends GetView<OnboardingController> {
             height: 30,
           ),
         ),
-      ],
-
-      // Page 1 - Screen 2 elements
-      if (pageIndex == 1) ...[
-        // Top left dashed circle outline
-        _AnimatedFloatingElement(
-          animation: controller.animationController,
-          startTop: -10,
-          startLeft: -80,
-          endTop: 0,
-          endLeft: -50,
-          child: SvgPicture.asset(
-            'assets/illustrations/circle.svg',
-            width: 85,
-            height: 85,
-            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-          ),
-        ),
-        // Top left to middle - dotted arrow
-        _AnimatedFloatingElement(
-          animation: controller.animationController,
-          startTop: 80,
-          startLeft: -50,
-          endTop: 80,
-          endLeft: 5,
-          delay: 0.1,
-          child: Transform.rotate(
-            angle: math.pi,
-            child: SvgPicture.asset(
-              'assets/illustrations/dottedarrow.svg',
-              width: 220,
-              height: 200,
-            ),
-          ),
-        ),
-        // Top right green circle
-        _AnimatedFloatingElement(
-          animation: controller.animationController,
-          startTop: 60,
-          startRight: -60,
-          endTop: 60,
-          endRight: 105,
-          delay: 0.15,
-          child: SvgPicture.asset(
-            'assets/illustrations/shadedcircle.svg',
-            width: 25,
-            height: 25,
-          ),
-        ),
-        // Top right orange triangle
-        _AnimatedFloatingElement(
-          animation: controller.animationController,
-          startTop: 140,
-          startRight: -50,
-          endTop: 140,
-          endRight: 35,
-          delay: 0.2,
-          child: SvgPicture.asset(
-            'assets/illustrations/triangle1.svg',
-            width: 60,
-            height: 60,
-          ),
-        ),
-        // Bottom left large triangle
-        _AnimatedFloatingElement(
-          animation: controller.animationController,
-          startBottom: 220,
-          startLeft: -70,
-          endBottom: 220,
-          endLeft: -20,
-          delay: 0.25,
-          child: Transform.rotate(
-            angle: 0.3,
-            child: SvgPicture.asset(
-              'assets/illustrations/triangle1.svg',
-              width: 70,
-              height: 70,
-            ),
-          ),
-        ),
-        // Bottom right yellow blob
-        _AnimatedFloatingElement(
-          animation: controller.animationController,
-          startBottom: 140,
-          startRight: -100,
-          endBottom: 0,
-          endRight: -50,
-          delay: 0.3,
-          child: Transform.rotate(
-            angle: math.pi,
-            child: SvgPicture.asset(
-              'assets/illustrations/Vector.svg',
-              width: 160,
-              height: 160,
-            ),
-          ),
-        ),
-      ],
     ];
   }
 
@@ -354,6 +259,17 @@ class OnboardingView extends GetView<OnboardingController> {
       height: 280,
       child: SvgPicture.asset(
         'assets/illustrations/screen2.svg',
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+
+  Widget _buildIllustration3() {
+    return SizedBox(
+      width: 280,
+      height: 280,
+      child: SvgPicture.asset(
+        'assets/illustrations/screen3.svg',
         fit: BoxFit.contain,
       ),
     );

@@ -2,10 +2,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../data/repositories/firestore_user_settings_repository.dart';
 import '../services/auth_service.dart';
 import '../routes/app_routes.dart';
-import 'package:vedic_maths/app/ui/widgets/alert_dialog_util.dart';
+import 'package:vedicmind/app/ui/widgets/alert_dialog_util.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:async';
 
 class SettingsController extends GetxController {
   // Acquire AuthService lazily in onInit to avoid construction-time Get.find errors
@@ -19,6 +22,7 @@ class SettingsController extends GetxController {
   final profileImage = Rx<File?>(null);
   final profileName = ''.obs;
   final profileEmail = ''.obs;
+  final profilePhotoUrl = ''.obs;
   final isLoading = false.obs;
   final userType = 'Adult'.obs;
 
@@ -42,18 +46,33 @@ class SettingsController extends GetxController {
 
   @override
   void onClose() {
+    _userDocSub?.cancel();
     nameController.dispose();
     super.onClose();
   }
 
-  // Load saved settings from SharedPreferences
+  final FirestoreUserSettingsRepository _settingsRepo = FirestoreUserSettingsRepository();
+  String? _userId;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _userDocSub;
+
+  Future<void> _ensureUserId() async {
+    if (_authService == null) return;
+    if (_userId != null) return;
+    final u = await _authService!.getCurrentUser();
+    _userId = u?.id;
+  }
+
+  // Load saved settings from Firestore user_settings
   Future<void> _loadSettings() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      isDarkMode.value = prefs.getBool('isDarkMode') ?? false;
-      pushNotifications.value = prefs.getBool('pushNotifications') ?? true;
-      emailNotifications.value = prefs.getBool('emailNotifications') ?? true;
-      userType.value = prefs.getString('userType') ?? 'Adult';
+      await _ensureUserId();
+      if (_userId == null) return;
+      _settingsRepo.watch(_userId!).listen((settings) {
+        isDarkMode.value = settings.isDarkMode;
+        pushNotifications.value = settings.pushNotifications;
+        emailNotifications.value = settings.emailNotifications;
+        userType.value = settings.userType[0].toUpperCase() + settings.userType.substring(1);
+      });
     } catch (e) {
       debugPrint('Error loading settings: $e');
     }
@@ -65,20 +84,40 @@ class SettingsController extends GetxController {
     try {
       final user = await _authService!.getCurrentUser();
       if (user != null) {
-        profileName.value = user.displayName ?? 'User';
+        // Email stays from auth (not editable here)
         profileEmail.value = user.email;
-        nameController.text = profileName.value;
 
-        // Load saved profile image path from SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        final savedImagePath = prefs.getString('profileImagePath');
-        if (savedImagePath != null && savedImagePath.isNotEmpty) {
-          profileImage.value = File(savedImagePath);
+        await _ensureUserId();
+        if (_userId != null) {
+          _subscribeUserDoc();
         }
       }
     } catch (e) {
       debugPrint('Error loading user profile: $e');
     }
+  }
+
+  void _subscribeUserDoc() {
+    _userDocSub?.cancel();
+    _userDocSub = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_userId)
+        .snapshots()
+        .listen((snap) {
+      final data = snap.data();
+      if (data == null) return;
+      final dn = data['displayName'];
+      final pu = data['photoUrl'];
+      if (dn is String && dn.isNotEmpty) {
+        profileName.value = dn;
+        nameController.text = dn;
+      }
+      if (pu is String && pu.isNotEmpty) {
+        profilePhotoUrl.value = pu;
+      }
+    }, onError: (e) {
+      debugPrint('User doc stream error: $e');
+    });
   }
 
   // Toggle theme
@@ -89,9 +128,10 @@ class SettingsController extends GetxController {
       // Update app theme
       Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
 
-      // Save preference
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isDarkMode', isDarkMode.value);
+      await _ensureUserId();
+      if (_userId != null) {
+        await _settingsRepo.toggleDarkMode(_userId!, isDarkMode.value);
+      }
 
       Get.snackbar(
         'Theme Updated',
@@ -110,8 +150,10 @@ class SettingsController extends GetxController {
   Future<void> togglePushNotifications(bool value) async {
     try {
       pushNotifications.value = value;
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('pushNotifications', value);
+      await _ensureUserId();
+      if (_userId != null) {
+        await _settingsRepo.setNotificationPrefs(_userId!, push: value);
+      }
     } catch (e) {
       debugPrint('Error toggling push notifications: $e');
     }
@@ -121,8 +163,10 @@ class SettingsController extends GetxController {
   Future<void> toggleEmailNotifications(bool value) async {
     try {
       emailNotifications.value = value;
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('emailNotifications', value);
+      await _ensureUserId();
+      if (_userId != null) {
+        await _settingsRepo.setNotificationPrefs(_userId!, email: value);
+      }
     } catch (e) {
       debugPrint('Error toggling email notifications: $e');
     }
@@ -140,10 +184,6 @@ class SettingsController extends GetxController {
 
       if (image != null) {
         profileImage.value = File(image.path);
-
-        // Save image path to SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('profileImagePath', image.path);
 
         Get.snackbar(
           'Success',
@@ -282,8 +322,10 @@ class SettingsController extends GetxController {
   Future<void> setUserType(String type) async {
     try {
       userType.value = type;
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userType', type);
+      await _ensureUserId();
+      if (_userId != null) {
+        await _settingsRepo.setUserType(_userId!, type.toLowerCase());
+      }
     } catch (e) {
       debugPrint('Error setting user type: $e');
     }
@@ -312,18 +354,36 @@ class SettingsController extends GetxController {
       // Update user profile using AuthService
       final user = await _authService!.getCurrentUser();
       if (user != null) {
+        // 1) If a new image is selected, upload to Firebase Storage and get HTTPS URL
+        String? uploadedPhotoUrl;
+        if (profileImage.value != null) {
+          try {
+            await _ensureUserId();
+            final uid = _userId ?? user.id;
+              final storage = FirebaseStorage.instance;
+              final ref = storage.ref().child('profile_photos').child('$uid.jpg');
+              await ref.putFile(profileImage.value!);
+              uploadedPhotoUrl = await ref.getDownloadURL();
+          } catch (e) {
+            debugPrint('Photo upload failed: $e');
+          }
+        }
+
         final updatedUser = user.copyWith(
           displayName: nameController.text.trim(),
           ageCategory: userType.value.toLowerCase(),
+          photoUrl: uploadedPhotoUrl ?? user.photoUrl,
         );
         final success = await _authService!.updateUserProfile(updatedUser);
 
         if (success) {
           profileName.value = nameController.text.trim();
 
-          // Save user type
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('userType', userType.value);
+          // Save user type and keep local image path (optional)
+          await _ensureUserId();
+          if (_userId != null) {
+            await _settingsRepo.setUserType(_userId!, userType.value.toLowerCase());
+          }
 
           Get.back(); // Close edit profile screen
           Get.snackbar(

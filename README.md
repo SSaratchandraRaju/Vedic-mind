@@ -1,4 +1,4 @@
-# VedicMind - Vedic Mathematics Learning App# vedic_maths
+# VedicMind - Vedic Mathematics Learning App# vedicmind
 
 
 
@@ -47,7 +47,7 @@ The app is fully responsive using the `sizer` package. See [`RESPONSIVE_DESIGN_G
 1. Clone the repository
 ```bash
 git clone <repository-url>
-cd vedic_maths
+cd vedicmind
 ```
 
 2. Install dependencies

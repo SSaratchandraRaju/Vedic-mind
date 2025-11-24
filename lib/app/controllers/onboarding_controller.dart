@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../data/repositories/firestore_user_settings_repository.dart';
+import '../services/auth_service.dart';
 import '../routes/app_routes.dart';
 
 class OnboardingController extends GetxController
@@ -19,6 +21,19 @@ class OnboardingController extends GetxController
       duration: const Duration(milliseconds: 800),
     );
     animationController.forward();
+    _initAuth();
+  }
+
+  AuthService? _authService;
+  String? _userId;
+  final _settingsRepo = FirestoreUserSettingsRepository();
+
+  Future<void> _initAuth() async {
+    try {
+      _authService = Get.find<AuthService>();
+      final user = await _authService!.getCurrentUser();
+      _userId = user?.id;
+    } catch (_) {}
   }
 
   void onPageChanged(int page) {
@@ -29,25 +44,40 @@ class OnboardingController extends GetxController
     animationController.forward();
   }
 
+  // Total number of onboarding pages
+  static const int totalPages = 3;
+
   Future<void> nextPage() async {
-    if (currentPage.value < 1) {
+    // If not on last page, go to next
+    if (currentPage.value < totalPages - 1) {
       pageController.nextPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
     } else {
-      // Mark onboarding as completed and navigate to login
+      // Mark onboarding as completed remotely and navigate
+      if (_userId != null) {
+        await _settingsRepo.markOnboardingCompleted(_userId!);
+        // If already authenticated, go straight to HOME
+        Get.offAllNamed(Routes.HOME);
+      } else {
+        Get.offAllNamed(Routes.LOGIN);
+      }
+      // Persist locally so we don't show onboarding again on cold start
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('onboarding_completed', true);
-      Get.offAllNamed(Routes.LOGIN);
     }
   }
 
   Future<void> skipOnboarding() async {
-    // Mark onboarding as completed and navigate to login
+    if (_userId != null) {
+      await _settingsRepo.markOnboardingCompleted(_userId!);
+      Get.offAllNamed(Routes.HOME);
+    } else {
+      Get.offAllNamed(Routes.LOGIN);
+    }
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_completed', true);
-    Get.offAllNamed(Routes.LOGIN);
   }
 
   @override

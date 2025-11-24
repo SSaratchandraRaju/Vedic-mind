@@ -1,6 +1,8 @@
 import '../data/models/auth_result_model.dart';
 import '../data/models/user_model.dart';
 import '../data/repositories/auth_repository.dart';
+import '../data/datasources/auth_data_source.dart';
+import '../data/repositories/firestore_progress_repository.dart';
 
 /// Authentication Service
 /// This handles business logic and uses the repository
@@ -52,6 +54,35 @@ class AuthService {
     return await _repository.signUpWithEmailPassword(email, password);
   }
 
+  /// Send phone OTP
+  Future<OtpSendResult> sendPhoneOtp(String phoneNumber) async {
+    final normalized = phoneNumber.trim();
+    if (normalized.isEmpty) {
+      return OtpSendResult.failure('Phone number is required');
+    }
+    if (!_isLikelyPhone(normalized)) {
+      return OtpSendResult.failure('Invalid phone number format');
+    }
+    return await _repository.sendPhoneOtp(normalized);
+  }
+
+  /// Verify phone OTP
+  Future<AuthResultModel> verifyPhoneOtp({
+    required String verificationId,
+    required String smsCode,
+  }) async {
+    if (verificationId.isEmpty) {
+      return AuthResultModel.failure('Missing verification session');
+    }
+    if (smsCode.trim().length < 4) { // allow variable length (4-6)
+      return AuthResultModel.failure('OTP code too short');
+    }
+    return await _repository.verifyPhoneOtp(
+      verificationId: verificationId,
+      smsCode: smsCode.trim(),
+    );
+  }
+
   /// Sign out
   Future<void> signOut() async {
     await _repository.signOut();
@@ -69,7 +100,20 @@ class AuthService {
 
   /// Update user profile
   Future<bool> updateUserProfile(UserModel user) async {
-    return await _repository.updateUserProfile(user);
+    final ok = await _repository.updateUserProfile(user);
+    if (ok) {
+      try {
+        await FirestoreProgressRepository().updateUserCore(
+          userId: user.id,
+          displayName: user.displayName,
+          photoUrl: user.photoUrl,
+        );
+      } catch (e) {
+        // ignore: avoid_print
+        print('[auth_service] user_core update failed: $e');
+      }
+    }
+    return ok;
   }
 
   /// Update age category
@@ -99,5 +143,11 @@ class AuthService {
   bool _isValidEmail(String email) {
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     return emailRegex.hasMatch(email);
+  }
+
+  bool _isLikelyPhone(String phone) {
+    // Basic heuristic: digits plus optional +, length between 7 and 15 digits
+    final digits = phone.replaceAll(RegExp(r'[^0-9]'), '');
+    return digits.length >= 7 && digits.length <= 15;
   }
 }

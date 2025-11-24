@@ -1,4 +1,4 @@
-name: vedic_maths
+name: vedicmind
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -49,6 +49,9 @@ dependencies:
   firebase_auth: ^5.3.1
   cloud_firestore: ^5.4.4
   google_sign_in: ^6.2.1
+  firebase_messaging: ^15.1.2
+  flutter_local_notifications: ^18.0.1
+  firebase_storage: ^12.3.0
   
   # Haptic Feedback
   vibration: ^2.0.0
@@ -64,6 +67,7 @@ dependencies:
   
   # Text to Speech
   flutter_tts: ^4.2.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -76,6 +80,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.13.1
+  test: ^1.26.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

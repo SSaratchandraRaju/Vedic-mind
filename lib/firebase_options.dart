@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -50,21 +41,47 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAM02pv9NkepbJlEyQqSitu96NXEqi36Qo',
-    appId: '1:360187297494:android:ed3c392bf58faaf1dad377',
-    messagingSenderId: '360187297494',
-    projectId: 'vedicmind-4c15e',
-    storageBucket: 'vedicmind-4c15e.firebasestorage.app',
+    apiKey: 'AIzaSyADZG8tWutFlMUE2xPxERqJyt3d028laNw',
+    appId: '1:1057656790392:android:018b70cf6f7d08022efc8d',
+    messagingSenderId: '1057656790392',
+    projectId: 'vedic-maths-d7d74',
+    storageBucket: 'vedic-maths-d7d74.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBBR-h-4hZW0yZg0fX8iA3rLTMyF7qJz2g',
-    appId: '1:360187297494:ios:04b20729c9f1ef18dad377',
-    messagingSenderId: '360187297494',
-    projectId: 'vedicmind-4c15e',
-    storageBucket: 'vedicmind-4c15e.firebasestorage.app',
-    iosClientId:
-        '360187297494-6litn5cs4njf51lfj855suoaa4aiq9ha.apps.googleusercontent.com',
+    apiKey: 'AIzaSyCNi-qatJlP60QNSgj0kP5sb7OZKJXMM2A',
+    appId: '1:1057656790392:ios:9139ce7a1b2e28502efc8d',
+    messagingSenderId: '1057656790392',
+    projectId: 'vedic-maths-d7d74',
+    storageBucket: 'vedic-maths-d7d74.firebasestorage.app',
     iosBundleId: 'com.example.vedicMaths',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyAq7DNvC60QEsdIs0j1s2SIaTITloIcjjk',
+    appId: '1:1057656790392:web:f5e4b527f112125a2efc8d',
+    messagingSenderId: '1057656790392',
+    projectId: 'vedic-maths-d7d74',
+    authDomain: 'vedic-maths-d7d74.firebaseapp.com',
+    storageBucket: 'vedic-maths-d7d74.firebasestorage.app',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyCNi-qatJlP60QNSgj0kP5sb7OZKJXMM2A',
+    appId: '1:1057656790392:ios:9139ce7a1b2e28502efc8d',
+    messagingSenderId: '1057656790392',
+    projectId: 'vedic-maths-d7d74',
+    storageBucket: 'vedic-maths-d7d74.firebasestorage.app',
+    iosBundleId: 'com.example.vedicMaths',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyAq7DNvC60QEsdIs0j1s2SIaTITloIcjjk',
+    appId: '1:1057656790392:web:252e740935ac1bf92efc8d',
+    messagingSenderId: '1057656790392',
+    projectId: 'vedic-maths-d7d74',
+    authDomain: 'vedic-maths-d7d74.firebaseapp.com',
+    storageBucket: 'vedic-maths-d7d74.firebasestorage.app',
+  );
+
 }

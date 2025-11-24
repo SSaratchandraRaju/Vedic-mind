@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     
     <application
-        android:label="vedic_maths"
+        android:label="vedicmind"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

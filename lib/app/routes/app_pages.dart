@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:vedic_maths/app/pages/splash/splash_view.dart';
+import 'package:vedicmind/app/pages/splash/splash_view.dart';
 import 'app_routes.dart';
 import '../bindings/home_binding.dart';
 import '../bindings/practice_binding.dart';

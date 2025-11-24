@@ -1,9 +1,7 @@
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import '../routes/app_routes.dart';
 
 class PracticeHubController extends GetxController {
-  final storage = GetStorage();
   final currentNavIndex = 1.obs; // Practice hub, but using home nav index
 
   // Progress tracking
@@ -21,58 +19,10 @@ class PracticeHubController extends GetxController {
   void _loadProgress() {
     // Load practice stats from storage - combining all practice types
 
-    // Sutras practice
-    final sutrasPoints = storage.read<int>('practice_sutras_points') ?? 0;
-    final sutrasQuestions = storage.read<int>('practice_sutras_questions') ?? 0;
-    final sutrasCorrect = storage.read<int>('practice_sutras_correct') ?? 0;
-
-    // Tactics practice
-    final tacticsPoints = storage.read<int>('practice_tactics_points') ?? 0;
-    final tacticsQuestions =
-        storage.read<int>('practice_tactics_questions') ?? 0;
-    final tacticsCorrect = storage.read<int>('practice_tactics_correct') ?? 0;
-
-    // Math tables
-    final mathTablesPoints = storage.read<int>('math_tables_points') ?? 0;
-    final mathTablesQuestions =
-        storage.read<int>('math_tables_total_questions') ?? 0;
-    final mathTablesCorrect =
-        storage.read<int>('math_tables_correct_answers') ?? 0;
-
-    // Arithmetic practice (if exists)
-    final arithmeticPoints =
-        storage.read<int>('arithmetic_practice_points') ?? 0;
-    final arithmeticQuestions =
-        storage.read<int>('arithmetic_practice_questions') ?? 0;
-    final arithmeticCorrect =
-        storage.read<int>('arithmetic_practice_correct') ?? 0;
-
-    // Total all practice types
-    final totalPracticePoints =
-        sutrasPoints + tacticsPoints + mathTablesPoints + arithmeticPoints;
-    final totalPracticeQuestions =
-        sutrasQuestions +
-        tacticsQuestions +
-        mathTablesQuestions +
-        arithmeticQuestions;
-    final totalPracticeCorrect =
-        sutrasCorrect + tacticsCorrect + mathTablesCorrect + arithmeticCorrect;
-
-    totalPoints.value = totalPracticePoints;
-    completedSessions.value = totalPracticeQuestions > 0
-        ? (totalPracticeQuestions / 20).ceil()
-        : 0;
-
-    if (totalPracticeQuestions > 0) {
-      accuracy.value = ((totalPracticeCorrect / totalPracticeQuestions) * 100)
-          .round();
-    } else {
-      accuracy.value = 0;
-    }
-
-    print(
-      'Practice Hub Progress: Points=$totalPracticePoints, Questions=$totalPracticeQuestions, Accuracy=${accuracy.value}%',
-    );
+  // Removed local storage aggregation; values provided elsewhere or via Firestore in other views.
+  totalPoints.value = 0;
+  completedSessions.value = 0;
+  accuracy.value = 0;
   }
 
   void navigateToTables() {

@@ -127,7 +127,7 @@ Get.find<GlobalProgressController>().addHistoryEntry(
   type: 'sutra',
 );
 ```
-Persisted via GetStorage key `progress_history` (list of JSON maps).
+Persisted remotely in Firestore under per-user subcollection `users/{userId}/history` (documents with section, points, description, type, timestamp). Local GetStorage legacy removed.
 
 ### 6.2 Aggregation Logic (`GlobalProgressController.calculateOverallProgress()`)
 Sources combined:

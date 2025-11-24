@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
 class MethodCard extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon; // Optional when using svg or image
   final Color iconColor;
+  final String? svgAsset; // Provide assets/icons/*.svg path
+  final String? imageAsset; // Provide assets/images/*.png path
   final String title;
   final String subtitle;
   final String? badge;
@@ -13,13 +16,15 @@ class MethodCard extends StatelessWidget {
 
   const MethodCard({
     super.key,
-    required this.icon,
+    this.icon,
     required this.iconColor,
     required this.title,
     required this.subtitle,
     this.badge,
     this.points,
     required this.onTap,
+    this.svgAsset,
+    this.imageAsset,
   });
 
   @override
@@ -35,15 +40,37 @@ class MethodCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+            // Leading visual: prefer imageAsset, then svgAsset, then icon
+            if (imageAsset != null)
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: Image.asset(
+                  imageAsset!,
+                  fit: BoxFit.contain,
+                ),
+              )
+            else
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  // Only show soft background when using icon/svg, not for PNG per request
+                  color: svgAsset == null && icon != null
+                      ? iconColor.withOpacity(0.1)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: svgAsset != null
+                      ? SvgPicture.asset(
+                          svgAsset!,
+                          width: 26,
+                          height: 26,
+                        )
+                      : Icon(icon, color: iconColor, size: 24),
+                ),
               ),
-              child: Icon(icon, color: iconColor, size: 24),
-            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(

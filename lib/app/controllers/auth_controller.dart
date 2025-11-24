@@ -23,6 +23,8 @@ class AuthController extends GetxController {
   final otpCode = ''.obs;
   final verificationId = ''.obs;
   final resendTimer = 60.obs;
+  final isSendingOtp = false.obs;
+  final isVerifyingOtp = false.obs;
 
   void togglePasswordVisibility() {
     obscurePassword.value = !obscurePassword.value;
@@ -39,13 +41,7 @@ class AuthController extends GetxController {
   // Email/Password Login
   Future<void> login() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please fill in all fields',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _error('Please fill in all fields');
       return;
     }
 
@@ -59,13 +55,7 @@ class AuthController extends GetxController {
     if (result.isSuccess) {
       Get.offAllNamed(Routes.HOME);
     } else {
-      Get.snackbar(
-        'Error',
-        result.error ?? 'Sign in failed',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _error(result.error ?? 'Sign in failed');
     }
   }
 
@@ -74,35 +64,17 @@ class AuthController extends GetxController {
     if (emailController.text.isEmpty ||
         passwordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please fill in all fields',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _error('Please fill in all fields');
       return;
     }
 
     if (passwordController.text != confirmPasswordController.text) {
-      Get.snackbar(
-        'Error',
-        'Passwords do not match',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _error('Passwords do not match');
       return;
     }
 
     if (passwordController.text.length < 6) {
-      Get.snackbar(
-        'Error',
-        'Password must be at least 6 characters',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _error('Password must be at least 6 characters');
       return;
     }
 
@@ -116,13 +88,7 @@ class AuthController extends GetxController {
     if (result.isSuccess) {
       Get.offAllNamed(Routes.HOME);
     } else {
-      Get.snackbar(
-        'Error',
-        result.error ?? 'Sign up failed',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _error(result.error ?? 'Sign up failed');
     }
   }
 
@@ -135,37 +101,65 @@ class AuthController extends GetxController {
     if (result.isSuccess) {
       Get.offAllNamed(Routes.HOME);
     } else {
-      Get.snackbar(
-        'Error',
-        result.error ?? 'Google sign in failed',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _error(result.error ?? 'Google sign in failed');
     }
   }
 
-  // Send Phone OTP - Note: Phone auth not yet implemented in new architecture
+  // Send Phone OTP
   Future<void> sendPhoneOTP() async {
-    Get.snackbar(
-      'Coming Soon',
-      'Phone authentication will be available soon',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.orange,
-      colorText: Colors.white,
-    );
-    // TODO: Implement phone auth in AuthService when needed
+    final phone = phoneController.text.trim();
+    if (phone.isEmpty) {
+      _error('Enter phone number');
+      return;
+    }
+    isSendingOtp.value = true;
+    final res = await _authService.sendPhoneOtp(phone);
+    isSendingOtp.value = false;
+
+    if (res.isSuccess) {
+      // Auto verification sentinel
+      if (res.verificationId == 'AUTO_VERIFIED') {
+        // Already signed in by backend
+        Get.offAllNamed(Routes.HOME);
+        return;
+      }
+      verificationId.value = res.verificationId!;
+      startResendTimer();
+      Get.toNamed(Routes.OTP_VERIFICATION, arguments: {'phone': phone});
+      Get.snackbar(
+        'OTP Sent',
+        'Code sent to $phone',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } else {
+  _error(res.error ?? 'Failed to send OTP');
+    }
   }
 
-  // Verify OTP - Not yet implemented
+  // Verify OTP
   Future<void> verifyOTP(String otp) async {
-    Get.snackbar(
-      'Coming Soon',
-      'Phone authentication will be available soon',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.orange,
-      colorText: Colors.white,
+    if (verificationId.value.isEmpty) {
+      _error('Missing verification session. Please resend OTP.');
+      return;
+    }
+    if (otp.trim().length < 4) {
+      _error('Invalid OTP code');
+      return;
+    }
+    isVerifyingOtp.value = true;
+    final result = await _authService.verifyPhoneOtp(
+      verificationId: verificationId.value,
+      smsCode: otp.trim(),
     );
+    isVerifyingOtp.value = false;
+
+    if (result.isSuccess) {
+      Get.offAllNamed(Routes.HOME);
+    } else {
+      _error(result.error ?? 'OTP verification failed');
+    }
   }
 
   // Resend OTP
@@ -190,13 +184,7 @@ class AuthController extends GetxController {
   // Reset Password
   Future<void> resetPassword() async {
     if (emailController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter your email',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _error('Please enter your email');
       return;
     }
 
@@ -215,13 +203,7 @@ class AuthController extends GetxController {
         colorText: Colors.white,
       );
     } else {
-      Get.snackbar(
-        'Error',
-        'Failed to send reset email',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      _error('Failed to send reset email');
     }
   }
 
@@ -229,6 +211,16 @@ class AuthController extends GetxController {
   Future<void> signOut() async {
     await _authService.signOut();
     Get.offAllNamed(Routes.LOGIN);
+  }
+
+  void _error(String message) {
+    Get.snackbar(
+      'Error',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   }
 
   @override

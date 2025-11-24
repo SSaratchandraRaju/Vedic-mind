@@ -7,6 +7,8 @@ import '../data/repositories/auth_repository_impl.dart';
 import '../services/auth_service.dart';
 import '../services/tts_service.dart';
 import '../controllers/global_progress_controller.dart';
+import '../controllers/enhanced_vedic_course_controller.dart';
+import '../controllers/vedic_course_controller.dart';
 
 /// Application bindings for dependency injection
 /// This is where you configure which backend to use
@@ -37,6 +39,10 @@ class AppBindings extends Bindings {
 
     // Global Progress Controller
     Get.put(GlobalProgressController(), permanent: true);
+
+    // Course controllers (needed early for progress aggregation & search)
+    Get.put(EnhancedVedicCourseController(), permanent: true);
+    Get.put(VedicCourseController(), permanent: true);
   }
 }
 

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+// Shimmer import (ensure package in pubspec; fallback handled if absent)
+// ignore: unnecessary_import
+import 'package:shimmer/shimmer.dart' as shimmer;
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 import '../routes/app_routes.dart';
@@ -28,14 +31,37 @@ class HomeView extends GetView<HomeController> {
                       children: [
                         GestureDetector(
                           onTap: () => Get.toNamed(Routes.SETTINGS),
-                          child: CircleAvatar(
-                            radius: 24,
-                            backgroundColor: AppColors.primary.withOpacity(0.1),
-                            child: const Icon(
-                              Icons.person,
-                              color: AppColors.primary,
-                            ),
-                          ),
+                          child: Obx(() {
+                            final url = controller.userPhotoUrl.value;
+                            if (url.isNotEmpty) {
+                              return CircleAvatar(
+                                radius: 24,
+                                backgroundColor: AppColors.primary.withOpacity(0.1),
+                                child: ClipOval(
+                                  child: Image.network(
+                                    url,
+                                    width: 48,
+                                    height: 48,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(
+                                        Icons.person,
+                                        color: AppColors.primary,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+                            }
+                            return CircleAvatar(
+                              radius: 24,
+                              backgroundColor: AppColors.primary.withOpacity(0.1),
+                              child: const Icon(
+                                Icons.person,
+                                color: AppColors.primary,
+                              ),
+                            );
+                          }),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -76,9 +102,39 @@ class HomeView extends GetView<HomeController> {
                       child: Row(
                         children: [
                           const SizedBox(width: 12),
+                          // Category Dropdown (replaces bottom sheet selector)
                           Obx(
-                            () => InkWell(
-                              onTap: controller.showCategorySelector,
+                            () => PopupMenuButton<SearchCategory>(
+                              onSelected: (value) {
+                                controller.selectedCategory.value = value;
+                                // Trigger a new search if query exists
+                                final query = controller.searchController.text.trim();
+                                if (query.isNotEmpty) {
+                                  controller.performSearch(query);
+                                }
+                              },
+                              itemBuilder: (context) {
+                                // Assuming SearchCategory.values exists
+                                return SearchCategory.values.map((cat) {
+                                  final text = cat == SearchCategory.all
+                                      ? 'All'
+                                      : controller.getCategoryName(cat);
+                                  return PopupMenuItem<SearchCategory>(
+                                    value: cat,
+                                    child: Text(
+                                      text,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  );
+                                }).toList();
+                              },
+                              position: PopupMenuPosition.under,
+                              elevation: 4,
+                              color: Colors.white,
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -92,16 +148,11 @@ class HomeView extends GetView<HomeController> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      controller.selectedCategory.value ==
-                                              SearchCategory.all
+                                      controller.selectedCategory.value == SearchCategory.all
                                           ? 'All'
                                           : controller
-                                                .getCategoryName(
-                                                  controller
-                                                      .selectedCategory
-                                                      .value,
-                                                )
-                                                .split(' ')[0],
+                                              .getCategoryName(controller.selectedCategory.value)
+                                              .split(' ')[0],
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 13,
@@ -296,6 +347,7 @@ class HomeView extends GetView<HomeController> {
                           children: [
                             const SizedBox(height: 16),
                             Container(
+                              width: double.infinity,
                               padding: const EdgeInsets.all(24),
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -303,6 +355,7 @@ class HomeView extends GetView<HomeController> {
                                 border: Border.all(color: AppColors.border),
                               ),
                               child: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
                                     Icons.search_off,
@@ -334,18 +387,14 @@ class HomeView extends GetView<HomeController> {
 
                     const SizedBox(height: 24),
 
-                    // Overall Score - Dynamic from GlobalProgressController
+                    // Overall Score - Firestore-driven dynamic stats
                     Obx(() {
-                      final accuracy = controller
-                          .globalProgressController
-                          .overallAccuracy
-                          .value;
-                      final points =
-                          controller.globalProgressController.totalPoints.value;
-                      final questionsAttempted = controller
-                          .globalProgressController
-                          .totalQuestionsAttempted
-                          .value;
+                      final gp = controller.globalProgressController;
+                      final loaded = gp.isProgressLoaded.value;
+                      final accuracy = gp.overallAccuracy.value.clamp(0, 100);
+                      final points = gp.totalPoints.value;
+                      final questionsAttempted = gp.totalQuestionsAttempted.value;
+                      final correctAnswers = gp.totalCorrectAnswers.value;
 
                       return Container(
                         padding: const EdgeInsets.all(20),
@@ -354,94 +403,82 @@ class HomeView extends GetView<HomeController> {
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: AppColors.border),
                         ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                        child: loaded
+                            ? Column(
+                                children: [
+                                  Row(
                                     children: [
-                                      Text(
-                                        'Overall Performance',
-                                        style: AppTextStyles.bodySmall,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('Overall Performance', style: AppTextStyles.bodySmall),
+                                            const SizedBox(height: 4),
+                                            Text('Discovering Mathematics', style: AppTextStyles.h5),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              questionsAttempted > 0 ? 'Keep up the great work!' : 'Start your journey!',
+                                              style: AppTextStyles.bodySmall,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Discovering Mathematics',
-                                        style: AppTextStyles.h5,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        questionsAttempted > 0
-                                            ? 'Keep up the great work!'
-                                            : 'Start your journey!',
-                                        style: AppTextStyles.bodySmall,
+                                      Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          SizedBox(
+                                            width: 80,
+                                            height: 80,
+                                            child: CircularProgressIndicator(
+                                              value: (accuracy / 100),
+                                              strokeWidth: 8,
+                                              backgroundColor: AppColors.gray100,
+                                              valueColor: AlwaysStoppedAnimation<Color>(
+                                                accuracy >= 80
+                                                    ? const Color(0xFF4CAF50)
+                                                    : accuracy >= 60
+                                                        ? AppColors.yellow
+                                                        : const Color(0xFFFF9800),
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                            '${accuracy.toStringAsFixed(0)}%',
+                                            style: AppTextStyles.h4.copyWith(
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ),
-                                Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 80,
-                                      height: 80,
-                                      child: CircularProgressIndicator(
-                                        value: accuracy / 100,
-                                        strokeWidth: 8,
-                                        backgroundColor: AppColors.gray100,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              accuracy >= 80
-                                                  ? const Color(0xFF4CAF50)
-                                                  : accuracy >= 60
-                                                  ? AppColors.yellow
-                                                  : const Color(0xFFFF9800),
-                                            ),
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: _buildStatItem(
+                                          icon: Icons.emoji_events,
+                                          label: 'Total Points',
+                                          value: points.toString(),
+                                          color: const Color(0xFFFF9800),
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      '${accuracy.toStringAsFixed(0)}%',
-                                      style: AppTextStyles.h4.copyWith(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.bold,
+                                      Container(height: 40, width: 1, color: AppColors.border),
+                                      Expanded(
+                                        child: _buildStatItem(
+                                          icon: Icons.quiz_outlined,
+                                          label: 'Questions',
+                                          value: questionsAttempted == 0 ? '0/0' : '$correctAnswers/$questionsAttempted',
+                                          color: AppColors.primary,
+                                          correctColor: const Color(0xFF4CAF50),
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            // Stats Row
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildStatItem(
-                                    icon: Icons.emoji_events,
-                                    label: 'Total Points',
-                                    value: points.toString(),
-                                    color: const Color(0xFFFF9800),
+                                    ],
                                   ),
-                                ),
-                                Container(
-                                  height: 40,
-                                  width: 1,
-                                  color: AppColors.border,
-                                ),
-                                Expanded(
-                                  child: _buildStatItem(
-                                    icon: Icons.quiz_outlined,
-                                    label: 'Questions',
-                                    value: questionsAttempted.toString(),
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                                ],
+                              )
+                            : _buildShimmerPerformancePlaceholder(),
                       );
                     }),
                     const SizedBox(height: 24),
@@ -450,71 +487,69 @@ class HomeView extends GetView<HomeController> {
                     Text('Popular methods', style: AppTextStyles.h5),
                     const SizedBox(height: 16),
 
-                    Obx(
-                      () => MethodCard(
-                        icon: Icons.calculate_outlined,
+                    Obx(() {
+                      final acc = controller.mathTablesAccuracy.value;
+                      final pts = controller.mathTablesPoints.value;
+                      return MethodCard(
+                        svgAsset: 'assets/icons/mathtables_new.svg',
                         iconColor: AppColors.primary,
                         title: 'Maths Tables',
                         subtitle: 'Practice multiplication tables',
-                        badge: controller.mathTablesAccuracy.value > 0
-                            ? '${controller.mathTablesAccuracy.value}%'
-                            : 'Start',
-                        points: controller.mathTablesPoints.value,
+                        badge: acc > 0 ? '$acc%' : 'Start',
+                        points: pts,
                         onTap: () => Get.toNamed(Routes.MATH_TABLES),
-                      ),
-                    ),
+                      );
+                    }),
                     const SizedBox(height: 12),
 
                     GestureDetector(
                       onTap: () => Get.toNamed(Routes.VEDIC_METHODS),
                       onLongPress: () => Get.toNamed(Routes.VEDIC_COURSE),
-                      child: Obx(
-                        () => MethodCard(
-                          icon: Icons.auto_awesome,
+                      child: Obx(() {
+                        final acc = controller.tacticsAccuracy.value;
+                        final pts = controller.tacticsPoints.value;
+                        return MethodCard(
+                          svgAsset: 'assets/icons/vedictactics_new.svg',
                           iconColor: AppColors.pink,
                           title: 'Vedic Tactics',
-                            subtitle: 'Master vedic math techniques',
-                          badge: controller.tacticsAccuracy.value > 0
-                              ? '${controller.tacticsAccuracy.value}%'
-                              : 'Start',
-                          points: controller.tacticsPoints.value,
+                          subtitle: 'Master vedic math techniques',
+                          badge: acc > 0 ? '$acc%' : 'Start',
+                          points: pts,
                           onTap: () => Get.toNamed(Routes.ALL_LESSONS),
-                        ),
-                      ),
+                        );
+                      }),
                     ),
                     const SizedBox(height: 12),
 
-                    Obx(
-                      () => MethodCard(
-                        icon: Icons.psychology_outlined,
+                    Obx(() {
+                      final acc = controller.sutrasAccuracy.value;
+                      final pts = controller.sutrasPoints.value;
+                      return MethodCard(
+                        svgAsset: 'assets/icons/sutras.svg',
                         iconColor: AppColors.secondary,
                         title: 'Vedic Sutras',
                         subtitle: '16 Sutras for Faster, Smarter Calculation.',
-                        badge: controller.sutrasAccuracy.value > 0
-                            ? '${controller.sutrasAccuracy.value}%'
-                            : 'Start',
-                        points: controller.sutrasPoints.value,
+                        badge: acc > 0 ? '$acc%' : 'Start',
+                        points: pts,
                         onTap: () => Get.toNamed(Routes.VEDIC_16_SUTRAS),
-                      ),
-                    ),
+                      );
+                    }),
                     const SizedBox(height: 12),
 
-                    Obx(
-                      () => MethodCard(
-                        icon: Icons.lightbulb_outline,
+                    Obx(() {
+                      final acc = controller.practiceAccuracy.value;
+                      final pts = controller.practicePoints.value;
+                      return MethodCard(
+                        svgAsset: 'assets/icons/practice.svg',
                         iconColor: AppColors.purple,
                         title: 'Practice',
                         subtitle: 'You can practice here & levelup',
-                        badge: controller.practiceAccuracy.value > 0
-                            ? '${controller.practiceAccuracy.value}%'
-                            : 'Start',
-                        points: controller.practicePoints.value,
+                        badge: acc > 0 ? '$acc%' : 'Start',
+                        points: pts,
                         onTap: () => controller.showPracticeDialog(),
-                      ),
-                    ),
-                    
+                      );
+                    }),
 
-                    
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -537,6 +572,7 @@ class HomeView extends GetView<HomeController> {
     required String label,
     required String value,
     required Color color,
+    Color? correctColor,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -557,16 +593,167 @@ class HomeView extends GetView<HomeController> {
             ],
           ),
           const SizedBox(height: 4),
-          Text(
-            value,
-            style: AppTextStyles.h4.copyWith(
-              color: color,
-              fontWeight: FontWeight.bold,
+          if (correctColor != null && value.contains('/'))
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: value.split('/')[0],
+                    style: AppTextStyles.h4.copyWith(
+                      color: correctColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextSpan(
+                    text: '/${value.split('/')[1]}',
+                    style: AppTextStyles.h4.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            Text(
+              value,
+              style: AppTextStyles.h4.copyWith(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+        ],
+      ),
+    );
+  }
+
+  // Shimmer placeholder for overall performance card while loading stats
+  Widget _buildShimmerPerformancePlaceholder() {
+    // If shimmer package not linked properly, return static placeholder
+    Widget content = Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(height: 12, width: 140, color: AppColors.gray100, margin: const EdgeInsets.only(bottom: 8)),
+                  Container(height: 18, width: 180, color: AppColors.gray100, margin: const EdgeInsets.only(bottom: 6)),
+                  Container(height: 12, width: 160, color: AppColors.gray100),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 80,
+              height: 80,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  Container(height: 20, width: 40, color: AppColors.gray100),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  Container(height: 14, width: 60, color: AppColors.gray100, margin: const EdgeInsets.only(bottom: 8)),
+                  Container(height: 22, width: 70, color: AppColors.gray100),
+                ],
+              ),
+            ),
+            Container(height: 40, width: 1, color: AppColors.border),
+            Expanded(
+              child: Column(
+                children: [
+                  Container(height: 14, width: 60, color: AppColors.gray100, margin: const EdgeInsets.only(bottom: 8)),
+                  Container(height: 22, width: 90, color: AppColors.gray100),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+    try {
+      return shimmer.Shimmer.fromColors(
+        baseColor: AppColors.gray100,
+        highlightColor: AppColors.gray200,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(height: 12, width: 140, color: Colors.white, margin: const EdgeInsets.only(bottom: 8)),
+                    Container(height: 18, width: 180, color: Colors.white, margin: const EdgeInsets.only(bottom: 6)),
+                    Container(height: 12, width: 160, color: Colors.white),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 80,
+                height: 80,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    Container(height: 20, width: 40, color: Colors.white),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    Container(height: 14, width: 60, color: Colors.white, margin: const EdgeInsets.only(bottom: 8)),
+                    Container(height: 22, width: 70, color: Colors.white),
+                  ],
+                ),
+              ),
+              Container(height: 40, width: 1, color: AppColors.border),
+              Expanded(
+                child: Column(
+                  children: [
+                    Container(height: 14, width: 60, color: Colors.white, margin: const EdgeInsets.only(bottom: 8)),
+                    Container(height: 22, width: 90, color: Colors.white),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
+    } catch (_) {
+      return content; // Fallback without shimmer effect
+    }
   }
 
   Color _getResultColor(String category) {

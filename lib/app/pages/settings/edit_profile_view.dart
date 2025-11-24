@@ -40,6 +40,7 @@ class EditProfileView extends GetView<SettingsController> {
             // Profile Image Section
             Obx(() {
               final imageFile = controller.profileImage.value;
+              final photoUrl = controller.profilePhotoUrl.value;
               return Column(
                 children: [
                   GestureDetector(
@@ -59,12 +60,28 @@ class EditProfileView extends GetView<SettingsController> {
                                   )
                                 : null,
                           ),
-                          child: imageFile == null
-                              ? const Icon(
-                                  Icons.person,
-                                  size: 56,
-                                  color: AppColors.gray400,
-                                )
+                          child: (imageFile == null)
+                              ? (photoUrl.isNotEmpty
+                                  ? ClipOval(
+                                      child: Image.network(
+                                        photoUrl,
+                                        width: 120,
+                                        height: 120,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return const Icon(
+                                            Icons.person,
+                                            size: 56,
+                                            color: AppColors.gray400,
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  : const Icon(
+                                      Icons.person,
+                                      size: 56,
+                                      color: AppColors.gray400,
+                                    ))
                               : null,
                         ),
                         Positioned(

@@ -156,6 +156,7 @@ class DivisionDashGame extends StatelessWidget {
             Text('• Apply multiplication pattern'),
             Text('• Adjust quotient'),
             Text('• Beat the timer!'),
+            Text('• Aim for accuracy!'),
           ],
         ),
       ),

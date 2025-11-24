@@ -104,8 +104,9 @@ class VedicSutrasFeatureCard extends StatelessWidget {
                   children: [
                     const Text(
                       '16 Vedic Sutras',
+                      
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize:  24,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),

@@ -36,4 +36,27 @@ abstract class AuthDataSource {
 
   /// Send password reset email
   Future<bool> sendPasswordResetEmail(String email);
+
+  /// Send OTP to phone number (returns verificationId or error via result model)
+  Future<OtpSendResult> sendPhoneOtp(String phoneNumber);
+
+  /// Verify OTP code with stored verificationId
+  Future<AuthResultModel> verifyPhoneOtp({
+    required String verificationId,
+    required String smsCode,
+  });
+}
+
+/// Result for sending OTP (kept lightweight to avoid coupling with AuthResultModel)
+class OtpSendResult {
+  final String? verificationId;
+  final String? error;
+  final bool isSuccess;
+
+  OtpSendResult.success(this.verificationId)
+      : error = null,
+        isSuccess = true;
+  OtpSendResult.failure(this.error)
+      : verificationId = null,
+        isSuccess = false;
 }

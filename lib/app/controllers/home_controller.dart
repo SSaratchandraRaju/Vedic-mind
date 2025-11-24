@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import '../routes/app_routes.dart';
 import '../services/auth_service.dart';
 import 'global_progress_controller.dart';
-import 'enhanced_vedic_course_controller.dart';
 import 'vedic_course_controller.dart';
+import '../data/repositories/firestore_progress_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 
 // Search Category Enum
 enum SearchCategory { all, vedicSutras, vedicTactics, practice, mathTables }
@@ -31,10 +32,13 @@ class SearchResult {
 
 class HomeController extends GetxController {
   AuthService? _authService;
-  final storage = GetStorage();
   final currentNavIndex = 1.obs; // Home is at index 1
   final userName = 'User'.obs;
+  final RxString userPhotoUrl = ''.obs;
   late final GlobalProgressController globalProgressController;
+  final FirestoreProgressRepository _progressRepo = FirestoreProgressRepository();
+  String? _userId;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _userDocSub;
 
   // Method-specific stats
   final mathTablesAccuracy = 0.obs;
@@ -60,65 +64,11 @@ class HomeController extends GetxController {
     _loadUserName();
     _initGlobalProgress();
     _loadMethodStats();
+    _subscribeAggregate();
   }
 
   void _loadMethodStats() {
-    // Math Tables stats
-    final mathTablesQ = storage.read<int>('math_tables_total_questions') ?? 0;
-    final mathTablesC = storage.read<int>('math_tables_correct_answers') ?? 0;
-    mathTablesPoints.value = storage.read<int>('math_tables_points') ?? 0;
-    mathTablesAccuracy.value = mathTablesQ > 0
-        ? ((mathTablesC / mathTablesQ) * 100).round()
-        : 0;
-
-    // Sutras stats (from practice)
-    final sutrasQ = storage.read<int>('practice_sutras_questions') ?? 0;
-    final sutrasC = storage.read<int>('practice_sutras_correct') ?? 0;
-    sutrasPoints.value = storage.read<int>('practice_sutras_points') ?? 0;
-
-    // Also check if sutras controller is available for additional stats
-    try {
-      final sutrasController = Get.find<EnhancedVedicCourseController>();
-      final progress = sutrasController.overallProgress;
-      final controllerPoints = progress['total_points'] as int? ?? 0;
-      sutrasPoints.value += controllerPoints;
-    } catch (e) {
-      // Controller not available
-    }
-
-    sutrasAccuracy.value = sutrasQ > 0
-        ? ((sutrasC / sutrasQ) * 100).round()
-        : 0;
-
-    // Tactics stats (from practice)
-    final tacticsQ = storage.read<int>('practice_tactics_questions') ?? 0;
-    final tacticsC = storage.read<int>('practice_tactics_correct') ?? 0;
-    tacticsPoints.value = storage.read<int>('practice_tactics_points') ?? 0;
-
-    // Also check tactics controller
-    try {
-      final tacticsController = Get.find<VedicCourseController>();
-      final allLessons = tacticsController.getAllLessons();
-      for (var item in allLessons) {
-        if (item['lesson'].isCompleted) {
-          tacticsPoints.value += 100;
-        }
-      }
-    } catch (e) {
-      // Controller not available
-    }
-
-    tacticsAccuracy.value = tacticsQ > 0
-        ? ((tacticsC / tacticsQ) * 100).round()
-        : 0;
-
-    // Overall Practice stats (combining all practice types)
-    final allPracticeQ = storage.read<int>('practice_total_questions') ?? 0;
-    final allPracticeC = storage.read<int>('practice_correct_answers') ?? 0;
-    practicePoints.value = storage.read<int>('practice_total_points') ?? 0;
-    practiceAccuracy.value = allPracticeQ > 0
-        ? ((allPracticeC / allPracticeQ) * 100).round()
-        : 0;
+    // Initial values set to zero; real stats arrive via Firestore aggregate stream.
   }
 
   void _initGlobalProgress() {
@@ -128,17 +78,85 @@ class HomeController extends GetxController {
       // Create if not found
       globalProgressController = Get.put(GlobalProgressController());
     }
-    // Refresh progress when home loads
-    globalProgressController.calculateOverallProgress();
+    // Defer refresh to next frame to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      globalProgressController.calculateOverallProgress();
+    });
   }
 
   void _initAuthService() {
     try {
       _authService = Get.find<AuthService>();
+      _authService!.getCurrentUser().then((u) {
+        _userId = u?.id;
+        if (_userId != null) {
+          _subscribeAggregate();
+          _subscribeUserDoc();
+        }
+      });
     } catch (e) {
       // AuthService not available, will use default username
       print('AuthService not available: $e');
     }
+  }
+
+  void _subscribeUserDoc() {
+    if (_userId == null) return;
+    _userDocSub?.cancel();
+    _userDocSub = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_userId)
+        .snapshots()
+        .listen((snap) {
+      final data = snap.data();
+      if (data == null) return;
+      final dn = data['displayName'];
+      final pu = data['photoUrl'];
+      if (dn is String && dn.isNotEmpty) {
+        userName.value = dn;
+      }
+      if (pu is String && pu.isNotEmpty) {
+        userPhotoUrl.value = pu;
+      }
+    }, onError: (e) {
+      // ignore errors silently for UI
+      // print('user doc stream error: $e');
+    });
+  }
+
+  void _subscribeAggregate() {
+    if (_userId == null) return;
+    final gp = globalProgressController;
+    // Fallback: mark loaded after a timeout if no snapshot arrives (e.g., offline or empty Firestore) to avoid infinite shimmer.
+    if (!gp.isProgressLoaded.value) {
+      Future.delayed(const Duration(seconds: 3), () {
+        if (!gp.isProgressLoaded.value) {
+          gp.isProgressLoaded.value = true; // show empty stats instead of shimmer
+        }
+      });
+    }
+    _progressRepo.watchAggregate(_userId!).listen((agg) {
+      // Update observable stats from remote aggregate
+      mathTablesPoints.value = agg.mathTablesPoints;
+      final mtQ = agg.mathTablesTotalQuestions;
+      final mtC = agg.mathTablesCorrectAnswers;
+      mathTablesAccuracy.value = mtQ > 0 ? ((mtC / mtQ) * 100).round() : 0;
+
+      practicePoints.value = agg.practiceTotalPoints;
+      final pQ = agg.practiceTotalQuestions;
+      final pC = agg.practiceCorrectAnswers;
+      practiceAccuracy.value = pQ > 0 ? ((pC / pQ) * 100).round() : 0;
+
+      // Sutras stats from aggregate (if available) override local estimates
+      sutrasPoints.value = agg.sutrasTotalPoints;
+      sutrasAccuracy.value = agg.sutrasAccuracy;
+  // Tactics stats from aggregate
+  tacticsPoints.value = agg.tacticsTotalPoints;
+  tacticsAccuracy.value = agg.tacticsAccuracy;
+      if (!gp.isProgressLoaded.value) {
+        gp.isProgressLoaded.value = true; // first successful aggregate
+      }
+    });
   }
 
   Future<void> _loadUserName() async {
@@ -295,7 +313,11 @@ class HomeController extends GetxController {
         'name': 'Yaavadunam',
         'translation': 'Whatever the extent of its deficiency',
       },
-      {'id': 11, 'name': 'Vyashtisamanstih', 'translation': 'Part and Whole'},
+      {
+        'id': 11,
+        'name': 'Vyashtisamanstih',
+        'translation': 'Part and Whole'
+      },
       {
         'id': 12,
         'name': 'Shesanyankena Charamena',
@@ -354,7 +376,7 @@ class HomeController extends GetxController {
       for (var item in allLessons) {
         final lesson = item['lesson'];
         final chapter = item['chapter'];
-
+        
         if (lesson.lessonTitle.toLowerCase().contains(query) ||
             chapter.chapterTitle.toLowerCase().contains(query) ||
             lesson.lessonId.toString().contains(query)) {
@@ -534,7 +556,13 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {
-    searchController.dispose();
+    _userDocSub?.cancel();
+    // Intentionally not disposing searchController here because the HomeView's
+    // TextField may still rebuild during navigation transitions (e.g., when
+    // returning from other routes or using bottom navigation) leading to
+    // 'TextEditingController was used after being disposed'. In apps where
+    // the controller truly goes out of scope permanently, dispose it manually
+    // via Get.delete<HomeController>() after popping HomeView.
     super.onClose();
   }
 
@@ -544,328 +572,3 @@ class HomeController extends GetxController {
   }
 }
 
-class _PracticeSetupSheet extends StatelessWidget {
-  final selectedOperation = 2.obs; // Default to multiplication
-  final selectedTime = 1.obs; // Index of selected time
-  final selectedTasks = 0.obs; // Index of selected tasks
-
-  _PracticeSetupSheet();
-
-  @override
-  Widget build(BuildContext context) {
-    // Time options in minutes
-    final timeOptions = [
-      {'label': '0:45', 'minutes': 0.75}, // 45 seconds
-      {'label': '1:30', 'minutes': 1.5}, // 1.5 minutes
-      {'label': '3:00', 'minutes': 3.0}, // 3 minutes
-      {'label': '5:00', 'minutes': 5.0}, // 5 minutes
-    ];
-    final tasks = [5, 10, 20, 30, 50];
-    final operations = [
-      {'symbol': '+', 'label': 'Addition'},
-      {'symbol': '−', 'label': 'Subtraction'},
-      {'symbol': '×', 'label': 'Multiplication'},
-      {'symbol': '÷', 'label': 'Division'},
-    ];
-
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Drag handle
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Title
-          const Text(
-            'Setup Practice Session',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'Poppins',
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Operation Selection
-          const Text(
-            'Select Operation',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          Obx(
-            () => Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(
-                4,
-                (index) => _OperationChip(
-                  symbol: operations[index]['symbol'] as String,
-                  label: operations[index]['label'] as String,
-                  isSelected: selectedOperation.value == index,
-                  onTap: () => selectedOperation.value = index,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Time Selection
-          const Text(
-            'Time',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          Obx(
-            () => Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(
-                4,
-                (index) => _TimeChip(
-                  label: timeOptions[index]['label'] as String,
-                  isSelected: selectedTime.value == index,
-                  onTap: () => selectedTime.value = index,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Tasks Selection
-          const Text(
-            'Number of Questions',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          Obx(
-            () => Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(
-                5,
-                (index) => _TaskChip(
-                  number: tasks[index],
-                  isSelected: selectedTasks.value == index,
-                  onTap: () => selectedTasks.value = index,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 32),
-
-          // Start Practice Button
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: () {
-                Get.back();
-                Get.toNamed(
-                  Routes.PRACTICE,
-                  arguments: {
-                    'operation': selectedOperation.value,
-                    'tasks': tasks[selectedTasks.value],
-                    'totalMinutes': timeOptions[selectedTime.value]['minutes'],
-                    'timePerQuestion': 10, // 10 seconds per question
-                  },
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF5B7FFF),
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                'Start Practice',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins',
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Go Back Button
-          Center(
-            child: TextButton(
-              onPressed: () => Get.back(),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black54,
-                  fontFamily: 'Poppins',
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-}
-
-class _OperationChip extends StatelessWidget {
-  final String symbol;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _OperationChip({
-    required this.symbol,
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 80,
-        height: 80,
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF5B7FFF) : Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? const Color(0xFF5B7FFF) : Colors.grey[300]!,
-            width: 2,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              symbol,
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w700,
-                color: isSelected ? Colors.white : Colors.black87,
-                fontFamily: 'Poppins',
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-                color: isSelected ? Colors.white : Colors.black54,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TimeChip extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _TimeChip({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF5B7FFF) : Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : Colors.black54,
-            fontFamily: 'Poppins',
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _TaskChip extends StatelessWidget {
-  final int number;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _TaskChip({
-    required this.number,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF5B7FFF) : Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Center(
-          child: Text(
-            number.toString(),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: isSelected ? Colors.white : Colors.black54,
-              fontFamily: 'Poppins',
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

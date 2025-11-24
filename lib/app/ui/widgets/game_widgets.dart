@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/color_extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -10,11 +11,11 @@ class GameAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
 
   const GameAppBar({
-    Key? key,
+    super.key,
     required this.title,
     required this.backgroundColor,
     this.actions,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +57,7 @@ class GameNumberPad extends StatelessWidget {
   final Color deleteColor;
 
   const GameNumberPad({
-    Key? key,
+    super.key,
     required this.onNumberPressed,
     required this.onSubmit,
     required this.onDelete,
@@ -64,7 +65,7 @@ class GameNumberPad extends StatelessWidget {
     this.backgroundColor,
     this.submitColor = Colors.green,
     this.deleteColor = Colors.red,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -224,69 +225,256 @@ class GameScoreBar extends StatelessWidget {
   final int timeLeft;
   final int combo;
   final Color? backgroundColor;
+  final int? maxTime; // Optional total time to render progress
+  final int heartsThreshold; // Max hearts to render as icons before switching to numeric display
+
+  /// When [maxTime] is provided, a progress bar will visualize remaining time.
+  /// When [lives] <= [heartsThreshold], hearts are rendered instead of a raw number.
 
   const GameScoreBar({
-    Key? key,
+    super.key,
     required this.score,
     required this.lives,
     required this.timeLeft,
     required this.combo,
     this.backgroundColor,
-  }) : super(key: key);
+    this.maxTime,
+    this.heartsThreshold = 5,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: backgroundColor ?? Colors.grey[200],
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: backgroundColor ?? Colors.grey[200],
+  border: Border(bottom: BorderSide(color: Colors.black.withOpacityCompat(0.05))),
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildScoreItem(
-            icon: Icons.star,
-            label: score.toString(),
-            color: Colors.amber,
-          ),
-          _buildScoreItem(
-            icon: Icons.favorite,
-            label: lives.toString(),
-            color: Colors.red,
-          ),
-          _buildScoreItem(
-            icon: Icons.timer,
-            label: '${timeLeft}s',
-            color: timeLeft > 10 ? Colors.blue : Colors.red,
-          ),
-          if (combo > 1)
-            _buildScoreItem(
-              icon: Icons.whatshot,
-              label: 'x$combo',
-              color: Colors.orange,
+          Expanded(
+            child: GameStatTile(
+              icon: Icons.star,
+              color: Colors.amber,
+              label: 'Score',
+              value: score.toString(),
+              tooltip: 'Total points earned',
+              semanticsLabel: 'Score',
             ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: GameStatTile(
+              icon: Icons.favorite,
+              color: Colors.red,
+              label: 'Lives',
+              value: lives.toString(),
+              tooltip: 'Remaining attempts',
+              semanticsLabel: 'Lives',
+              customContent: _buildLivesContent(),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: GameStatTile(
+              icon: Icons.timer,
+              color: timeLeft > (maxTime != null ? maxTime! * 0.2 : 10) ? Colors.blue : Colors.red,
+              label: 'Time',
+              value: '${timeLeft}s',
+              tooltip: 'Time remaining',
+              semanticsLabel: 'Time left',
+              progress: _timeProgress(),
+            ),
+          ),
+          if (combo > 1) ...[
+            const SizedBox(width: 8),
+            Expanded(
+              child: GameStatTile(
+                icon: Icons.whatshot,
+                color: Colors.orange,
+                label: 'Combo',
+                value: 'x$combo',
+                tooltip: 'Current streak multiplier',
+                semanticsLabel: 'Combo multiplier',
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildScoreItem({
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+  /// Build hearts or numeric lives
+  Widget _buildLivesContent() {
+    if (lives <= heartsThreshold && lives > 0) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(heartsThreshold, (index) {
+          final filled = index < lives;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1.5),
+            child: Icon(
+              filled ? Icons.favorite : Icons.favorite_border,
+              color: filled ? Colors.red : Colors.red.withOpacityCompat(0.3),
+              size: 18,
+            ),
+          );
+        }),
+      );
+    }
+    if (lives == 0) {
+      return const Text(
+        'None',
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.red,
         ),
+      );
+    }
+    return Text(
+      lives.toString(),
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: Colors.red,
+      ),
+    );
+  }
+
+  double? _timeProgress() {
+    if (maxTime == null || maxTime == 0) return null;
+    final clamped = timeLeft.clamp(0, maxTime!);
+    return clamped / maxTime!;
+  }
+}
+
+/// A reusable stat tile to make game stats clearer & consistent.
+class GameStatTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+  final String? tooltip;
+  final String? semanticsLabel;
+  final double? progress; // 0..1 optional progress bar
+  final Widget? customContent; // Override value rendering (e.g., hearts)
+
+  const GameStatTile({
+    Key? key,
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+    this.tooltip,
+    this.semanticsLabel,
+    this.progress,
+    this.customContent,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final tile = Container(
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacityCompat(0.04),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+  border: Border.all(color: color.withOpacityCompat(0.4), width: 1),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: color, size: 20),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          customContent ?? Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          if (progress != null) ...[
+            const SizedBox(height: 4),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: progress!.clamp(0, 1),
+                minHeight: 6,
+                backgroundColor: Colors.grey[300],
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+
+    final wrapped = Semantics(
+      label: semanticsLabel ?? label,
+      value: value,
+      child: tooltip != null ? Tooltip(message: tooltip!, child: tile) : tile,
+    );
+    return wrapped;
+  }
+}
+
+/// Optional legend widget explaining each stat (can be placed on start/help screens).
+class GameStatsLegend extends StatelessWidget {
+  final Color? textColor;
+  const GameStatsLegend({Key? key, this.textColor}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final color = textColor ?? Colors.grey[800];
+    final styleTitle = TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color);
+    final styleItem = TextStyle(fontSize: 13, color: color);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Game Stats', style: styleTitle),
+        const SizedBox(height: 6),
+        _legendRow(Icons.star, 'Score: Points you have earned by solving problems.' , styleItem),
+        _legendRow(Icons.favorite, 'Lives: Remaining attempts. Lose one for each wrong answer.' , styleItem),
+        _legendRow(Icons.timer, 'Time: Seconds left. Bar shrinks to zero when time runs out.' , styleItem),
+        _legendRow(Icons.whatshot, 'Combo: Streak multiplier. Higher combo = bonus points.' , styleItem),
       ],
+    );
+  }
+
+  Widget _legendRow(IconData icon, String text, TextStyle style) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: Colors.blueGrey),
+          const SizedBox(width: 6),
+          Expanded(child: Text(text, style: style)),
+        ],
+      ),
     );
   }
 }
@@ -337,7 +525,7 @@ class GameStartScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withOpacityCompat(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -537,7 +725,7 @@ class GameProblemDisplay extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacityCompat(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -595,7 +783,7 @@ class PracticeKeyboard extends StatefulWidget {
   final Color tabColor;
 
   const PracticeKeyboard({
-    Key? key,
+    super.key,
     required this.onCharacterPressed,
     required this.onSubmit,
     required this.onDelete,
@@ -603,7 +791,7 @@ class PracticeKeyboard extends StatefulWidget {
     this.submitColor = Colors.green,
     this.deleteColor = Colors.red,
     this.tabColor = Colors.blue,
-  }) : super(key: key);
+  });
 
   @override
   State<PracticeKeyboard> createState() => _PracticeKeyboardState();

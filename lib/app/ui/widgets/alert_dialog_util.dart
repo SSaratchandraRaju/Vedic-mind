@@ -359,8 +359,8 @@ class AlertDialogUtil {
   /// Returns a function that when called, closes the loading dialog
   static VoidCallback showLoading({String message = 'Please wait...'}) {
     Get.dialog(
-      WillPopScope(
-        onWillPop: () async => false,
+      PopScope(
+        canPop: false,
         child: AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),

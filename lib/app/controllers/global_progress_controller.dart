@@ -1,7 +1,8 @@
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'enhanced_vedic_course_controller.dart';
-import 'vedic_course_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../data/repositories/firestore_progress_repository.dart';
+import '../services/auth_service.dart';
+// Removed direct dependency on lesson controller; rely solely on Firestore aggregates.
 
 // History entry model
 class ProgressHistoryEntry {
@@ -38,13 +39,23 @@ class ProgressHistoryEntry {
 }
 
 class GlobalProgressController extends GetxController {
-  final storage = GetStorage();
+  final FirestoreProgressRepository _progressRepo = FirestoreProgressRepository();
+  AuthService? _authService;
+  String? _userId;
+
 
   // Reactive variables for overall progress
   final RxInt totalPoints = 0.obs;
   final RxDouble overallAccuracy = 0.0.obs;
   final RxInt totalQuestionsAttempted = 0.obs;
   final RxInt totalCorrectAnswers = 0.obs;
+  // Firestore-driven sutra aggregate reactive fields
+  final RxInt sutrasCompleted = 0.obs;
+  final RxInt sutrasAccuracy = 0.obs;
+  final RxInt sutrasPoints = 0.obs;
+
+  // Loading state for initial aggregate
+  final RxBool isProgressLoaded = false.obs;
 
   // History tracking
   final RxList<ProgressHistoryEntry> progressHistory =
@@ -53,29 +64,125 @@ class GlobalProgressController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _loadHistory();
-    calculateOverallProgress();
+    _initAuth();
   }
 
-  void _loadHistory() {
-    final savedHistory = storage.read<List>('progress_history');
-    if (savedHistory != null) {
-      progressHistory.clear();
-      progressHistory.addAll(
-        savedHistory
-            .map((json) => ProgressHistoryEntry.fromJson(
-                  Map<String, dynamic>.from(json),
-                ))
-            .toList(),
-      );
+  Future<void> _initAuth() async {
+    try {
+      _authService = Get.find<AuthService>();
+    } catch (_) {}
+    if (_authService != null) {
+      final user = await _authService!.getCurrentUser();
+      _userId = user?.id;
+      // Seed leaderboard doc if missing
+      if (_userId != null) {
+        final firestore = FirebaseFirestore.instance;
+        final lbDoc = await firestore.collection('user_progress').doc(_userId).get();
+        if (!lbDoc.exists) {
+          await firestore.collection('user_progress').doc(_userId).set({
+            'userId': _userId,
+            'display_name': user?.displayName ?? _userId,
+            'total_xp': 0,
+            'current_level': 1,
+            'total_problems_attempted': 0,
+            'total_problems_correct': 0,
+            'streak': 0,
+            'math_tables': {
+              'completed_sections': [],
+              'total_questions': 0,
+              'correct_answers': 0,
+              'points': 0,
+            },
+            'practice_totals': {
+              'total_questions': 0,
+              'correct_answers': 0,
+              'total_points': 0,
+            },
+            'sutra_stats': {
+              'completed': 0,
+              'total_points': 0,
+              'accuracy': 0,
+            },
+            'tactics_stats': {
+              'completed': 0,
+              'total_points': 0,
+              'accuracy': 0,
+            },
+            'earned_badges': [],
+            'last_updated': FieldValue.serverTimestamp(),
+          });
+        }
+      }
     }
+    _subscribeHistory();
+    _subscribeAggregate();
   }
 
-  void _saveHistory() {
-    storage.write(
-      'progress_history',
-      progressHistory.map((e) => e.toJson()).toList(),
-    );
+  void _subscribeHistory() {
+    if (_userId == null) return;
+    _progressRepo.watchHistory(_userId!, limit: 200).listen((list) {
+      progressHistory.assignAll(list.map((data) => ProgressHistoryEntry.fromJson({
+            'section': data['section'],
+            'points': data['points'],
+            'description': data['description'],
+            'timestamp': (data['timestamp'] is Timestamp)
+                ? (data['timestamp'] as Timestamp).toDate().toIso8601String()
+                : DateTime.now().toIso8601String(),
+            'type': data['type'],
+          })).toList());
+    }, onError: (err) {
+      // Failed-precondition (missing composite index) or offline; skip history until resolved.
+      if (err.toString().contains('failed-precondition')) {
+        print('History stream requires Firestore composite index. Visit console to create index. Suppressing crash.');
+        // Fallback to unordered stream avoiding index.
+        _progressRepo.watchHistoryNoOrder(_userId!, limit: 200).listen((list) {
+          list.sort((a, b) {
+            final ta = a['timestamp'];
+            final tb = b['timestamp'];
+            DateTime da;
+            DateTime db;
+            if (ta is Timestamp) {
+              da = ta.toDate();
+            } else if (ta is DateTime) {
+              da = ta;
+            } else {
+              da = DateTime.fromMillisecondsSinceEpoch(0);
+            }
+            if (tb is Timestamp) {
+              db = tb.toDate();
+            } else if (tb is DateTime) {
+              db = tb;
+            } else {
+              db = DateTime.fromMillisecondsSinceEpoch(0);
+            }
+            return db.compareTo(da); // descending
+          });
+          progressHistory.assignAll(list.map((data) => ProgressHistoryEntry.fromJson({
+                'section': data['section'],
+                'points': data['points'],
+                'description': data['description'],
+                'timestamp': (data['timestamp'] is Timestamp)
+                    ? (data['timestamp'] as Timestamp).toDate().toIso8601String()
+                    : DateTime.now().toIso8601String(),
+                'type': data['type'],
+              })).toList());
+        });
+      } else if (err.toString().contains('unavailable')) {
+        print('History stream unavailable (offline). Will retry automatically when connection restores.');
+      } else {
+        print('History stream error: $err');
+      }
+    });
+  }
+
+  void _subscribeAggregate() {
+    if (_userId == null) return;
+    _progressRepo.watchAggregate(_userId!).listen((agg) {
+      calculateOverallProgress(aggregate: agg);
+      if (!isProgressLoaded.value) {
+        isProgressLoaded.value = true; // mark loaded after first snapshot
+      }
+    });
   }
 
   // Add a new history entry
@@ -85,17 +192,15 @@ class GlobalProgressController extends GetxController {
     required String description,
     required String type,
   }) {
-    final entry = ProgressHistoryEntry(
+    if (_userId == null) return; // Require auth
+    // Write only to Firestore; rely on stream for UI update (removes local-only fallback)
+    _progressRepo.addHistoryEntry(
+      userId: _userId!,
       section: section,
       points: points,
       description: description,
-      timestamp: DateTime.now(),
       type: type,
     );
-
-    progressHistory.insert(0, entry); // Add to beginning (most recent first)
-    _saveHistory();
-    calculateOverallProgress(); // Refresh stats
   }
 
   // Get history filtered by section
@@ -113,125 +218,56 @@ class GlobalProgressController extends GetxController {
     }).toList();
   }
 
-  void calculateOverallProgress() {
-    int totalPointsSum = 0;
-    int totalQuestions = 0;
-    int totalCorrect = 0;
+  void calculateOverallProgress({UserProgressAggregate? aggregate, double? overrideOverallAccuracy}) {
+    if (aggregate == null) return; // Require Firestore data only
+    sutrasPoints.value = aggregate.sutrasTotalPoints;
+    sutrasAccuracy.value = aggregate.sutrasAccuracy;
+    sutrasCompleted.value = aggregate.sutrasCompleted;
 
-    // 1. Math Tables Progress
-    final mathTablesPoints = storage.read<int>('math_tables_points') ?? 0;
-    final mathTablesQuestions =
-        storage.read<int>('math_tables_total_questions') ?? 0;
-    final mathTablesCorrect =
-        storage.read<int>('math_tables_correct_answers') ?? 0;
+    totalPoints.value = aggregate.mathTablesPoints + aggregate.sutrasTotalPoints + aggregate.practiceTotalPoints + aggregate.tacticsTotalPoints;
+    totalQuestionsAttempted.value = aggregate.mathTablesTotalQuestions + aggregate.practiceTotalQuestions;
+    totalCorrectAnswers.value = aggregate.mathTablesCorrectAnswers + aggregate.practiceCorrectAnswers;
 
-    totalPointsSum += mathTablesPoints;
-    totalQuestions += mathTablesQuestions;
-    totalCorrect += mathTablesCorrect;
-
-    print('Math Tables: Points=$mathTablesPoints, Q=$mathTablesQuestions, Correct=$mathTablesCorrect');
-
-    // 2. Vedic Sutras Progress (16 Sutras)
-    try {
-      final sutrasController = Get.find<EnhancedVedicCourseController>();
-      final sutrasProgress = sutrasController.overallProgress;
-      final sutrasPoints = sutrasProgress['total_points'] as int? ?? 0;
-      final sutrasAccuracy = sutrasProgress['accuracy'] as int? ?? 0;
-      final sutrasCompleted = sutrasProgress['completed'] as int? ?? 0;
-
-      totalPointsSum += sutrasPoints;
-      // Estimate questions from sutras (each sutra has ~10 practice questions)
-      final estimatedSutrasQuestions = sutrasCompleted * 10;
-      totalQuestions += estimatedSutrasQuestions;
-      totalCorrect +=
-          ((estimatedSutrasQuestions * sutrasAccuracy) / 100).round();
-
-      print('Vedic Sutras: Points=$sutrasPoints, Completed=$sutrasCompleted, Accuracy=$sutrasAccuracy%');
-    } catch (e) {
-      // Controller not initialized yet
-      print('Vedic Sutras Controller not found: $e');
-    }
-
-    // 3. Vedic Tactics/Lessons Progress
-    try {
-      final tacticsController = Get.find<VedicCourseController>();
-      final allLessons = tacticsController.getAllLessons();
-
-      int tacticsPoints = 0;
-      int tacticsQuestions = 0;
-      int tacticsCorrect = 0;
-
-      for (var item in allLessons) {
-        final lesson = item['lesson'];
-        if (lesson.isCompleted) {
-          tacticsPoints += 100; // 100 points per completed lesson
-        }
-        if (lesson.score > 0) {
-          tacticsQuestions += 1;
-          tacticsCorrect += (lesson.score as num).toInt();
-        }
-      }
-
-      totalPointsSum += tacticsPoints;
-      totalQuestions += tacticsQuestions;
-      totalCorrect += tacticsCorrect;
-
-      print('Vedic Tactics: Points=$tacticsPoints, Q=$tacticsQuestions, Correct=$tacticsCorrect');
-    } catch (e) {
-      // Controller not initialized yet
-      print('Vedic Tactics Controller not found: $e');
-    }
-
-    // 4. Practice Progress (if stored separately)
-    final practicePoints = storage.read<int>('practice_total_points') ?? 0;
-    final practiceQuestions =
-        storage.read<int>('practice_total_questions') ?? 0;
-    final practiceCorrect =
-        storage.read<int>('practice_correct_answers') ?? 0;
-
-    totalPointsSum += practicePoints;
-    totalQuestions += practiceQuestions;
-    totalCorrect += practiceCorrect;
-
-    print('Practice: Points=$practicePoints, Q=$practiceQuestions, Correct=$practiceCorrect');
-
-    // Update reactive variables
-    totalPoints.value = totalPointsSum;
-    totalQuestionsAttempted.value = totalQuestions;
-    totalCorrectAnswers.value = totalCorrect;
-
-    // Calculate overall accuracy
-    if (totalQuestions > 0) {
-      overallAccuracy.value = (totalCorrect / totalQuestions) * 100;
+    if (overrideOverallAccuracy != null) {
+      overallAccuracy.value = overrideOverallAccuracy;
     } else {
-      overallAccuracy.value = 0.0;
+      // New rule: overall accuracy derived from total correct answers divided by total attempted questions.
+      if (totalQuestionsAttempted.value == 0) {
+        overallAccuracy.value = 0;
+      } else {
+        overallAccuracy.value = ((totalCorrectAnswers.value / totalQuestionsAttempted.value) * 100).clamp(0, 100);
+      }
     }
-
-    print('TOTAL: Points=$totalPointsSum, Q=$totalQuestions, Correct=$totalCorrect, Accuracy=${overallAccuracy.value.toStringAsFixed(1)}%');
   }
 
   // Call this method whenever any section updates its progress
   void refreshProgress() {
-    calculateOverallProgress();
+    // No-op: progress reacts to Firestore stream only now.
   }
 
   // Breakdown by section for detailed view
   Map<String, dynamic> getProgressBreakdown() {
     return {
-      'math_tables': {
-        'points': storage.read<int>('math_tables_points') ?? 0,
-        'questions': storage.read<int>('math_tables_total_questions') ?? 0,
-        'correct': storage.read<int>('math_tables_correct_answers') ?? 0,
-      },
-      'practice': {
-        'points': storage.read<int>('practice_total_points') ?? 0,
-        'questions': storage.read<int>('practice_total_questions') ?? 0,
-        'correct': storage.read<int>('practice_correct_answers') ?? 0,
-      },
       'total_points': totalPoints.value,
       'overall_accuracy': overallAccuracy.value,
       'total_questions': totalQuestionsAttempted.value,
       'total_correct': totalCorrectAnswers.value,
     };
+  }
+
+  /// Fetch a complete stats snapshot from Firestore only (no local persistence).
+  /// Returns null if user not authenticated yet.
+  Future<FullUserStats?> loadFullStats({int practiceSessionsLimit = 200, int historyLimit = 200}) async {
+    if (_userId == null) return null;
+    try {
+      return await _progressRepo.fetchFullUserStats(
+        userId: _userId!,
+        practiceSessionsLimit: practiceSessionsLimit,
+        historyLimit: historyLimit,
+      );
+    } catch (e) {
+      print('Failed to load full stats: $e');
+      return null;
+    }
   }
 }

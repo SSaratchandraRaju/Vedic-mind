@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'dart:ui';
 import '../../routes/app_routes.dart';
 import '../../controllers/enhanced_vedic_course_controller.dart';
+import '../../controllers/global_progress_controller.dart';
 import '../../ui/theme/app_colors.dart';
 import '../../ui/theme/app_text_styles.dart';
 
@@ -38,229 +40,47 @@ class Vedic16SutrasView extends GetView<EnhancedVedicCourseController> {
                   child: SafeArea(
                     child: Padding(
                       padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          const Text(
-                            '16 Vedic Sutras',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              height: 1.2,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Master ancient calculation techniques',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 15,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.school,
-                                size: 16,
-                                color: Colors.white.withOpacity(0.8),
+                      child: Obx(() {
+                        // Trigger a granular refresh (throttled) when this view builds
+                        controller.refreshGranularProgress();
+                        final total = controller.allSutras.length;
+                        final global = Get.find<GlobalProgressController>();
+                        final completed = global.sutrasCompleted.value;
+                        final accuracy = global.sutrasAccuracy.value;
+                        final points = global.sutrasPoints.value;
+                        final completionPct = total > 0 ? ((completed / total) * 100).round() : 0;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            const Text(
+                              '16 Vedic Sutras',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 30,
+                                fontWeight: FontWeight.w700,
+                                height: 1.1,
+                                letterSpacing: -0.5,
                               ),
-                              const SizedBox(width: 4),
-                              Obx(
-                                () => Text(
-                                  '${controller.allSutras.length} Sutras',
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.8),
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                            const SizedBox(height: 20),
+                            _StatsHeader(
+                              totalItems: total,
+                              completionPct: completionPct,
+                              accuracy: accuracy,
+                              points: points,
+                              itemLabel: 'Sutras',
+                            ),
+                          ],
+                        );
+                      }),
                     ),
                   ),
                 ),
               ),
             ),
 
-            // Progress Section
-            SliverToBoxAdapter(
-              child: Obx(() {
-                final progress = controller.overallProgress;
-                final completedCount = progress['completed'] as int;
-                final totalCount = progress['total'] as int;
-                final completionPercent =
-                    progress['completion_percentage'] as int;
-                final accuracy = progress['accuracy'] as int;
-                final totalPoints = progress['total_points'] as int;
-
-                return Container(
-                  margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Your Progress',
-                            style: AppTextStyles.h4.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            '$completionPercent%',
-                            style: AppTextStyles.h3.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // Completion info
-                      Row(
-                        children: [
-                          Text(
-                            '$completedCount of $totalCount Sutras',
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            '$completionPercent% completed',
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textTertiary,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // Progress bar
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: LinearProgressIndicator(
-                          value: completionPercent / 100,
-                          minHeight: 8,
-                          backgroundColor: Colors.grey[200],
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColors.primary,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Stats Row
-                      Row(
-                        children: [
-                          // Accuracy
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.star,
-                                      size: 16,
-                                      color: const Color(0xFF4CAF50),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      'Accuracy',
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: AppColors.textSecondary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '$accuracy%',
-                                  style: AppTextStyles.h4.copyWith(
-                                    color: const Color(0xFF4CAF50),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Divider
-                          Container(
-                            height: 40,
-                            width: 1,
-                            color: AppColors.border,
-                          ),
-
-                          // Points
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    const SizedBox(width: 12),
-                                    const Icon(
-                                      Icons.emoji_events,
-                                      size: 16,
-                                      color: Color(0xFFFF9800),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      'Points',
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: AppColors.textSecondary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 12),
-                                  child: Text(
-                                    '$totalPoints',
-                                    style: AppTextStyles.h4.copyWith(
-                                      color: const Color(0xFFFF9800),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ),
+            // Removed old progress section
 
             // Content
             SliverToBoxAdapter(
@@ -323,22 +143,25 @@ class Vedic16SutrasView extends GetView<EnhancedVedicCourseController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Header info
-                      // Sutra cards
                       ...controller.allSutras.map((sutra) {
+                        final prevProgress = controller.sutraProgress[sutra.sutraId - 1];
+                        final bool isUnlocked = sutra.sutraId == 1 || (prevProgress?.isCompleted ?? false);
                         return _SutraCard(
                           sutra: sutra,
-                          onTap: () {
-                            Get.toNamed(
-                              Routes.SUTRA_DETAIL,
-                              arguments: {
-                                'sutra': sutra,
-                                'sutraNumber': sutra.sutraId,
-                                'sutraName': sutra.name,
-                                'meaning': sutra.translation,
-                              },
-                            );
-                          },
+                          isUnlocked: isUnlocked,
+                          onTap: isUnlocked
+                              ? () {
+                                  Get.toNamed(
+                                    Routes.SUTRA_DETAIL,
+                                    arguments: {
+                                      'sutra': sutra,
+                                      'sutraNumber': sutra.sutraId,
+                                      'sutraName': sutra.name,
+                                      'meaning': sutra.translation,
+                                    },
+                                  );
+                                }
+                              : null,
                         );
                       }).toList(),
                     ],
@@ -355,10 +178,9 @@ class Vedic16SutrasView extends GetView<EnhancedVedicCourseController> {
 
 class _SutraCard extends StatelessWidget {
   final dynamic sutra;
-  final VoidCallback onTap;
-
-  const _SutraCard({Key? key, required this.sutra, required this.onTap})
-    : super(key: key);
+  final VoidCallback? onTap;
+  final bool isUnlocked;
+  const _SutraCard({required this.sutra, required this.onTap, required this.isUnlocked});
 
   Color _getDifficultyColor(String difficulty) {
     switch (difficulty.toLowerCase()) {
@@ -415,20 +237,28 @@ class _SutraCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<EnhancedVedicCourseController>();
-
     return Obx(() {
       final progress = controller.sutraProgress[sutra.sutraId];
-      final isCompleted = progress?.isCompleted ?? false;
-      final accuracy = progress?.accuracy.toInt() ?? 0;
-      final hasProgress = progress != null && progress.totalAttempts > 0;
+      final bool isCompleted = progress?.isCompleted ?? false;
+      final int accuracy = progress?.accuracy.toInt() ?? 0;
+      final bool hasProgress = progress != null && progress.totalAttempts > 0;
+      final accuracyColor = accuracy >= 80
+          ? const Color(0xFF4CAF50)
+          : accuracy >= 50
+              ? const Color(0xFFFFA726)
+              : const Color(0xFFEF5350);
 
       return Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isUnlocked ? Colors.white : Colors.grey[100],
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isCompleted ? const Color(0xFF4CAF50) : AppColors.border,
+            color: isCompleted
+                ? const Color(0xFF4CAF50)
+                : isUnlocked
+                    ? AppColors.border
+                    : Colors.grey[300]!,
             width: isCompleted ? 2 : 1,
           ),
           boxShadow: [
@@ -442,7 +272,7 @@ class _SutraCard extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: onTap,
+            onTap: isUnlocked ? onTap : null,
             borderRadius: BorderRadius.circular(16),
             child: Padding(
               padding: const EdgeInsets.all(20),
@@ -451,22 +281,29 @@ class _SutraCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Sutra Number (without background)
                       Stack(
                         children: [
                           SizedBox(
                             width: 56,
                             height: 56,
                             child: Center(
-                              child: Text(
-                                '${sutra.sutraId}',
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primary,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
+                              child: isUnlocked
+                                  ? Text(
+                                      '${sutra.sutraId}',
+                                      style: TextStyle(
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.bold,
+                                        color: isCompleted
+                                            ? const Color(0xFF4CAF50)
+                                            : AppColors.primary,
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    )
+                                  : Icon(
+                                      Icons.lock,
+                                      size: 32,
+                                      color: Colors.grey[400],
+                                    ),
                             ),
                           ),
                           if (isCompleted)
@@ -478,23 +315,14 @@ class _SutraCard extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   color: const Color(0xFF4CAF50),
                                   shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
+                                  border: Border.all(color: Colors.white, width: 2),
                                 ),
-                                child: const Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                  size: 12,
-                                ),
+                                child: const Icon(Icons.check, color: Colors.white, size: 12),
                               ),
                             ),
                         ],
                       ),
                       const SizedBox(width: 12),
-
-                      // Sutra Info
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -503,7 +331,7 @@ class _SutraCard extends StatelessWidget {
                               sutra.name,
                               style: AppTextStyles.h5.copyWith(
                                 fontSize: 16,
-                                color: AppColors.textPrimary,
+                                color: isUnlocked ? AppColors.textPrimary : Colors.grey[600],
                                 fontFamily: 'Poppins',
                               ),
                               maxLines: 1,
@@ -513,7 +341,7 @@ class _SutraCard extends StatelessWidget {
                             Text(
                               sutra.translation,
                               style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
+                                color: isUnlocked ? AppColors.textSecondary : Colors.grey[500],
                                 fontStyle: FontStyle.italic,
                                 fontFamily: 'Poppins',
                               ),
@@ -521,24 +349,17 @@ class _SutraCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                // Difficulty Badge
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: _getDifficultyColor(
-                                      sutra.difficulty,
-                                    ).withOpacity(0.1),
+                                    color: _getDifficultyColor(sutra.difficulty).withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(6),
                                     border: Border.all(
-                                      color: _getDifficultyColor(
-                                        sutra.difficulty,
-                                      ).withOpacity(0.3),
+                                      color: _getDifficultyColor(sutra.difficulty).withOpacity(0.3),
                                     ),
                                   ),
                                   child: Text(
@@ -546,62 +367,49 @@ class _SutraCard extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
-                                      color: _getDifficultyColor(
-                                        sutra.difficulty,
-                                      ),
+                                      color: _getDifficultyColor(sutra.difficulty),
                                       fontFamily: 'Poppins',
                                     ),
                                   ),
                                 ),
-
-                                // Game Chip
                                 const SizedBox(width: 8),
                                 InkWell(
-                                  onTap: () {
-                                    final gameRoute = _getGameRoute(
-                                      sutra.sutraId,
-                                    );
-                                    if (gameRoute != null) {
-                                      Get.toNamed(gameRoute);
-                                    } else {
-                                      Get.snackbar(
-                                        'Coming Soon',
-                                        'Game for this sutra is not available yet',
-                                        backgroundColor: AppColors.warning,
-                                        colorText: Colors.white,
-                                      );
-                                    }
-                                  },
+                                  onTap: isUnlocked
+                                      ? () {
+                                          final gameRoute = _getGameRoute(sutra.sutraId);
+                                          if (gameRoute != null) {
+                                            Get.toNamed(gameRoute);
+                                          } else {
+                                            Get.snackbar(
+                                              'Coming Soon',
+                                              'Game for this sutra is not available yet',
+                                              backgroundColor: AppColors.warning,
+                                              colorText: Colors.white,
+                                            );
+                                          }
+                                        }
+                                      : null,
                                   borderRadius: BorderRadius.circular(6),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: AppColors.purple.withOpacity(0.1),
+                                      color: isUnlocked ? AppColors.purple.withOpacity(0.1) : Colors.grey[200],
                                       borderRadius: BorderRadius.circular(6),
                                       border: Border.all(
-                                        color: AppColors.purple.withOpacity(
-                                          0.3,
-                                        ),
+                                        color: (isUnlocked ? AppColors.purple : Colors.grey[400]!).withOpacity(0.3),
                                       ),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(
-                                          Icons.sports_esports,
-                                          size: 12,
-                                          color: AppColors.purple,
-                                        ),
+                                        Icon(Icons.sports_esports, size: 12, color: isUnlocked ? AppColors.purple : Colors.grey[500]),
                                         const SizedBox(width: 4),
                                         Text(
-                                          'Game >',
+                                          isUnlocked ? 'Game >' : 'Locked',
                                           style: TextStyle(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w600,
-                                            color: AppColors.purple,
+                                            color: isUnlocked ? AppColors.purple : Colors.grey[600],
                                             fontFamily: 'Poppins',
                                           ),
                                         ),
@@ -609,50 +417,25 @@ class _SutraCard extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-
-                                // Accuracy Chip (only if has progress)
-                                if (hasProgress) ...[
+                                if (hasProgress && isUnlocked) ...[
                                   const SizedBox(width: 8),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                        color:
-                                            (accuracy >= 80
-                                                    ? const Color(0xFF4CAF50)
-                                                    : accuracy >= 50
-                                                    ? const Color(0xFFFFA726)
-                                                    : const Color(0xFFEF5350))
-                                                .withOpacity(0.3),
-                                      ),
+                                      border: Border.all(color: accuracyColor.withOpacity(0.3)),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(
-                                          Icons.star,
-                                          size: 12,
-                                          color: accuracy >= 80
-                                              ? const Color(0xFF4CAF50)
-                                              : accuracy >= 50
-                                              ? const Color(0xFFFFA726)
-                                              : const Color(0xFFEF5350),
-                                        ),
+                                        Icon(Icons.star, size: 12, color: accuracyColor),
                                         const SizedBox(width: 4),
                                         Text(
                                           '$accuracy%',
                                           style: TextStyle(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w600,
-                                            color: accuracy >= 80
-                                                ? const Color(0xFF4CAF50)
-                                                : accuracy >= 50
-                                                ? const Color(0xFFFFA726)
-                                                : const Color(0xFFEF5350),
+                                            color: accuracyColor,
                                             fontFamily: 'Poppins',
                                           ),
                                         ),
@@ -660,48 +443,39 @@ class _SutraCard extends StatelessWidget {
                                     ),
                                   ),
                                 ],
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-
                       const SizedBox(width: 12),
-
-                      // Time (Top Right)
                       Column(
                         children: [
                           Row(
                             children: [
-                              Icon(
-                                Icons.access_time,
-                                size: 14,
-                                color: AppColors.textTertiary,
-                              ),
+                              Icon(Icons.access_time, size: 14, color: isUnlocked ? AppColors.textTertiary : Colors.grey[400]),
                               const SizedBox(width: 4),
                               Text(
                                 '${sutra.timeMinutes} min',
                                 style: AppTextStyles.caption.copyWith(
                                   fontSize: 11,
                                   fontFamily: 'Poppins',
+                                  color: isUnlocked ? AppColors.textSecondary : Colors.grey[500],
                                 ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 8),
-                          // Arrow Icon
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
+                          if (isUnlocked)
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(Icons.arrow_forward_ios, color: AppColors.primary, size: 16),
                             ),
-                            child: Icon(
-                              Icons.arrow_forward_ios,
-                              color: AppColors.primary,
-                              size: 16,
-                            ),
-                          ),
                         ],
                       ),
                     ],
@@ -713,5 +487,110 @@ class _SutraCard extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+class _HeaderChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  const _HeaderChip({required this.icon, required this.label, required this.color});
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [color.withOpacity(0.55), color.withOpacity(0.28)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withOpacity(0.35), width: 0.7),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 15, color: Colors.white),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ],
+            ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatsHeader extends StatelessWidget {
+  final int totalItems;
+  final int completionPct;
+  final int accuracy;
+  final int points;
+  final String itemLabel;
+  const _StatsHeader({
+    required this.totalItems,
+    required this.completionPct,
+    required this.accuracy,
+    required this.points,
+    required this.itemLabel,
+  });
+  @override
+  Widget build(BuildContext context) {
+    final Color accuracyColor = accuracy >= 80
+        ? const Color(0xFF4CAF50)
+        : accuracy >= 50
+            ? const Color(0xFFFFA726)
+            : const Color(0xFFEF5350);
+    final Color pointsColor = const Color(0xFF7E57C2);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              _HeaderChip(icon: Icons.school, label: '$totalItems $itemLabel', color: Colors.white),
+              const SizedBox(width: 10),
+              _HeaderChip(icon: Icons.star, label: '$accuracy% Accuracy', color: accuracyColor),
+              const SizedBox(width: 10),
+              _HeaderChip(icon: Icons.bolt, label: '$points pts', color: pointsColor),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: LinearProgressIndicator(
+            minHeight: 12,
+            value: completionPct / 100.0,
+            backgroundColor: Colors.white.withOpacity(0.18),
+            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Progress: $completionPct%',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.3,
+          ),
+        ),
+      ],
+    );
   }
 }

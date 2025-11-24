@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "vedic_maths" "\0"
+            VALUE "FileDescription", "vedicmind" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "vedic_maths" "\0"
+            VALUE "InternalName", "vedicmind" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "vedic_maths.exe" "\0"
-            VALUE "ProductName", "vedic_maths" "\0"
+            VALUE "OriginalFilename", "vedicmind.exe" "\0"
+            VALUE "ProductName", "vedicmind" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

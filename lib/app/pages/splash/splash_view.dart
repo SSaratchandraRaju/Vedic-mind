@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../data/repositories/firestore_user_settings_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../ui/theme/app_colors.dart';
@@ -21,22 +22,37 @@ class _SplashViewState extends State<SplashView> {
 
   Future<void> _navigateToNextScreen() async {
     await Future.delayed(const Duration(seconds: 2));
-
     final prefs = await SharedPreferences.getInstance();
-    final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
-
-    // Check if user is logged in
+    final localCompleted = prefs.getBool('onboarding_completed') ?? false;
     final user = FirebaseAuth.instance.currentUser;
 
-    if (!onboardingCompleted) {
-      // First time user - show onboarding
-      Get.offAllNamed(Routes.ONBOARDING);
-    } else if (user != null) {
-      // User is logged in - go to home
-      Get.offAllNamed(Routes.HOME);
-    } else {
-      // User completed onboarding but not logged in - show login
-      Get.offAllNamed(Routes.LOGIN);
+    // If no user yet (unauthenticated)
+    if (user == null) {
+      // If we have locally completed onboarding, go straight to LOGIN
+      if (localCompleted) {
+        Get.offAllNamed(Routes.LOGIN);
+      } else {
+        Get.offAllNamed(Routes.ONBOARDING);
+      }
+      return;
+    }
+    try {
+      final repo = FirestoreUserSettingsRepository();
+      final settings = await repo.fetch(user.uid);
+      // Prefer remote flag if available; fall back to local flag
+      final completed = settings.onboardingCompleted || localCompleted;
+      if (completed) {
+        Get.offAllNamed(Routes.HOME);
+      } else {
+        Get.offAllNamed(Routes.ONBOARDING);
+      }
+    } catch (e) {
+      // Firestore unavailable (offline or index issue) -> default to HOME to avoid blocking UX
+      if (localCompleted) {
+        Get.offAllNamed(Routes.HOME);
+      } else {
+        Get.offAllNamed(Routes.ONBOARDING);
+      }
     }
   }
 

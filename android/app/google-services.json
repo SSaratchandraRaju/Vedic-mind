@@ -1,36 +1,26 @@
 {
   "project_info": {
-    "project_number": "360187297494",
-    "project_id": "vedicmind-4c15e",
-    "storage_bucket": "vedicmind-4c15e.firebasestorage.app"
+    "project_number": "1057656790392",
+    "project_id": "vedic-maths-d7d74",
+    "storage_bucket": "vedic-maths-d7d74.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:360187297494:android:ed3c392bf58faaf1dad377",
+        "mobilesdk_app_id": "1:1057656790392:android:018b70cf6f7d08022efc8d",
         "android_client_info": {
-          "package_name": "com.vikrasoftech.vedic_maths"
+          "package_name": "com.vikrasoftech.vedicmind"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "360187297494-t50ncicp5b09afc7j67ldvomd08fpu4p.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAM02pv9NkepbJlEyQqSitu96NXEqi36Qo"
+          "current_key": "AIzaSyADZG8tWutFlMUE2xPxERqJyt3d028laNw"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "360187297494-t50ncicp5b09afc7j67ldvomd08fpu4p.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

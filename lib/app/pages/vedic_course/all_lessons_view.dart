@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import '../../controllers/vedic_course_controller.dart';
@@ -6,7 +7,6 @@ import '../../data/models/vedic_course_models.dart';
 import '../../routes/app_routes.dart';
 import '../../ui/theme/app_colors.dart';
 import '../../ui/theme/app_text_styles.dart';
-import '../../ui/widgets/progress_section.dart';
 
 class AllLessonsView extends GetView<VedicCourseController> {
   const AllLessonsView({super.key});
@@ -88,51 +88,56 @@ class AllLessonsView extends GetView<VedicCourseController> {
                           top: 16.0,
                           bottom: 16.0,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              'Master Vedic Mathematics',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                height: 1.2,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Learn powerful calculation techniques through structured lessons',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: Colors.white.withOpacity(0.9),
-                              ),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
+                        child: Builder(
+                          builder: (context) {
+                            final completedCount = allLessons.where((l) {
+                              final lesson = l['lesson'] as Lesson;
+                              return lesson.isCompleted;
+                            }).length;
+                            final totalCount = allLessons.length;
+                            int totalAttempts = 0;
+                            int totalCorrect = 0;
+                            for (var item in allLessons) {
+                              final lesson = item['lesson'] as Lesson;
+                              if (lesson.score > 0) {
+                                totalAttempts++;
+                                totalCorrect += lesson.score;
+                              }
+                            }
+                            final accuracy = totalAttempts > 0
+                                ? (totalCorrect / totalAttempts).toInt()
+                                : 0;
+                            final completionPct = totalCount > 0
+                                ? ((completedCount / totalCount) * 100).toInt()
+                                : 0;
+                            final totalPoints = completedCount * 100;
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(
-                                  Icons.library_books,
-                                  size: 16,
-                                  color: Colors.white.withOpacity(0.8),
-                                ),
-                                const SizedBox(width: 4),
-                                Flexible(
-                                  child: Text(
-                                    '${allLessons.length} Comprehensive Lessons',
-                                    style: AppTextStyles.caption.copyWith(
-                                      color: Colors.white.withOpacity(0.8),
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
+                                Text(
+                                  'Vedic Tatics',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.1,
+                                    letterSpacing: -0.5,
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 18),
+                                // Stats container
+                                _StatsHeader(
+                                  totalLessons: totalCount,
+                                  completionPct: completionPct,
+                                  accuracy: accuracy,
+                                  points: totalPoints,
                                 ),
                               ],
-                            ),
-                          ],
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -140,57 +145,31 @@ class AllLessonsView extends GetView<VedicCourseController> {
                 ),
               ),
 
-              // Progress Section - Common Widget
-              SliverToBoxAdapter(
-                child: Builder(
-                  builder: (context) {
-                    final completedCount = allLessons.where((l) {
-                      final lesson = l['lesson'] as Lesson;
-                      return lesson.isCompleted;
-                    }).length;
-                    final totalCount = allLessons.length;
 
-                    // Calculate accuracy
-                    int totalAttempts = 0;
-                    int totalCorrect = 0;
-                    for (var item in allLessons) {
-                      final lesson = item['lesson'] as Lesson;
-                      if (lesson.score > 0) {
-                        totalAttempts++;
-                        totalCorrect += lesson.score;
-                      }
-                    }
-                    final accuracy = totalAttempts > 0
-                        ? (totalCorrect / totalAttempts).toInt()
-                        : 0;
-
-                    // Calculate total points (100 points per completed lesson)
-                    final totalPoints = completedCount * 100;
-
-                    return Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: ProgressSection(
-                        completedCount: completedCount,
-                        totalCount: totalCount,
-                        accuracy: accuracy,
-                        totalPoints: totalPoints,
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              // Lessons List - Exactly like Vedic Sutras cards
-              SliverToBoxAdapter(
-                child: Builder(
-                  builder: (context) {
+                  // Lessons List - Exactly like Vedic Sutras cards
+                  SliverToBoxAdapter(
+                  child: Builder(
+                    builder: (context) {
                     final allLessons = controller.getAllLessons();
 
                     return Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                        padding: const EdgeInsets.only(bottom: 12, left: 4), // reduced bottom space
+                        child: Text(
+                          'Your Learning Path',
+                          style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                          letterSpacing: -0.3,
+                          fontFamily: 'Poppins',
+                          ),
+                        ),
+                        ),
                           // Lesson cards
                           ...allLessons.asMap().entries.map((entry) {
                             final index = entry.key;
@@ -233,6 +212,138 @@ class AllLessonsView extends GetView<VedicCourseController> {
           );
         }),
       ),
+    );
+  }
+}
+
+class _HeaderChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  const _HeaderChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                color.withOpacity(0.55),
+                color.withOpacity(0.28),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white.withOpacity(0.35), width: 0.7),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 15, color: Colors.white),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatsHeader extends StatelessWidget {
+  final int totalLessons;
+  final int completionPct;
+  final int accuracy;
+  final int points;
+  const _StatsHeader({
+    required this.totalLessons,
+    required this.completionPct,
+    required this.accuracy,
+    required this.points,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final Color accuracyColor = accuracy >= 80
+        ? const Color(0xFF4CAF50)
+        : accuracy >= 50
+            ? const Color(0xFFFFA726)
+            : const Color(0xFFEF5350);
+    final Color pointsColor = const Color(0xFF7E57C2);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Chips row (single line, scroll if overflow)
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              _HeaderChip(
+                icon: Icons.library_books,
+                label: '$totalLessons Lessons',
+                color: Colors.white,
+              ),
+              const SizedBox(width: 10),
+              _HeaderChip(
+                icon: Icons.star,
+                label: '$accuracy% Accuracy',
+                color: accuracyColor,
+              ),
+              const SizedBox(width: 10),
+              _HeaderChip(
+                icon: Icons.bolt,
+                label: '$points pts',
+                color: pointsColor,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        // Progress bar at bottom
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                minHeight: 12,
+                value: completionPct / 100.0,
+                backgroundColor: Colors.white.withOpacity(0.18),
+                valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF4CAF50)),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Progress: $completionPct%',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
