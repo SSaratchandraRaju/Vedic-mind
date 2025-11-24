@@ -127,7 +127,7 @@ class VedicMindApp extends StatelessWidget {
       builder: (context, orientation, deviceType) {
         final themeController = Get.put(ThemeController(), permanent: true);
         return Obx(() => GetMaterialApp(
-              title: 'VedicMind',
+              title: 'Vedic Mind',
               debugShowCheckedModeBanner: false,
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,

@@ -83,6 +83,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
                                 score: users[1].totalXp.toString(),
                                 height: 180,
                                 color: AppColors.gray200,
+                                photoUrl: users[1].photoUrl,
                               ),
                             ),
                           Positioned(
@@ -98,6 +99,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
                                 height: 220,
                                 color: AppColors.yellow,
                                 hasCrown: true,
+                                photoUrl: users[0].photoUrl,
                               ),
                             ),
                           ),
@@ -112,6 +114,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
                                 score: users[2].totalXp.toString(),
                                 height: 160,
                                 color: AppColors.gray300,
+                                photoUrl: users[2].photoUrl,
                               ),
                             ),
                         ],
@@ -163,6 +166,7 @@ class LeaderboardView extends GetView<LeaderboardController> {
                             score: around[i].totalXp.toString(),
                             isUp: true, // Placeholder trend; could compute delta
                             isCurrentUser: around[i].userId == controller.currentUserId,
+                            photoUrl: around[i].photoUrl,
                           ),
                       ],
                     );
@@ -218,7 +222,7 @@ class _TabButton extends StatelessWidget {
         ),
       ),
     );
-  }
+    }
 }
 
 class _PodiumCard extends StatelessWidget {
@@ -229,6 +233,7 @@ class _PodiumCard extends StatelessWidget {
   final double height;
   final Color color;
   final bool hasCrown;
+  final String? photoUrl;
 
   const _PodiumCard({
     required this.rank,
@@ -238,6 +243,7 @@ class _PodiumCard extends StatelessWidget {
     required this.height,
     required this.color,
     this.hasCrown = false,
+    this.photoUrl,
   });
 
   @override
@@ -253,6 +259,11 @@ class _PodiumCard extends StatelessWidget {
         default:
           return AppColors.yellow;
       }
+    }
+
+    ImageProvider? avatarProvider;
+    if (photoUrl != null && photoUrl!.isNotEmpty) {
+      avatarProvider = NetworkImage(photoUrl!);
     }
 
     return Column(
@@ -274,11 +285,14 @@ class _PodiumCard extends StatelessWidget {
             CircleAvatar(
               radius: rank == 1 ? 40 : 35,
               backgroundColor: Colors.grey[200],
-              child: Icon(
-                Icons.person,
-                size: rank == 1 ? 45 : 40,
-                color: Colors.grey,
-              ),
+              backgroundImage: avatarProvider,
+              child: avatarProvider == null
+                  ? Icon(
+                      Icons.person,
+                      size: rank == 1 ? 45 : 40,
+                      color: Colors.grey,
+                    )
+                  : null,
             ),
             Positioned(
               bottom: 0,
@@ -362,6 +376,7 @@ class _PlayerListItem extends StatelessWidget {
   final String score;
   final bool isUp;
   final bool isCurrentUser;
+  final String? photoUrl;
 
   const _PlayerListItem({
     required this.rank,
@@ -369,10 +384,15 @@ class _PlayerListItem extends StatelessWidget {
     required this.score,
     required this.isUp,
     this.isCurrentUser = false,
+    this.photoUrl,
   });
 
   @override
   Widget build(BuildContext context) {
+    ImageProvider? avatarProvider;
+    if (photoUrl != null && photoUrl!.isNotEmpty) {
+      avatarProvider = NetworkImage(photoUrl!);
+    }
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       padding: const EdgeInsets.all(16),
@@ -400,11 +420,14 @@ class _PlayerListItem extends StatelessWidget {
             backgroundColor: isCurrentUser
                 ? Colors.white.withOpacity(0.2)
                 : AppColors.gray100,
-            child: Icon(
-              Icons.person,
-              size: 24,
-              color: isCurrentUser ? Colors.white : AppColors.gray400,
-            ),
+            backgroundImage: avatarProvider,
+            child: avatarProvider == null
+                ? Icon(
+                    Icons.person,
+                    size: 24,
+                    color: isCurrentUser ? Colors.white : AppColors.gray400,
+                  )
+                : null,
           ),
           const SizedBox(width: 12),
           Expanded(

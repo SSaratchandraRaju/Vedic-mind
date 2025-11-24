@@ -11,6 +11,7 @@ class LeaderboardUser {
   final int totalProblemsAttempted;
   final int totalProblemsCorrect;
   final int streak;
+  final String? photoUrl; // nullable user avatar URL
   LeaderboardUser({
     required this.userId,
     required this.displayName,
@@ -19,6 +20,7 @@ class LeaderboardUser {
     required this.totalProblemsAttempted,
     required this.totalProblemsCorrect,
     required this.streak,
+    this.photoUrl,
   });
 }
 
@@ -65,6 +67,20 @@ class LeaderboardController extends GetxController {
       final list = <LeaderboardUser>[];
       for (final doc in snapshot.docs) {
         final data = doc.data();
+        // Attempt to read nested user_core.photo_url first
+        String? photoUrl;
+        if (data['user_core'] is Map) {
+          final uc = data['user_core'] as Map;
+          final p = uc['photo_url'];
+          if (p is String && p.trim().isNotEmpty) {
+            photoUrl = p.trim();
+          }
+        }
+        // Also allow legacy root-level photoUrl if ever present
+        final rootP = data['photoUrl'];
+        if (photoUrl == null && rootP is String && rootP.trim().isNotEmpty) {
+          photoUrl = rootP.trim();
+        }
         list.add(LeaderboardUser(
           userId: doc.id,
           displayName: (data['display_name'] ?? doc.id) as String,
@@ -73,6 +89,7 @@ class LeaderboardController extends GetxController {
           totalProblemsAttempted: (data['total_problems_attempted'] ?? 0) as int,
           totalProblemsCorrect: (data['total_problems_correct'] ?? 0) as int,
           streak: (data['streak'] ?? 0) as int,
+          photoUrl: photoUrl,
         ));
       }
       topUsers.assignAll(list);
