@@ -22,6 +22,10 @@ class FirebaseAuthDataSource implements AuthDataSource {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  static DateTime? _lastOtpRequestAt;
+  static const Duration _otpThrottle = Duration(seconds: 60);
+  static const bool _debugPhoneAuth = true; // Toggle verbose logs
+
   @override
   Future<AuthResultModel> signInWithGoogle() async {
     try {
@@ -99,7 +103,34 @@ class FirebaseAuthDataSource implements AuthDataSource {
       final UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      final user = await _createOrUpdateUser(userCredential.user!);
+      // Immediately send verification email (non-blocking)
+      final createdUser = userCredential.user;
+      if (createdUser != null && !createdUser.emailVerified) {
+        try {
+          await createdUser.sendEmailVerification();
+        } catch (e) {
+          // ignore: avoid_print
+          print('[EmailAuth][verification][send][error] $e');
+        }
+      }
+
+      // Derive display name from email prefix and an initial placeholder as photoUrl
+      final emailPrefix = email.split('@').first.trim();
+      final derivedName = emailPrefix.isEmpty
+          ? 'User'
+          : (emailPrefix[0].toUpperCase() + emailPrefix.substring(1));
+      final initial = derivedName[0].toUpperCase();
+      try {
+        await userCredential.user?.updateDisplayName(derivedName);
+      } catch (e) {
+        // ignore: avoid_print
+        print('[EmailAuth][profile][displayName][warn] $e');
+      }
+      final user = await _createOrUpdateUser(
+        userCredential.user!,
+        overrideDisplayName: derivedName,
+        overridePhotoInitial: initial,
+      );
       return AuthResultModel.success(user);
     } on FirebaseAuthException catch (e) {
       String errorMessage;
@@ -149,10 +180,24 @@ class FirebaseAuthDataSource implements AuthDataSource {
 
       if (docSnapshot.exists) {
         final data = docSnapshot.data()!;
-        return UserModel.fromJson({
+        // Backfill required fields for model construction
+        final nowIso = DateTime.now().toIso8601String();
+        final merged = {
           ...data,
           'id': firebaseUser.uid,
-        });
+          'email': (data['email'] as String?) ?? (firebaseUser.email ?? ''),
+          'createdAt': (data['createdAt'] as String?) ?? nowIso,
+        };
+        // If fields were missing, persist them (fire-and-forget)
+        if (data['email'] == null || data['createdAt'] == null) {
+          try {
+            await _firestore.collection('users').doc(firebaseUser.uid).set({
+              'email': merged['email'],
+              'createdAt': merged['createdAt'],
+            }, SetOptions(merge: true));
+          } catch (_) {}
+        }
+        return UserModel.fromJson(merged);
       }
 
       // If not in Firestore, create from Firebase user
@@ -235,50 +280,106 @@ class FirebaseAuthDataSource implements AuthDataSource {
   // PHONE OTP METHODS -------------------------------------------------------
   @override
   Future<OtpSendResult> sendPhoneOtp(String phoneNumber) async {
+    final start = DateTime.now();
+    // Throttle to avoid device blocking (17010) and rate limits
+    final now = DateTime.now();
+    if (_lastOtpRequestAt != null && now.difference(_lastOtpRequestAt!) < _otpThrottle) {
+      final remaining = _otpThrottle - now.difference(_lastOtpRequestAt!);
+      if (_debugPhoneAuth) {
+        // ignore: avoid_print
+        print('[PhoneAuth][Throttle] Blocked request. nextAllowedIn=${remaining.inSeconds}s lastAt=${_lastOtpRequestAt!.toIso8601String()}');
+      }
+      return OtpSendResult.failure('Please wait ${remaining.inSeconds}s before requesting another OTP.');
+    }
+    _lastOtpRequestAt = now;
+
     try {
       // Normalize phone number (ensure starts with +)
       final cleaned = phoneNumber.replaceAll(RegExp(r'\s+'), '');
-      final normalized = cleaned.startsWith('+')
-          ? cleaned
-          : '+$cleaned';
+      final normalized = cleaned.startsWith('+') ? cleaned : '+$cleaned';
 
-    // Debug logging to help diagnose phone auth issues (remove in production)
-    // ignore: avoid_print
-    print('[PhoneAuth] Requesting OTP for: $normalized');
+      if (_debugPhoneAuth) {
+        // ignore: avoid_print
+        print('[PhoneAuth] Requesting OTP for: $normalized at ${start.toIso8601String()}');
+      }
 
       final completer = Completer<OtpSendResult>();
+      final sw = Stopwatch()..start();
 
       await _auth.verifyPhoneNumber(
         phoneNumber: normalized,
         timeout: const Duration(seconds: 60),
         verificationCompleted: (PhoneAuthCredential credential) async {
-          // Auto-retrieval on Android; sign in directly
-          final userCred = await _auth.signInWithCredential(credential);
-          await _createOrUpdateUser(userCred.user!);
-          if (!completer.isCompleted) {
-            completer.complete(OtpSendResult.success('AUTO_VERIFIED'));
+          if (_debugPhoneAuth) {
+            // ignore: avoid_print
+            print('[PhoneAuth][verificationCompleted] provider=${credential.providerId} smsCodeLen=${credential.smsCode?.length ?? 0} elapsedMs=${sw.elapsedMilliseconds}');
+          }
+          try {
+            final userCred = await _auth.signInWithCredential(credential);
+            await _createOrUpdateUser(userCred.user!);
+            if (!completer.isCompleted) {
+              completer.complete(OtpSendResult.success('AUTO_VERIFIED'));
+            }
+          } catch (e) {
+            if (_debugPhoneAuth) {
+              // ignore: avoid_print
+              print('[PhoneAuth][verificationCompleted][signInWithCredential][error] $e');
+            }
+            if (!completer.isCompleted) {
+              completer.complete(OtpSendResult.failure('Auto verification sign-in failed: $e'));
+            }
           }
         },
         verificationFailed: (FirebaseAuthException e) {
+          if (_debugPhoneAuth) {
+            // ignore: avoid_print
+            print('[PhoneAuth][verificationFailed] code=${e.code} message=${e.message} elapsedMs=${sw.elapsedMilliseconds}');
+            // Common hints
+            if (e.code == 'too-many-requests') {
+              print('[PhoneAuth][hint] Device or IP rate-limited (17010). Wait and try later or use another number/device.');
+            } else if (e.code == 'quota-exceeded') {
+              print('[PhoneAuth][hint] Project SMS quota exceeded.');
+            } else if (e.code == 'invalid-app-credential' || e.code == 'app-not-authorized') {
+              print('[PhoneAuth][hint] Invalid play integrity/app attestation (17028). Ensure SHA-1/SHA-256 and Play Integrity configured.');
+            }
+          }
           if (!completer.isCompleted) {
             completer.complete(OtpSendResult.failure(e.message ?? 'Verification failed'));
           }
         },
         codeSent: (String verificationId, int? resendToken) {
+          if (_debugPhoneAuth) {
+            final shortId = verificationId.length > 8 ? verificationId.substring(0, 8) : verificationId;
+            // ignore: avoid_print
+            print('[PhoneAuth][codeSent] verificationId=$shortId... resendToken=${resendToken ?? -1} elapsedMs=${sw.elapsedMilliseconds}');
+          }
           if (!completer.isCompleted) {
             completer.complete(OtpSendResult.success(verificationId));
           }
         },
         codeAutoRetrievalTimeout: (String verificationId) {
-          // Timeout - still provide verificationId for manual entry
+          if (_debugPhoneAuth) {
+            final shortId = verificationId.length > 8 ? verificationId.substring(0, 8) : verificationId;
+            // ignore: avoid_print
+            print('[PhoneAuth][timeout] verificationId=$shortId... elapsedMs=${sw.elapsedMilliseconds}');
+          }
           if (!completer.isCompleted) {
             completer.complete(OtpSendResult.success(verificationId));
           }
         },
       );
 
-      return await completer.future;
+      final result = await completer.future;
+      if (_debugPhoneAuth) {
+        // ignore: avoid_print
+        print('[PhoneAuth][result] type=${result.isSuccess ? 'success' : 'failure'} elapsedMs=${sw.elapsedMilliseconds}');
+      }
+      return result;
     } catch (e) {
+      if (_debugPhoneAuth) {
+        // ignore: avoid_print
+        print('[PhoneAuth][exception] $e');
+      }
       return OtpSendResult.failure('Failed to send OTP: ${e.toString()}');
     }
   }
@@ -288,6 +389,11 @@ class FirebaseAuthDataSource implements AuthDataSource {
     required String verificationId,
     required String smsCode,
   }) async {
+    if (_debugPhoneAuth) {
+      final shortId = verificationId.length > 8 ? verificationId.substring(0, 8) : verificationId;
+      // ignore: avoid_print
+      print('[PhoneAuth][verify] verificationId=$shortId... codeLen=${smsCode.length}');
+    }
     try {
       final credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
@@ -295,42 +401,106 @@ class FirebaseAuthDataSource implements AuthDataSource {
       );
 
       final userCredential = await _auth.signInWithCredential(credential);
+      if (_debugPhoneAuth) {
+        // ignore: avoid_print
+        print('[PhoneAuth][verify][success] uid=${userCredential.user?.uid}');
+      }
       final user = await _createOrUpdateUser(userCredential.user!);
       return AuthResultModel.success(user);
     } on FirebaseAuthException catch (e) {
-      return AuthResultModel.failure(e.message ?? 'Invalid OTP');
+      if (_debugPhoneAuth) {
+        // ignore: avoid_print
+        print('[PhoneAuth][verify][FirebaseAuthException] code=${e.code} message=${e.message}');
+      }
+      // Map some common codes to user-friendly messages
+      final fallback = 'Invalid OTP. Please check the code and try again.';
+      String message;
+      switch (e.code) {
+        case 'invalid-verification-code':
+          message = 'Invalid OTP code. Please try again.';
+          break;
+        case 'session-expired':
+          message = 'This OTP has expired. Please request a new one.';
+          break;
+        case 'quota-exceeded':
+          message = 'SMS quota exceeded. Please try again later.';
+          break;
+        default:
+          message = e.message ?? fallback;
+      }
+      return AuthResultModel.failure(message);
     } catch (e) {
-      return AuthResultModel.failure('Failed to verify OTP: ${e.toString()}');
+      if (_debugPhoneAuth) {
+        // ignore: avoid_print
+        print('[PhoneAuth][verify][exception] $e');
+      }
+      return AuthResultModel.failure('Failed to verify OTP. Please try again.');
     }
   }
 
+  // EMAIL VERIFICATION HELPERS ----------------------------------------------
+  Future<bool> sendEmailVerification() async {
+    final user = _auth.currentUser;
+    if (user == null) return false;
+    try {
+      await user.sendEmailVerification();
+      return true;
+    } catch (e) {
+      // ignore: avoid_print
+      print('[EmailAuth][verification][resend][error] $e');
+      return false;
+    }
+  }
+
+  Future<bool> isEmailVerified() async {
+    final user = _auth.currentUser;
+    if (user == null) return false;
+    await user.reload(); // refresh verification state
+    return _auth.currentUser?.emailVerified ?? false;
+  }
+
+  Future<bool> resendEmailVerificationIfUnverified() async {
+    final user = _auth.currentUser;
+    if (user == null) return false;
+    await user.reload();
+    if (user.emailVerified) return true; // already verified
+    return await sendEmailVerification();
+  }
+
   /// Helper method to create or update user
-  Future<UserModel> _createOrUpdateUser(User firebaseUser) async {
+  Future<UserModel> _createOrUpdateUser(User firebaseUser, {String? overrideDisplayName, String? overridePhotoInitial}) async {
     final now = DateTime.now();
 
     // Create/update user in Firestore
     final userRef = _firestore.collection('users').doc(firebaseUser.uid);
     final docSnapshot = await userRef.get();
 
+    final effectiveDisplayName = overrideDisplayName ?? firebaseUser.displayName ?? firebaseUser.email?.split('@').first;
+    final effectivePhotoUrl = overridePhotoInitial ?? firebaseUser.photoURL; // if single letter, UI will render initial
     late UserModel model;
     if (docSnapshot.exists) {
-      await userRef.update({
+      await userRef.set({
         'lastLoginAt': now.toIso8601String(),
         'userId': firebaseUser.uid,
-        'displayName': firebaseUser.displayName, // keep name fresh
-        'photoUrl': firebaseUser.photoURL,
-      });
+        'displayName': effectiveDisplayName,
+        'photoUrl': effectivePhotoUrl,
+        'email': firebaseUser.email ?? '',
+        'createdAt': (docSnapshot.data()?['createdAt'] as String?) ?? now.toIso8601String(),
+      }, SetOptions(merge: true));
       model = UserModel.fromJson({
         ...docSnapshot.data()!,
-        'displayName': firebaseUser.displayName,
-        'photoUrl': firebaseUser.photoURL,
+        'displayName': effectiveDisplayName,
+        'photoUrl': effectivePhotoUrl,
         'id': firebaseUser.uid,
+        'lastLoginAt': now.toIso8601String(),
+        'email': firebaseUser.email ?? (docSnapshot.data()?['email'] as String? ?? ''),
+        'createdAt': (docSnapshot.data()?['createdAt'] as String?) ?? now.toIso8601String(),
       });
     } else {
       final userData = {
-        'email': firebaseUser.email,
-        'displayName': firebaseUser.displayName,
-        'photoUrl': firebaseUser.photoURL,
+        'email': firebaseUser.email ?? '',
+        'displayName': effectiveDisplayName,
+        'photoUrl': effectivePhotoUrl,
         'createdAt': now.toIso8601String(),
         'lastLoginAt': now.toIso8601String(),
         'userId': firebaseUser.uid,
@@ -349,8 +519,8 @@ class FirebaseAuthDataSource implements AuthDataSource {
     try {
       await FirestoreProgressRepository().updateUserCore(
         userId: firebaseUser.uid,
-        displayName: firebaseUser.displayName,
-        photoUrl: firebaseUser.photoURL,
+        displayName: effectiveDisplayName,
+        photoUrl: effectivePhotoUrl,
       );
     } catch (e) {
       // ignore: avoid_print

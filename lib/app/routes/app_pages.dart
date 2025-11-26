@@ -16,11 +16,14 @@ import '../bindings/auth_binding.dart';
 import '../bindings/settings_binding.dart';
 import '../bindings/vedic_course_binding.dart';
 import '../bindings/enhanced_vedic_binding.dart';
+import '../middlewares/ensure_verified_middleware.dart';
 
 import '../pages/splash/onboarding_view.dart';
 import '../pages/auth/login_view.dart';
 import '../pages/auth/signup_view.dart';
 import '../pages/auth/otp_verification_view.dart';
+import '../pages/auth/verify_email_view.dart';
+import '../bindings/verify_email_binding.dart';
 import '../pages/home_view.dart';
 import '../pages/math_tables/math_tables_view.dart';
 import '../pages/math_tables/math_tables_test_view.dart';
@@ -91,6 +94,11 @@ class AppPages {
       binding: AuthBinding(),
     ),
     GetPage(
+      name: Routes.VERIFY_EMAIL,
+      page: () => const VerifyEmailView(),
+      binding: VerifyEmailBinding(),
+    ),
+    GetPage(
       name: Routes.OTP_VERIFICATION,
       page: () => const OTPVerificationView(),
       binding: AuthBinding(),
@@ -104,21 +112,25 @@ class AppPages {
       name: Routes.HOME,
       page: () => const HomeView(),
       binding: HomeBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.MATH_TABLES,
       page: () => const MathTablesView(),
       binding: MathTablesBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.MATH_TABLES_TEST,
       page: () => const MathTablesTestView(),
       binding: MathTablesTestBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.SECTION_DETAIL,
       page: () => const SectionDetailView(),
       binding: SectionDetailBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     // GetPage(
     //   name: Routes.LESSONS,
@@ -128,52 +140,66 @@ class AppPages {
     GetPage(
       name: Routes.VEDIC_METHODS,
       page: () => const VedicMethodsOverviewView(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
-    GetPage(name: Routes.METHOD_DETAIL, page: () => const MethodDetailView()),
+    GetPage(
+      name: Routes.METHOD_DETAIL,
+      page: () => const MethodDetailView(),
+      middlewares: [EnsureVerifiedMiddleware()],
+    ),
     GetPage(
       name: Routes.VEDIC_COURSE,
       page: () => const VedicCourseView(),
       binding: VedicCourseBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.CHAPTER_DETAIL,
       page: () => const ChapterDetailView(),
       binding: VedicCourseBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.LESSON_DETAIL,
       page: () => const LessonDetailView(),
       binding: VedicCourseBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.ALL_LESSONS,
       page: () => const AllLessonsView(),
       binding: VedicCourseBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.LESSON_STEPS,
       page: () => const LessonStepsView(),
       binding: VedicCourseBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.LESSON_PRACTICE,
       page: () => const LessonPracticeView(),
       binding: VedicCourseBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.VEDIC_16_SUTRAS,
       page: () => const Vedic16SutrasView(),
       binding: EnhancedVedicBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.SUTRA_DETAIL,
       page: () => const SutraDetailView(),
       binding: EnhancedVedicBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.INTERACTIVE_LESSON,
       page: () => const InteractiveLessonView(),
       binding: EnhancedVedicBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     // GetPage(
     //   name: Routes.QUIZ,
@@ -184,39 +210,47 @@ class AppPages {
       name: Routes.PRACTICE,
       page: () => const PracticeView(),
       binding: PracticeBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.PRACTICE_HUB,
       page: () => const PracticeHubView(),
       binding: PracticeHubBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.PRACTICE_ARITHMETIC_SETUP,
       page: () => const ArithmeticSetupView(),
       binding: ArithmeticPracticeBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.PRACTICE_TABLES_SETUP,
       page: () => const PracticeView(), // Reuse existing practice view
       binding: PracticeBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.PRACTICE_SUTRAS,
       page: () => const PracticeSutrasView(),
       binding: SutrasPracticeBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.PRACTICE_TACTICS,
       page: () => const PracticeTacticsView(),
       binding: TacticsPracticeBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.PRACTICE_GAMES,
       page: () => const PracticeGamesView(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.PRACTICE_RESULTS,
       page: () => const PracticeResultsView(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     // GetPage(
     //   name: Routes.PROGRESS,
@@ -227,26 +261,31 @@ class AppPages {
       name: Routes.LEADERBOARD,
       page: () => const LeaderboardView(),
       binding: LeaderboardBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.HISTORY,
       page: () => const HistoryView(),
       binding: HistoryBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.NOTIFICATIONS,
       page: () => const NotificationsView(),
       binding: NotificationsBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.SETTINGS,
       page: () => const SettingsView(),
       binding: SettingsBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
     GetPage(
       name: Routes.EDIT_PROFILE,
       page: () => const EditProfileView(),
       binding: SettingsBinding(),
+      middlewares: [EnsureVerifiedMiddleware()],
     ),
 
     // Mini Game Routes

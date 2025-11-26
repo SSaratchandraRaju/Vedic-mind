@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../routes/app_routes.dart';
 import '../services/auth_service.dart';
 
@@ -53,7 +54,14 @@ class AuthController extends GetxController {
     isLoading.value = false;
 
     if (result.isSuccess) {
-      Get.offAllNamed(Routes.HOME);
+      final user = FirebaseAuth.instance.currentUser;
+      final isEmailPassword = user?.providerData.any((p) => p.providerId == 'password') ?? false;
+      final needsVerification = (user != null) && isEmailPassword && !(user.emailVerified);
+      if (needsVerification) {
+        Get.offAllNamed(Routes.VERIFY_EMAIL);
+      } else {
+        Get.offAllNamed(Routes.HOME);
+      }
     } else {
       _error(result.error ?? 'Sign in failed');
     }
@@ -86,7 +94,12 @@ class AuthController extends GetxController {
     isLoading.value = false;
 
     if (result.isSuccess) {
-      Get.offAllNamed(Routes.HOME);
+      final firebaseUser = FirebaseAuth.instance.currentUser;
+      if (firebaseUser != null && !(firebaseUser.emailVerified)) {
+        Get.offAllNamed(Routes.VERIFY_EMAIL);
+      } else {
+        Get.offAllNamed(Routes.HOME);
+      }
     } else {
       _error(result.error ?? 'Sign up failed');
     }
@@ -107,9 +120,16 @@ class AuthController extends GetxController {
 
   // Send Phone OTP
   Future<void> sendPhoneOTP() async {
-    final phone = phoneController.text.trim();
+    var phone = phoneController.text.trim();
     if (phone.isEmpty) {
       _error('Enter phone number');
+      return;
+    }
+    // Auto prepend +91 if user entered raw digits without +
+    if (!phone.startsWith('+')) {
+      phone = '+91$phone';
+    } else if (phone.startsWith('+91') && phone.length == 3) {
+      _error('Enter phone digits after +91');
       return;
     }
     isSendingOtp.value = true;
@@ -134,7 +154,7 @@ class AuthController extends GetxController {
         colorText: Colors.white,
       );
     } else {
-  _error(res.error ?? 'Failed to send OTP');
+      _error(res.error ?? 'Failed to send OTP');
     }
   }
 
@@ -214,9 +234,10 @@ class AuthController extends GetxController {
   }
 
   void _error(String message) {
+    final msg = (message).toString();
     Get.snackbar(
       'Error',
-      message,
+      msg.isEmpty ? 'Something went wrong' : msg,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.red,
       colorText: Colors.white,

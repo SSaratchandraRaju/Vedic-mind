@@ -471,54 +471,60 @@ class SignupView extends GetView<AuthController> {
   }
 
   Widget _buildPhoneSignupForm() {
+    final c = Get.find<AuthController>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Phone Number',
-          style: AppTextStyles.label.copyWith(
-            color: AppColors.textPrimary,
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
+        Text('Mobile Number', style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600)),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.border),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text('+91', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: c.phoneController,
+                  keyboardType: TextInputType.phone,
+                  maxLength: 20, // user can enter up to 20 digits (rare business cases)
+                  decoration: const InputDecoration(
+                    counterText: '',
+                    hintText: 'Enter phone number',
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (value) {
+                    // Strip any non-digits the user pasted
+                    final digitsOnly = value.replaceAll(RegExp(r'[^0-9]'), '');
+                    if (digitsOnly != value) {
+                      final selectionIndex = digitsOnly.length;
+                      c.phoneController.value = TextEditingValue(
+                        text: digitsOnly,
+                        selection: TextSelection.collapsed(offset: selectionIndex),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
-          controller: controller.phoneController,
-          keyboardType: TextInputType.phone,
-          style: const TextStyle(
-            fontSize: 15,
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w400,
-            fontFamily: 'Poppins',
-          ),
-          decoration: InputDecoration(
-            hintText: '+91 1234567890',
-            hintStyle: TextStyle(
-              color: AppColors.gray400,
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              fontFamily: 'Poppins',
-            ),
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
-            ),
-          ),
+        Text(
+          'We will send an OTP to this Indian number. Country code automatically applied.',
+          style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary, fontSize: 11),
         ),
       ],
     );

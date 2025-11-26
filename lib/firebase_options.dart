@@ -42,7 +42,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyADZG8tWutFlMUE2xPxERqJyt3d028laNw',
-    appId: '1:1057656790392:android:018b70cf6f7d08022efc8d',
+    appId: '1:1057656790392:android:962f6c7d701a31892efc8d',
     messagingSenderId: '1057656790392',
     projectId: 'vedic-maths-d7d74',
     storageBucket: 'vedic-maths-d7d74.firebasestorage.app',
@@ -54,6 +54,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1057656790392',
     projectId: 'vedic-maths-d7d74',
     storageBucket: 'vedic-maths-d7d74.firebasestorage.app',
+    androidClientId: '1057656790392-foamh3rbt09m48b9o63bcnccush0ovcr.apps.googleusercontent.com',
+    iosClientId: '1057656790392-pmddet8mlnp00nuhn0gelccbpk5f7n4t.apps.googleusercontent.com',
     iosBundleId: 'com.example.vedicMaths',
   );
 
@@ -72,6 +74,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1057656790392',
     projectId: 'vedic-maths-d7d74',
     storageBucket: 'vedic-maths-d7d74.firebasestorage.app',
+    androidClientId: '1057656790392-foamh3rbt09m48b9o63bcnccush0ovcr.apps.googleusercontent.com',
+    iosClientId: '1057656790392-pmddet8mlnp00nuhn0gelccbpk5f7n4t.apps.googleusercontent.com',
     iosBundleId: 'com.example.vedicMaths',
   );
 

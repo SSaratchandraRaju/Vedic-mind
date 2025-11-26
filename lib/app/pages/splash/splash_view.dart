@@ -41,14 +41,22 @@ class _SplashViewState extends State<SplashView> {
       final settings = await repo.fetch(user.uid);
       // Prefer remote flag if available; fall back to local flag
       final completed = settings.onboardingCompleted || localCompleted;
-      if (completed) {
+      final hasEmail = (user.email != null && user.email!.isNotEmpty);
+      final requiresVerification = hasEmail && !(user.emailVerified);
+      if (requiresVerification) {
+        Get.offAllNamed(Routes.VERIFY_EMAIL);
+      } else if (completed) {
         Get.offAllNamed(Routes.HOME);
       } else {
         Get.offAllNamed(Routes.ONBOARDING);
       }
     } catch (e) {
       // Firestore unavailable (offline or index issue) -> default to HOME to avoid blocking UX
-      if (localCompleted) {
+      final hasEmail = (user.email != null && user.email!.isNotEmpty);
+      final requiresVerification = hasEmail && !(user.emailVerified);
+      if (requiresVerification) {
+        Get.offAllNamed(Routes.VERIFY_EMAIL);
+      } else if (localCompleted) {
         Get.offAllNamed(Routes.HOME);
       } else {
         Get.offAllNamed(Routes.ONBOARDING);

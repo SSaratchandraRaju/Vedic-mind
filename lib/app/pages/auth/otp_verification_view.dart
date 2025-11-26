@@ -11,7 +11,8 @@ class OTPVerificationView extends GetView<AuthController> {
   @override
   Widget build(BuildContext context) {
     final args = Get.arguments as Map<String, dynamic>?;
-    final phoneNumber = args?['phoneNumber'] ?? '';
+    // Support both 'phone' and 'phoneNumber' keys
+    final phoneNumber = (args?['phone'] ?? args?['phoneNumber'] ?? '') as String;
     final maskedPhone = _maskPhoneNumber(phoneNumber);
 
     return Scaffold(
@@ -52,7 +53,7 @@ class OTPVerificationView extends GetView<AuthController> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Enter the security code we sent to your email $maskedPhone',
+                        'Enter the security code we sent to your phone $maskedPhone',
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: AppColors.textSecondary,
                           fontSize: 13,
@@ -134,7 +135,9 @@ class OTPVerificationView extends GetView<AuthController> {
                       border: Border.all(color: AppColors.primary),
                     ),
                   ),
+                  onChanged: (value) => controller.otpCode.value = value,
                   onCompleted: (pin) {
+                    controller.otpCode.value = pin;
                     controller.verifyOTP(pin);
                   },
                 ),
@@ -196,11 +199,21 @@ class OTPVerificationView extends GetView<AuthController> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: controller.isLoading.value
+                      onPressed: controller.isVerifyingOtp.value
                           ? null
                           : () {
-                              // Verify with current input
-                              // This is handled in onCompleted
+                              final pin = controller.otpCode.value.trim();
+                              if (pin.length >= 4) {
+                                controller.verifyOTP(pin);
+                              } else {
+                                Get.snackbar(
+                                  'Error',
+                                  'Please enter the OTP code',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  backgroundColor: Colors.red,
+                                  colorText: Colors.white,
+                                );
+                              }
                             },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
@@ -211,7 +224,7 @@ class OTPVerificationView extends GetView<AuthController> {
                         ),
                         disabledBackgroundColor: AppColors.gray300,
                       ),
-                      child: controller.isLoading.value
+                      child: controller.isVerifyingOtp.value
                           ? const SizedBox(
                               width: 24,
                               height: 24,

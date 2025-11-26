@@ -6,6 +6,7 @@ import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_app_check/firebase_app_check.dart'; // Added
 import 'app/routes/app_pages.dart';
 import 'app/ui/theme/app_theme.dart';
 import 'app/bindings/app_bindings.dart';
@@ -14,11 +15,37 @@ import 'app/data/repositories/firestore_notifications_repository.dart';
 import 'app/controllers/notifications_controller.dart';
 import 'app/controllers/theme_controller.dart';
 
+const bool kEnableAppCheck = true; // Re-enabled to remove placeholder token warnings
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase with generated options
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Debug-only bypass for reCAPTCHA visible challenges (DO NOT enable in release)
+  assert(() {
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+    debugPrint('Phone Auth: appVerificationDisabledForTesting ENABLED (debug mode)');
+    return true;
+  }());
+
+  if (kEnableAppCheck) {
+    try {
+      await FirebaseAppCheck.instance.activate(androidProvider: AndroidProvider.playIntegrity);
+      // To use a debug token during development, run with:
+      //   export FIREBASE_APP_CHECK_DEBUG_TOKEN=YOUR_DEBUG_TOKEN
+      //   flutter run --dart-define=FIREBASE_APP_CHECK_DEBUG_TOKEN=$FIREBASE_APP_CHECK_DEBUG_TOKEN
+      // Then retrieve and log a fresh token if needed:
+      // final token = await FirebaseAppCheck.instance.getToken();
+      // debugPrint('AppCheck token: $token');
+      debugPrint('App Check activated (Play Integrity).');
+    } catch (e) {
+      debugPrint('App Check activation failed: $e');
+    }
+  } else {
+    debugPrint('App Check disabled via kEnableAppCheck flag.');
+  }
 
   // Set up local notifications (for displaying FCM while foreground)
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();

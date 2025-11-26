@@ -3,6 +3,7 @@ abstract class Routes {
   static const ONBOARDING = '/onboarding';
   static const LOGIN = '/login';
   static const SIGNUP = '/signup';
+  static const VERIFY_EMAIL = '/verify-email';
   static const OTP_VERIFICATION = '/otp-verification';
   static const FORGOT_PASSWORD = '/forgot-password';
   static const AGE_SELECTION = '/age-selection';

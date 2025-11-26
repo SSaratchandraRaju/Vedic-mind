@@ -12,7 +12,20 @@
           "package_name": "com.vikrasoftech.vedicmind"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1057656790392-foamh3rbt09m48b9o63bcnccush0ovcr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vikrasoftech.vedicmind",
+            "certificate_hash": "e851f0214662c392bcdbf6a22b553be4bb7b8b5c"
+          }
+        },
+        {
+          "client_id": "1057656790392-vj417echp7rq13387tfpsiqoelkb1cdr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyADZG8tWutFlMUE2xPxERqJyt3d028laNw"
@@ -20,7 +33,55 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1057656790392-vj417echp7rq13387tfpsiqoelkb1cdr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1057656790392-pmddet8mlnp00nuhn0gelccbpk5f7n4t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.vedicMaths"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1057656790392:android:962f6c7d701a31892efc8d",
+        "android_client_info": {
+          "package_name": "com.vikrasoftech.vedicmind.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1057656790392-vj417echp7rq13387tfpsiqoelkb1cdr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADZG8tWutFlMUE2xPxERqJyt3d028laNw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1057656790392-vj417echp7rq13387tfpsiqoelkb1cdr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1057656790392-pmddet8mlnp00nuhn0gelccbpk5f7n4t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.vedicMaths"
+              }
+            }
+          ]
         }
       }
     }

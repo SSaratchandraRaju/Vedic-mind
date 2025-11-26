@@ -33,7 +33,21 @@ class HomeView extends GetView<HomeController> {
                           onTap: () => Get.toNamed(Routes.SETTINGS),
                           child: Obx(() {
                             final url = controller.userPhotoUrl.value;
+                            // If photoUrl is a single letter (initial), render text avatar
                             if (url.isNotEmpty) {
+                              if (url.length == 1) {
+                                return CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: AppColors.primary.withOpacity(0.15),
+                                  child: Text(
+                                    url.toUpperCase(),
+                                    style: AppTextStyles.h4.copyWith(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                );
+                              }
                               return CircleAvatar(
                                 radius: 24,
                                 backgroundColor: AppColors.primary.withOpacity(0.1),
@@ -44,9 +58,19 @@ class HomeView extends GetView<HomeController> {
                                     height: 48,
                                     fit: BoxFit.cover,
                                     errorBuilder: (context, error, stackTrace) {
-                                      return const Icon(
-                                        Icons.person,
-                                        color: AppColors.primary,
+                                      return CircleAvatar(
+                                        radius: 24,
+                                        backgroundColor: AppColors.primary.withOpacity(0.15),
+                                        child: Text(
+                                          (controller.userName.value.isNotEmpty
+                                                  ? controller.userName.value[0]
+                                                  : 'U')
+                                              .toUpperCase(),
+                                          style: AppTextStyles.h4.copyWith(
+                                            color: AppColors.primary,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
                                       );
                                     },
                                   ),
@@ -56,9 +80,15 @@ class HomeView extends GetView<HomeController> {
                             return CircleAvatar(
                               radius: 24,
                               backgroundColor: AppColors.primary.withOpacity(0.1),
-                              child: const Icon(
-                                Icons.person,
-                                color: AppColors.primary,
+                              child: Text(
+                                (controller.userName.value.isNotEmpty
+                                        ? controller.userName.value[0]
+                                        : 'U')
+                                    .toUpperCase(),
+                                style: AppTextStyles.h4.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             );
                           }),
